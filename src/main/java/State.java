@@ -35,12 +35,12 @@ public class State {
                 throw new IllegalArgumentException("a cube can only have 6 sides");
             }
 
-            int[]
-            for (int[][] ints : cube) {
-                for (int[] anInt : ints) {
-                    anInt[width-1]
-                }
-            }
+            int[] slice = new int[depth];
+//            for (int[][] ints : cube) {
+//                for (int[] anInt : ints) {
+//                    anInt[width-1]
+//                }
+//            }
 
 
         }
