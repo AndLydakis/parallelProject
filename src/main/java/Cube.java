@@ -12,7 +12,7 @@ public class Cube {
     //Do we want an array or a concurrent hashmap ?
     final GameBlock[][][] cube;
     final ConcurrentHashMap<String, GameBlock> cubeMap;
-    
+
     Cube(int width, int height, int depth, int blockHp) {
         this.width = width;
         this.height = height;
