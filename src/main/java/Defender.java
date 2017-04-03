@@ -11,6 +11,7 @@ public class Defender extends Player{
     private long lastBoost;
     private int toLevelUpAr = 10;
     private int toLevelUpSpeed = 10;
+    private final int shieldPrice = 500;
 
     public Defender(String un, int s, int cr){
         super(un, s, cr);
@@ -63,6 +64,14 @@ public class Defender extends Player{
             return;
         }
         System.err.println("Need "+toLevelUpSpeed+" credits to level up speed, current credits: "+cr);
+    }
+
+    public void buyShield(){
+        if(super.removeCredits(shieldPrice)){
+            shields++;
+        }else{
+            System.err.println("Not enough credits to buy a shield, "+shieldPrice+" credits needed");
+        }
     }
 }
 

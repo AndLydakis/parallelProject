@@ -11,6 +11,7 @@ public class Attacker extends Player {
     private long lastBoost;
     private int toLevelUpAr = 10;
     private int toLevelUpSpeed = 10;
+    private int bombPrice = 500;
 
     public Attacker(String un, int s, int cr){
         super(un, s, cr);
@@ -60,4 +61,13 @@ public class Attacker extends Player {
         }
         System.err.println("Need "+toLevelUpSpeed+" credits to level up speed, current credits: "+cr);
     }
+
+    public void buyBomb(){
+        if(super.removeCredits(bombPrice)){
+            bombs++;
+        }else{
+            System.err.println("Not enough credits to buy a bomb, "+bombPrice+" credits needed");
+        }
+    }
+
 }
