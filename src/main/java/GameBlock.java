@@ -15,7 +15,7 @@ public class GameBlock {
     private final Object hpLock;
     private final Object shieldLock;
 
-    public GameBlock(int x, int y, int z, int hp){
+    public GameBlock(int x, int y, int z, int hp) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -28,26 +28,26 @@ public class GameBlock {
     }
 
     @Override
-    public String toString(){
-        return x+"_"+y+"_"+"_"+z;
+    public String toString() {
+        return x + "_" + y + "_" + "_" + z;
     }
 
-    public int isShielded() throws RemoteException{
+    public int isShielded() throws RemoteException {
         return this.shielded.get();
     }
 
-    public int getHp() throws RemoteException{
+    public int getHp() throws RemoteException {
         return this.hp;
     }
 
-    public int attack(Player attacker, int dmg)throws RemoteException {
-        synchronized (shieldLock){
-            synchronized (hpLock){
-                if(this.isShielded()>=dmg){
-                    int dmgBlocked = this.isShielded()-dmg;
+    public int attack(Player attacker, int dmg) throws RemoteException {
+        synchronized (shieldLock) {
+            synchronized (hpLock) {
+                if (this.isShielded() >= dmg) {
+                    int dmgBlocked = this.isShielded() - dmg;
                     shielder.gainCredits(dmgBlocked);
                     dmg -= (dmgBlocked);
-                    if(dmg>0) {
+                    if (dmg > 0) {
                         this.shielded.set(this.shielded.get() >= dmg ? this.shielded.get() - dmg : 0);
                         attacker.gainCredits(dmg);
                     }
@@ -57,7 +57,7 @@ public class GameBlock {
         return 0;
     }
 
-    public int repair(Player repairer, int rep)throws RemoteException {
+    public int repair(Player repairer, int rep) throws RemoteException {
         synchronized (hpLock) {
 //            repairer.gainCredits((maxHp - this.hp) > rep?rep:maxHp - this.hp);
 //            this.hp = (this.hp+rep)>maxHp?maxHp:(this.hp+rep);
@@ -66,8 +66,8 @@ public class GameBlock {
     }
 
     public boolean shield(Player p, int sp) throws RemoteException {
-        synchronized (shieldLock){
-            if(isShielded()==0){
+        synchronized (shieldLock) {
+            if (isShielded() == 0) {
                 shielded.set(sp);
                 shielder = p;
                 return true;

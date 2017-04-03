@@ -10,7 +10,7 @@ public class FinalProject {
     public static void main(String[] args) {
         System.out.println("dooks");
 
-        State.Board board = new State.Board(20, 20, 20, 10);
+        LocalState.Board board = new LocalState.Board(20, 20, 20, 10);
 
         for (int[][] ints : board.cube) {
             for (int[] anInt : ints) {

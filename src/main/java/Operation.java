@@ -3,12 +3,13 @@ import java.io.Serializable;
 /**
  * Created by lydakis-local on 4/3/17.
  */
-public abstract class Operation implements Serializable{
+public abstract class Operation implements Serializable {
     static final long serialVersionUID = 876987698768012L;
 
-    Operation(){}
+    Operation() {
+    }
 
-    public static Operation attack(Player p, GameBlock b){
+    public static Operation attack(Player p, GameBlock b) {
         return new Operation() {
             @Override
             public String toString() {
@@ -17,7 +18,7 @@ public abstract class Operation implements Serializable{
         };
     }
 
-    public static Operation repair(Player p, GameBlock b){
+    public static Operation repair(Player p, GameBlock b) {
         return new Operation() {
             @Override
             public String toString() {
@@ -26,7 +27,7 @@ public abstract class Operation implements Serializable{
         };
     }
 
-    public static Operation bomb(Player p, GameBlock b){
+    public static Operation bomb(Player p, GameBlock b) {
         return new Operation() {
             @Override
             public String toString() {
@@ -35,11 +36,11 @@ public abstract class Operation implements Serializable{
         };
     }
 
-    public static Operation shield(Player p, GameBlock b){
+    public static Operation shield(Player p, GameBlock b) {
         return new Operation() {
             @Override
             public String toString() {
-                return p.toString()+" SHIELDS "+b.toString();
+                return p.toString() + " SHIELDS " + b.toString();
             }
         };
     }

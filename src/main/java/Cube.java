@@ -21,21 +21,21 @@ public class Cube {
         cubeMap = new ConcurrentHashMap<>();
         cube = new GameBlock[width][height][depth];
 
-        for(int w = 0; w < this.width; w++){
-            for(int h = 0; h < this.height; h++){
-                for(int d = 0; d < this.depth; d++) {
+        for (int w = 0; w < this.width; w++) {
+            for (int h = 0; h < this.height; h++) {
+                for (int d = 0; d < this.depth; d++) {
                     cube[w][h][d] = new GameBlock(w, h, d, blockHp);
-                    cubeMap.put(coordToString(w,h,d), cube[w][h][d]);
+                    cubeMap.put(coordToString(w, h, d), cube[w][h][d]);
                 }
             }
         }
     }
 
-    private String coordToString(int w, int h, int d){
-        return(w+"_"+h+"_"+d);
+    private String coordToString(int w, int h, int d) {
+        return (w + "_" + h + "_" + d);
     }
 
-    public ArrayList<Cube> returnFace(){
+    public ArrayList<Cube> returnFace() {
         return new ArrayList<>();
     }
 }

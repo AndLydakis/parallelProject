@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * Created by lydakis-local on 4/2/17.
  */
-public final class Player extends UnicastRemoteObject implements Comparable<Player>, RemotePlayer{
+public class Player extends UnicastRemoteObject implements Comparable<Player>, RemotePlayer{
     final String userName;
     private int score;
     private int credits;
