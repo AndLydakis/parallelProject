@@ -6,12 +6,12 @@ import java.rmi.RemoteException;
  * Created by lydakis-local on 4/3/17.
  */
 public class TestClient {
-    private final State state;
+    private final RemoteState state;
     private String username;
     private Player player;
 
     private TestClient(String service) throws RemoteException, NotBoundException, MalformedURLException {
-        state = (State) java.rmi.Naming.lookup(service);
+        state = (RemoteState) java.rmi.Naming.lookup(service);
     }
 
     private void selectTarget() {
@@ -56,7 +56,7 @@ public class TestClient {
     }
 
     private void login() throws RemoteException {
-        player = state.login(username);
+        player = (Player)state.login(username);
         if (player == null) {
             System.err.println("Could not login, please retry");
         } else {

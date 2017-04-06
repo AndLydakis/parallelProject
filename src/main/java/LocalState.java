@@ -6,9 +6,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by ChunkLightTuna on 4/2/17.
  */
-public class LocalState extends UnicastRemoteObject implements State {
+public class LocalState extends UnicastRemoteObject implements RemoteState {
     final String name;
-    //TODO DO WE NEED BOTH A STATE AND A BOARD ?
 
     final int height;
     final int width;
@@ -41,6 +40,43 @@ public class LocalState extends UnicastRemoteObject implements State {
             return true;
         }
         return false;
+    }
+
+    public String parseRequest(String req){
+        String[] tokens = req.split(" ");
+        String username = tokens[0];
+        String operation = tokens[1];
+        switch (operation) {
+            case "ATTACK":
+                break;
+            case "REPAIR":
+                break;
+            case "SHIELD":
+                break;
+            case "REGISTER":
+                break;
+            case "LOGIN":
+                break;
+            case "LOGOUT":
+                break;
+            case "LVL_REP":
+                break;
+            case "LVL_AR":
+                break;
+            case "LVL_SP":
+                break;
+            case "BOOST":
+                break;
+            case "BB":
+                break;
+            case "BS":
+                break;
+            case "LDB":
+                break;
+            default:
+                break;
+        }
+        return "";
     }
 
     public LocalState(String name, int width, int height, int depth, int blockHp) throws RemoteException {
