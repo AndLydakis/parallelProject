@@ -1,3 +1,6 @@
+import com.sun.org.apache.regexp.internal.RE;
+import jdk.nashorn.internal.ir.Block;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -11,6 +14,19 @@ public interface RemotePlayer extends java.rmi.Remote {
      * @throws RemoteException
      */
     String toString() throws RemoteException;
+
+    /**
+     * Update the status of the player
+     * @throws RemoteException
+     */
+    void update(String s) throws RemoteException;
+
+    /**
+     *
+     * @return a block given its coordinates
+     * @throws RemoteException
+     */
+    RemoteBlock blockFromString() throws RemoteException;
 
     /**
      * @return the current level of the player

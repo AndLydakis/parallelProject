@@ -42,18 +42,30 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
         return false;
     }
 
-    public String parseRequest(String req){
+    public String parseRequest(String req) throws RemoteException {
         String[] tokens = req.split(" ");
-        String username = tokens[0];
-        String operation = tokens[1];
+        String operation = tokens[0];
+        String username = tokens[1];
         switch (operation) {
-            case "ATTACK":
-                break;
-            case "REPAIR":
-                break;
+            case "ATTACK": {
+                Attacker atk = (Attacker) players.get(username);
+                GameBlock gb = cube.getBlock(tokens[2]);
+                atk.gainCredits(gb.attack(atk.getAttackRating()));
+                return atk.toString();
+            }
+            case "REPAIR": {
+                Defender def = (Defender) players.get(username);
+                GameBlock gb = cube.getBlock(tokens[2]);
+                def.gainCredits(gb.repair(def.getRepairRating()));
+                return def.toString();
+            }
             case "SHIELD":
+                Defender def = (Defender) players.get(username);
+                GameBlock gb = cube.getBlock(tokens[2]);
+                gb.shield(def, def.getRepairRating());
                 break;
             case "REGISTER":
+
                 break;
             case "LOGIN":
                 break;
@@ -78,6 +90,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
         }
         return "";
     }
+
 
     public LocalState(String name, int width, int height, int depth, int blockHp) throws RemoteException {
         synchronized (this) {

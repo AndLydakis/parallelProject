@@ -40,7 +40,7 @@ public class GameBlock {
         return this.hp;
     }
 
-    public int attack(Player attacker, int dmg) throws RemoteException {
+    public int attack(int dmg) throws RemoteException {
         synchronized (shieldLock) {
             synchronized (hpLock) {
                 if (this.isShielded() >= dmg) {
@@ -49,7 +49,7 @@ public class GameBlock {
                     dmg -= (dmgBlocked);
                     if (dmg > 0) {
                         this.shielded.set(this.shielded.get() >= dmg ? this.shielded.get() - dmg : 0);
-                        attacker.gainCredits(dmg);
+                        return (dmg);
                     }
                 }
             }
@@ -57,12 +57,15 @@ public class GameBlock {
         return 0;
     }
 
-    public int repair(Player repairer, int rep) throws RemoteException {
+    public int repair(int rep) throws RemoteException {
         synchronized (hpLock) {
+            if (this.hp==maxHp) return 0;
+            int r = (maxHp - this.hp) > rep?rep:maxHp - this.hp;
+            this.hp = (this.hp+rep)>=maxHp?maxHp:(this.hp+rep);
+            return r;
 //            repairer.gainCredits((maxHp - this.hp) > rep?rep:maxHp - this.hp);
 //            this.hp = (this.hp+rep)>maxHp?maxHp:(this.hp+rep);
         }
-        return 0;
     }
 
     public boolean shield(Player p, int sp) throws RemoteException {

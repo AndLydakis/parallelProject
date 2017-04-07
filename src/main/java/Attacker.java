@@ -8,7 +8,7 @@ public class Attacker extends Player {
 
     private int bombs;
     private double speed;
-    private double attackRating;
+    private int attackRating;
     private long lastAttack;
     private long lastBomb;
     private long lastBoost;
@@ -19,17 +19,38 @@ public class Attacker extends Player {
     public Attacker(String un, int s, int cr) throws RemoteException {
         super(un, s, cr);
         this.speed = 1.0;
-        this.attackRating = 1.0;
+        this.attackRating = 1;
         this.lastAttack = -1l;
         this.lastBomb = -1l;
         this.bombs = 0;
+    }
+
+    public Attacker(String s) throws RemoteException {
+        super(s);
+        this.speed = 1.0;
+        this.attackRating= 1;
+        this.lastAttack = -1l;
+        this.lastBomb = -1l;
+        this.bombs = 0;
+    }
+
+    /**
+     * Update player from a socket response
+     * @param s String formatted as "SCORE CREDITS LEVEL SPEED ATTACK_RATING BOMBS"
+     */
+    public void update(String s){
+        super.update(s);
+        String[] tokens = s.split(" ");
+        this.speed = Double.parseDouble(tokens[3]);
+        this.attackRating = Integer.parseInt(tokens[4]);
+        this.bombs = Integer.parseInt(tokens[5]);
     }
 
     public double getSpeed() {
         return this.speed;
     }
 
-    public double getAttackRating() {
+    public int getAttackRating() {
         return this.attackRating;
     }
 
@@ -71,6 +92,16 @@ public class Attacker extends Player {
         } else {
             System.err.println("Not enough credits to buy a bomb, " + bombPrice + " credits needed");
         }
+    }
+
+    public int attack(String block, String type) throws RemoteException {
+        if(type.equals("ATK")) {
+            gainCredits(targets.get(block).attack( getAttackRating()));
+        }else if(type.equals("BOMB")){
+            gainCredits(targets.get(block).attack(getAttackRating())*10);
+        }
+
+        return 0;
     }
 
 }

@@ -1,6 +1,7 @@
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by lydakis-local on 4/2/17.
@@ -13,9 +14,17 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
     private final Object creditLock;
     private final Object logLock;
     private volatile boolean logged;
+    ConcurrentHashMap<String, RemoteBlock> targets;
 
     private final double boostCooldown = 10.0;
 
+    /**
+     * Create player from string for the socket service
+     * @param un username
+     * @param s score
+     * @param cr credits
+     * @throws RemoteException
+     */
     public Player(String un, int s, int cr) throws RemoteException {
         this.userName = un;
         this.score = s;
@@ -26,8 +35,48 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
         this.logged = false;
     }
 
-    public String toString() {
+    /**
+     * Load player from string for the socket service
+     * @param s String formatted as "USERNAME SCORE CREDITS LEVEL"
+     * @throws RemoteException
+     */
+    public Player(String s) throws RemoteException{
+        String[] tokens = s.split(" ");
+        this.userName = tokens[0];
+        this.score = Integer.parseInt(tokens[1]);
+        this.credits = Integer.parseInt(tokens[2]);
+        this.level = Integer.parseInt(tokens[3]);;
+        this.creditLock = new Object();
+        this.logLock = new Object();
+        this.logged = false;
+    }
+
+    /**
+     * Update the player from a server response
+     * @param s String formatted as "SCORE CREDITS LEVEL"
+     */
+    public void update(String s){
+        String[] tokens = s.split(" ");
+        this.score = Integer.parseInt(tokens[0]);
+        this.credits = Integer.parseInt(tokens[1]);
+        this.level = Integer.parseInt(tokens[2]);
+    }
+
+    public void assignTargets(ConcurrentHashMap map){
+        this.targets = map;
+    }
+
+    public RemoteBlock blockFromString(String coords) throws RemoteException{
+        return targets.get(coords);
+    }
+
+    public String unameToString() {
         return this.userName;
+    }
+
+    @Override
+    public RemoteBlock blockFromString() throws RemoteException {
+        return null;
     }
 
     public void login() throws RemoteException{

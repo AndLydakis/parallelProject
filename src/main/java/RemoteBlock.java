@@ -18,20 +18,18 @@ public interface RemoteBlock extends java.rmi.Remote {
     public int getHp() throws RemoteException;
 
     /**
-     * @param attacker the Player who attacked
      * @param dmg      the power of the attack
-     * @return a Record of the form <PLAYER> DAMAGES <BLOCK> FOR <DAMAGE>
+     * @return credits equal to the amount of hit points removed
      * @throws RemoteException
      */
-    Record attack(Player attacker, int dmg) throws RemoteException;
+    int attack(int dmg) throws RemoteException;
 
     /**
-     * @param repairer the Player who repaired
-     * @param rep      the repair power
-     * @return a Record of the form <PLAYER> REPAIRS <BLOCK> FOR <POINTS>
+     * @param rep the hit points repaired
+     * @return credits equal to the amount of hit points repaired
      * @throws RemoteException
      */
-    Record repair(Player repairer, int rep) throws RemoteException;
+    int repair(int rep) throws RemoteException;
 
     /**
      * @param p  the Player attempting to shield the block
