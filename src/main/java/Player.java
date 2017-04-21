@@ -1,3 +1,4 @@
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -55,14 +56,14 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
      * Update the player from a server response
      * @param s String formatted as "SCORE CREDITS LEVEL"
      */
-    public void update(String s){
+    public void update(String s) throws RemoteException{
         String[] tokens = s.split(" ");
         this.score = Integer.parseInt(tokens[0]);
         this.credits = Integer.parseInt(tokens[1]);
         this.level = Integer.parseInt(tokens[2]);
     }
 
-    public void assignTargets(ConcurrentHashMap map){
+    public void assignTargets(ConcurrentHashMap map) throws RemoteException{
         this.targets = map;
     }
 
@@ -70,7 +71,7 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
         return targets.get(coords);
     }
 
-    public String unameToString() {
+    public String unameToString()throws RemoteException{
         return this.userName;
     }
 

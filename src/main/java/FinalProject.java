@@ -9,15 +9,15 @@ public class FinalProject {
      */
     public static void main(String[] args) {
         System.out.println("dooks");
-
-        LocalState.Board board = new LocalState.Board(20, 20, 20, 10);
-
-        for (int[][] ints : board.cube) {
-            for (int[] anInt : ints) {
-                for (int i : anInt) {
-                    System.out.println(i);
-                }
-            }
-        }
+//
+//        LocalState.Board board = new LocalState.Board(20, 20, 20, 10);
+//
+//        for (int[][] ints : board.cube) {
+//            for (int[] anInt : ints) {
+//                for (int i : anInt) {
+//                    System.out.println(i);
+//                }
+//            }
+//        }
     }
 }

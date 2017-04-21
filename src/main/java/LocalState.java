@@ -18,7 +18,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
     private ArrayList<Player> attackers;
     private ArrayList<Player> defenders;
 
-    public synchronized Player login(String username) throws RemoteException {
+    public synchronized Player   login(String username) throws RemoteException {
         if (players.get(username) != null) {
             players.get(username).login();
             return players.get(username);
@@ -92,14 +92,14 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
     }
 
 
-    public LocalState(String name, int width, int height, int depth, int blockHp) throws RemoteException {
+    public LocalState(String name, int size, int blockHp) throws RemoteException {
         synchronized (this) {
             this.name = name;
-            this.width = width;
-            this.height = height;
-            this.depth = depth;
+            this.width = size;
+            this.height = size;
+            this.depth = size;
 
-            cube = new Cube(width, height, depth, blockHp);
+            cube = new Cube(size, blockHp);
 
             players = new ConcurrentHashMap<>();
             attackers = new ArrayList<>();

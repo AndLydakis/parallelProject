@@ -29,13 +29,23 @@ public class GameBlock {
 
     @Override
     public String toString() {
-        return x + "_" + y + "_" + "_" + z;
+        return x + "_" + y + "_" + z;
     }
 
+    /**
+     * check if the
+     * @return
+     * @throws RemoteException
+     */
     public int isShielded() throws RemoteException {
         return this.shielded.get();
     }
 
+    /**
+     * return the block's hitpoins
+     * @return the block's hitpoints
+     * @throws RemoteException
+     */
     public int getHp() throws RemoteException {
         return this.hp;
     }
@@ -57,6 +67,12 @@ public class GameBlock {
         return 0;
     }
 
+    /**
+     * Restore some block hitpoints
+     * @param rep a number of hit points to be
+     * @return the amount of points that were repaired, so the player can gain the corresponding credits
+     * @throws RemoteException
+     */
     public int repair(int rep) throws RemoteException {
         synchronized (hpLock) {
             if (this.hp==maxHp) return 0;
@@ -68,6 +84,13 @@ public class GameBlock {
         }
     }
 
+    /**
+     * Receive shield from player
+     * @param p a player that is trying to shield a block
+     * @param sp the shield points to be given to the block
+     * @return true if the shield was placed successfully, false if otherwise
+     * @throws RemoteException
+     */
     public boolean shield(Player p, int sp) throws RemoteException {
         synchronized (shieldLock) {
             if (isShielded() == 0) {

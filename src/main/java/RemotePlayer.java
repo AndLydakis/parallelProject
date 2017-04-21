@@ -13,7 +13,7 @@ public interface RemotePlayer extends java.rmi.Remote {
      * @return the player's username
      * @throws RemoteException
      */
-    String toString() throws RemoteException;
+    String toString();
 
     /**
      * Update the status of the player
@@ -70,5 +70,4 @@ public interface RemotePlayer extends java.rmi.Remote {
      * @throws RemoteException
      */
     ArrayList<GameBlock> requestFace() throws RemoteException;
-
 }

@@ -108,7 +108,9 @@ public class GameServer {
             throw new IllegalStateException("Server already running");
         Registry reg;
         if (port > 0) {
+            System.err.println("Getting registry at port: " + port);
             reg = LocateRegistry.getRegistry(port);
+            System.err.println("Got registry");
         } else if (port < 0) {
             port = -port;
             reg = LocateRegistry.createRegistry(port);
@@ -127,7 +129,9 @@ public class GameServer {
                 }
             }
         }
+        System.err.println("Rebinding registry");
         reg.rebind(state.name, state);
+        System.err.println("Bind successful");
         return port;
     }
 
@@ -162,11 +166,9 @@ public class GameServer {
             port = Integer.parseInt(args[0]);
         }
         String name = args[1];
-        int width = Integer.parseInt(args[2]);
-        int height = Integer.parseInt(args[3]);
-        int depth = Integer.parseInt(args[4]);
-        int bhp = Integer.parseInt(args[5]);
-        LocalState state = new LocalState(name, width, height, depth, bhp);
+        int size = Integer.parseInt(args[2]);
+        int bhp = Integer.parseInt(args[3]);
+        LocalState state = new LocalState(name, size, bhp);
         GameServer server = new GameServer(state);
         try {
             port = server.start(port);

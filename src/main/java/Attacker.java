@@ -20,8 +20,8 @@ public class Attacker extends Player {
         super(un, s, cr);
         this.speed = 1.0;
         this.attackRating = 1;
-        this.lastAttack = -1l;
-        this.lastBomb = -1l;
+        this.lastAttack = -10000L;
+        this.lastBomb = -10000L;
         this.bombs = 0;
     }
 
@@ -29,16 +29,17 @@ public class Attacker extends Player {
         super(s);
         this.speed = 1.0;
         this.attackRating= 1;
-        this.lastAttack = -1l;
-        this.lastBomb = -1l;
+        this.lastAttack = -10000L;
+        this.lastBomb = -10000L;
         this.bombs = 0;
     }
 
     /**
      * Update player from a socket response
+     *
      * @param s String formatted as "SCORE CREDITS LEVEL SPEED ATTACK_RATING BOMBS"
      */
-    public void update(String s){
+    public void update(String s) throws RemoteException {
         super.update(s);
         String[] tokens = s.split(" ");
         this.speed = Double.parseDouble(tokens[3]);
@@ -46,62 +47,139 @@ public class Attacker extends Player {
         this.bombs = Integer.parseInt(tokens[5]);
     }
 
+    /**
+     * Return the speed of the player
+     * @return the speed of the player
+     */
     public double getSpeed() {
         return this.speed;
     }
 
+    /**
+     * Return the attack rating of the player
+     * @return the attack rating of the player
+     */
     public int getAttackRating() {
         return this.attackRating;
     }
 
+    /**
+     * Return the number of bombs available to the player
+     * @return the number of bombs
+     */
     public int getBombs() {
         return this.bombs;
     }
 
+    /**
+     * Check if the player can attack again
+     * @return true iof the player can attack, false otherwise
+     */
     public boolean canAttack() {
         return ((System.nanoTime() - this.lastAttack) > this.speed);
     }
 
+    /**
+     * Check if the player can use his boost ability again
+     * @return true if the player can boost again, false otherwise
+     * @throws RemoteException if rmi fails
+     */
     public boolean canBoost() throws RemoteException {
         return ((System.nanoTime() - this.lastBoost) > getBoostCooldown());
     }
 
-    public void levelUpAr() throws RemoteException {
+
+    /**
+     * Increase the attack rating if the player has enough credits
+     * @return true if the player had enough credits to level up repair rating, false otherwise
+     * @throws RemoteException
+     */
+    public boolean levelUpAr() throws RemoteException {
         int cr = getCredits();
-        if (getCredits() <= toLevelUpAr) {
+        if (super.removeCredits(toLevelUpAr)) {
             attackRating += 1;
             toLevelUpAr *= 10;
-            return;
+            return true;
         }
         System.err.println("Need " + toLevelUpAr + " credits to level up attack rating, current credits: " + cr);
+        return false;
     }
 
-    public void levelUpSpeed() throws RemoteException {
+    /**
+     * Increase the speed of the if the player has enough credits
+     *
+     * @return true if the player had enough credits to level up speed, false otherwise
+     * @throws RemoteException
+     */
+    public boolean levelUpSpeed() throws RemoteException {
         int cr = getCredits();
-        if (getCredits() <= toLevelUpSpeed) {
-            speed += 1;
-            toLevelUpSpeed *= 10;
-            return;
+        if (((System.nanoTime() - this.lastBoost) > this.speed)) {
+            if (super.removeCredits(toLevelUpSpeed)) {
+                speed += 1;
+                toLevelUpSpeed *= 10;
+                return true;
+            }
         }
         System.err.println("Need " + toLevelUpSpeed + " credits to level up speed, current credits: " + cr);
+        return false;
     }
 
-    public void buyBomb() throws RemoteException {
+    /**
+     * Damages a block's hitpoints for an amount equal to the players attack rating
+     * @param b the block to be repaired
+     * @return true if the block was repaired, false if the block was already destroyed
+     * @throws RemoteException if rmi fails
+     */
+    public boolean attack(GameBlock b) throws RemoteException{
+        int p = b.attack(getAttackRating());
+        if(p >= 0){
+            this.gainCredits(p);
+            return true;
+        }else{
+            return false;
+        }
+
+    }
+
+    /**
+     * Increases the number of available bombs if the player has enough credits
+     *
+     * @return the number of bombs available to the player
+     * @throws RemoteException
+     */
+    public int buyBomb() throws RemoteException {
         if (super.removeCredits(bombPrice)) {
             bombs++;
         } else {
-            System.err.println("Not enough credits to buy a bomb, " + bombPrice + " credits needed");
+            System.err.println("Not enough credits to buy a shield, " + bombPrice + " credits needed");
         }
+        return bombs;
     }
 
-    public int attack(String block, String type) throws RemoteException {
-        if(type.equals("ATK")) {
-            gainCredits(targets.get(block).attack( getAttackRating()));
-        }else if(type.equals("BOMB")){
-            gainCredits(targets.get(block).attack(getAttackRating())*10);
+    /**
+     * Temporarily increase the player's speed if he has sufficient credits, and his boost is not in cooldown
+     *
+     * @return true if the boost succeeded, false otherwise
+     * @throws RemoteException
+     */
+    synchronized public boolean boost() throws RemoteException {
+        if (((System.nanoTime() - this.lastBoost) > this.speed)
+                && super.removeCredits(100)) {
+            this.speed = this.speed / 2;
+            return true;
         }
+        return false;
+    }
 
-        return 0;
+    /**
+     * Reset the player's speed back to the original pre-boost value
+     *
+     * @throws RemoteException
+     */
+    synchronized public void resetBoost() throws RemoteException {
+        if ((System.nanoTime() - this.lastBoost) > this.speed) {
+            this.speed = this.speed * 2;
+        }
     }
 
 }
