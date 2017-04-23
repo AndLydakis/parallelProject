@@ -1,3 +1,4 @@
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -28,7 +29,7 @@ public class Attacker extends Player {
     public Attacker(String s) throws RemoteException {
         super(s);
         this.speed = 1.0;
-        this.attackRating= 1;
+        this.attackRating = 1;
         this.lastAttack = -10000L;
         this.lastBomb = -10000L;
         this.bombs = 0;
@@ -49,38 +50,43 @@ public class Attacker extends Player {
 
     /**
      * Return the speed of the player
+     *
      * @return the speed of the player
      */
-    public double getSpeed() {
+    public double getSpeed() throws RemoteException {
         return this.speed;
     }
 
     /**
      * Return the attack rating of the player
+     *
      * @return the attack rating of the player
      */
-    public int getAttackRating() {
+    public int getAttackRating() throws RemoteException {
         return this.attackRating;
     }
 
     /**
      * Return the number of bombs available to the player
+     *
      * @return the number of bombs
      */
-    public int getBombs() {
+    public int getBombs() throws RemoteException {
         return this.bombs;
     }
 
     /**
      * Check if the player can attack again
+     *
      * @return true iof the player can attack, false otherwise
      */
-    public boolean canAttack() {
+    public boolean canAttack() throws RemoteException {
         return ((System.nanoTime() - this.lastAttack) > this.speed);
     }
 
     /**
      * Check if the player can use his boost ability again
+     *
      * @return true if the player can boost again, false otherwise
      * @throws RemoteException if rmi fails
      */
@@ -91,6 +97,7 @@ public class Attacker extends Player {
 
     /**
      * Increase the attack rating if the player has enough credits
+     *
      * @return true if the player had enough credits to level up repair rating, false otherwise
      * @throws RemoteException
      */
@@ -126,16 +133,17 @@ public class Attacker extends Player {
 
     /**
      * Damages a block's hitpoints for an amount equal to the players attack rating
+     *
      * @param b the block to be repaired
      * @return true if the block was repaired, false if the block was already destroyed
      * @throws RemoteException if rmi fails
      */
-    public boolean attack(GameBlock b) throws RemoteException{
+    public boolean attack(GameBlock b) throws RemoteException {
         int p = b.attack(getAttackRating());
-        if(p >= 0){
+        if (p >= 0) {
             this.gainCredits(p);
             return true;
-        }else{
+        } else {
             return false;
         }
 

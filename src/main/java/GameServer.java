@@ -2,8 +2,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -11,12 +13,18 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Created by lydakis-local on 4/3/17.
  */
 public class GameServer {
 
+    public static final String SERVER_NAME = "server";
     private final LocalState state;
     private Registry registry;
 
@@ -103,13 +111,14 @@ public class GameServer {
      * </ul>
      * </p>
      */
-    public synchronized int start(int port) throws RemoteException {
+    public synchronized int start(int port) throws RemoteException, UnknownHostException {
+//        System.setProperty("java.rmi.server.hostname", "10.21.95.75");
         if (registry != null)
             throw new IllegalStateException("Server already running");
         Registry reg;
         if (port > 0) {
             System.err.println("Getting registry at port: " + port);
-            reg = LocateRegistry.getRegistry(port);
+            reg = LocateRegistry.createRegistry(port);
             System.err.println("Got registry");
         } else if (port < 0) {
             port = -port;
@@ -129,7 +138,7 @@ public class GameServer {
                 }
             }
         }
-        System.err.println("Rebinding registry");
+        System.err.println("Rebinding registry for " + state.name );
         reg.rebind(state.name, state);
         System.err.println("Bind successful");
         return port;
@@ -160,6 +169,15 @@ public class GameServer {
     /**
      * Command line program
      */
+
+    public void printStatus() throws RemoteException {
+        try {
+            this.state.printStatus();
+        }catch (RemoteException re){
+            re.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         int port = 0;
         if (args.length > 0) {
@@ -176,8 +194,23 @@ public class GameServer {
             Thread[] clientThreads = new Thread[16];
 
             ExecutorService clientExecutor = Executors.newFixedThreadPool(16);
+
+            ScheduledExecutorService cubeExecutor = Executors.newScheduledThreadPool(1);
+            try {
+                cubeExecutor.scheduleAtFixedRate(() -> {
+                    try{
+                        server.printStatus();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }, 10, 10, SECONDS);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+
             Socket s = null;
-            ServerSocket serverSocket = new ServerSocket(port);
+            ServerSocket serverSocket = new ServerSocket(port+1);
             while (true) {
                 try {
                     s = serverSocket.accept();

@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Created by lydakis-local on 4/2/17.
  */
 public class Cube {
-//    final int height;
+    //    final int height;
 //    final int width;
 //    final int depth;
     final int size;
@@ -19,6 +19,7 @@ public class Cube {
 //    final GameBlock[][][] cube;
     final ConcurrentHashMap<String, GameBlock> cubeMap;
     final ConcurrentLinkedQueue<Layer> layers;
+    Layer currentLayer;
     ConcurrentHashMap<String, GameBlock> activeCubes;
 
     class Layer {
@@ -29,6 +30,7 @@ public class Cube {
         ArrayList<GameBlock> face4;
         ArrayList<GameBlock> face5;
         ArrayList<GameBlock> face6;
+        ArrayList<GameBlock> layer;
 
         public Layer(int level, int size, int blockHp) {
             face1 = new ArrayList<>();
@@ -38,6 +40,7 @@ public class Cube {
             face5 = new ArrayList<>();
             face6 = new ArrayList<>();
             faces = new ArrayList<>();
+            layer = new ArrayList<>();
 
             ArrayList<GameBlock> edge1 = new ArrayList<>();
             ArrayList<GameBlock> edge2 = new ArrayList<>();
@@ -168,29 +171,47 @@ public class Cube {
             faces.add(face4);
             faces.add(face5);
             faces.add(face6);
+            for(ArrayList<GameBlock> f: faces){
+                for(GameBlock b: f){
+                    layer.add(b);
+                }
+            }
+        }
+
+        public boolean isAlive() throws RemoteException {
+            for (ArrayList<GameBlock> f : faces) {
+                for (GameBlock gb : f) {
+                    if (gb.getHp() > 0) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 
     Cube(int size, int blockHp) {
-        this.size = size%2==0?(size-1):size;
+        this.size = size % 2 == 0 ? (size - 1) : size;
         cubeMap = new ConcurrentHashMap<>();
         activeCubes = new ConcurrentHashMap<>();
         layers = new ConcurrentLinkedQueue();
 
-        for(int i = size; i >0;i-=2){
+        for (int i = size; i > 0; i -= 2) {
             layers.add(new Layer(size, i, blockHp));
         }
 
-        for(Layer layer:layers){
-            for(ArrayList<GameBlock> face: layer.faces){
-                for(GameBlock block : face) {
+        for (Layer layer : layers) {
+            for (ArrayList<GameBlock> face : layer.faces) {
+                for (GameBlock block : face) {
                     cubeMap.putIfAbsent(block.toString(), block);
                 }
             }
         }
+
+        currentLayer = layers.poll();
         Iterator it = cubeMap.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
+            Map.Entry pair = (Map.Entry) it.next();
             System.out.println(pair.getKey() + " = " + pair.getValue().toString());
         }
 //        cube = new GameBlock[size][size][size];
@@ -205,8 +226,21 @@ public class Cube {
 //        }
     }
 
+
     private String coordToString(int w, int h, int d) {
         return (w + "_" + h + "_" + d);
+    }
+
+    public boolean isAlive() throws RemoteException {
+        if (currentLayer.isAlive()) {
+            return true;
+        } else {
+            currentLayer = layers.poll();
+            if (currentLayer == null) {
+                return false;
+            }
+            return true;
+        }
     }
 
     private int[] stringToCoord(String block) {
@@ -231,8 +265,8 @@ public class Cube {
         return cubeMap.get(coordToString(w, h, d));
     }
 
-    public ArrayList<Cube> returnFace() {
-        return new ArrayList<>();
+    public ArrayList<GameBlock> returnFace() {
+        return currentLayer.layer;
     }
 
     public static void main(String[] args) {

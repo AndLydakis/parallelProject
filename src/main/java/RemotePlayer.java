@@ -1,6 +1,7 @@
 import com.sun.org.apache.regexp.internal.RE;
 import jdk.nashorn.internal.ir.Block;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -13,7 +14,7 @@ public interface RemotePlayer extends java.rmi.Remote {
      * @return the player's username
      * @throws RemoteException
      */
-    String toString();
+    String unameToString() throws RemoteException;
 
     /**
      * Update the status of the player

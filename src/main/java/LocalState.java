@@ -1,7 +1,10 @@
+import javax.net.ssl.SSLContext;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by ChunkLightTuna on 4/2/17.
@@ -13,16 +16,20 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
     final int width;
     final int depth;
     private final Cube cube;
+    ExecutorService stateExecutor;
 
     private ConcurrentHashMap<String, Player> players;
     private ArrayList<Player> attackers;
     private ArrayList<Player> defenders;
 
-    public synchronized Player   login(String username) throws RemoteException {
+    public RemotePlayer login(String username) throws RemoteException {
         if (players.get(username) != null) {
             players.get(username).login();
+            System.err.println("Success");
+            System.err.println(players.get(username).unameToString());
             return players.get(username);
         }
+        System.err.println("Failed");
         return null;
     }
 
@@ -34,12 +41,26 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
         return false;
     }
 
-    public synchronized boolean register(String username, int role) {
+    public synchronized boolean register(String username, int role) throws RemoteException {
         if (players.get(username) == null) {
-
+            if(role==1){
+                System.err.println("Registered attacker "+username);
+                Attacker atk = new Attacker(username, 0, 0);
+                players.putIfAbsent(username, atk);
+                attackers.add(atk);
+            }else{
+                System.err.println("Registered defender "+username);
+                Defender def = new Defender(username, 0, 0);
+                players.putIfAbsent(username, def);
+                defenders.add(def);
+            }
             return true;
         }
         return false;
+    }
+
+    public void printStatus() throws RemoteException {
+        System.err.println(this.cube.isAlive());
     }
 
     public String parseRequest(String req) throws RemoteException {
@@ -91,13 +112,13 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
         return "";
     }
 
-
     public LocalState(String name, int size, int blockHp) throws RemoteException {
         synchronized (this) {
             this.name = name;
             this.width = size;
             this.height = size;
             this.depth = size;
+            this.stateExecutor = Executors.newFixedThreadPool(16);
 
             cube = new Cube(size, blockHp);
 
