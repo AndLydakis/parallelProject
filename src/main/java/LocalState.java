@@ -2,6 +2,7 @@ import javax.net.ssl.SSLContext;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,8 +20,8 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
     ExecutorService stateExecutor;
 
     private ConcurrentHashMap<String, Player> players;
-    private ArrayList<Player> attackers;
-    private ArrayList<Player> defenders;
+    private ConcurrentHashMap<String, Attacker> attackers;
+    private ConcurrentHashMap<String, Defender> defenders;
 
     public RemotePlayer login(String username) throws RemoteException {
         if (players.get(username) != null) {
@@ -47,12 +48,12 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
                 System.err.println("Registered attacker "+username);
                 Attacker atk = new Attacker(username, 0, 0);
                 players.putIfAbsent(username, atk);
-                attackers.add(atk);
+                attackers.putIfAbsent(username, atk);
             }else{
                 System.err.println("Registered defender "+username);
                 Defender def = new Defender(username, 0, 0);
                 players.putIfAbsent(username, def);
-                defenders.add(def);
+                defenders.putIfAbsent(username, def);
             }
             return true;
         }
@@ -123,9 +124,45 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
             cube = new Cube(size, blockHp);
 
             players = new ConcurrentHashMap<>();
-            attackers = new ArrayList<>();
-            defenders = new ArrayList<>();
+            attackers = new ConcurrentHashMap<>();
+            defenders = new ConcurrentHashMap<>();
         }
+    }
+
+    public boolean requestPrimary(String user, int role, String block) throws RemoteException{
+        boolean result;
+        if(role==1){
+            result = attackers.get(user).attack(cube.getBlock(block));
+        }else{
+            result = defenders.get(user).repair(cube.getBlock(block));
+        }
+        return result;
+    }
+
+    @Override
+    public boolean requestSecondary(String user, int role, String block) throws RemoteException {
+        boolean result;
+        if(role==1){
+            String tokens[] = block.split("_");
+            int number = Integer.parseInt(tokens[tokens.length-1]);
+            int n1 = number - 2;
+            int n2 = number - 1;
+            int n3 = number + 1;
+            int n4 = number + 2;
+            GameBlock b1 = cube.getBlock(tokens[0]+"_"+tokens[1]+"_"+n1);
+            GameBlock b2 = cube.getBlock(tokens[0]+"_"+tokens[1]+"_"+n2);
+            GameBlock b3 = cube.getBlock(tokens[0]+"_"+tokens[1]+"_"+n3);
+            GameBlock b4 = cube.getBlock(tokens[0]+"_"+tokens[1]+"_"+n4);
+            boolean r1 = attackers.get(user).attack(cube.getBlock(block));
+            boolean r2 = attackers.get(user).attack(b1);
+            boolean r3 = attackers.get(user).attack(b2);
+            boolean r4 = attackers.get(user).attack(b3);
+            boolean r5= attackers.get(user).attack(b4);
+            return r1||r2||r3||r4||r5;
+        }else{
+            result = defenders.get(user).shield(cube.getBlock(block));
+        }
+        return result;
     }
 
     void getFace(int side) {

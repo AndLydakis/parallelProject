@@ -149,6 +149,14 @@ public class Attacker extends Player {
 
     }
 
+    public boolean bomb(GameBlock[] blocks) throws RemoteException {
+        int sum = blocks[0].attack(getAttackRating()*5);
+        for(int i = 1; i < blocks.length;i++){
+                blocks[i].attack(getAttackRating()*2);
+        }
+        return false;
+    }
+
     /**
      * Increases the number of available bombs if the player has enough credits
      *
