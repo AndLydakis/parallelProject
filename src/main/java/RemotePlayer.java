@@ -17,6 +17,12 @@ public interface RemotePlayer extends java.rmi.Remote {
     String unameToString() throws RemoteException;
 
     /**
+     * @return a description of the player
+     * @throws RemoteException
+     */
+    String print() throws RemoteException;
+
+    /**
      * Update the status of the player
      * @throws RemoteException
      */

@@ -14,6 +14,7 @@ public class Defender extends Player {
     long lastRepair;
     long lastShield;
     private long lastBoost;
+    private final Object shieldLock;
     private int toLevelUpRr = 10;
     private int toLevelUpSpeed = 10;
     private final int shieldPrice = 500;
@@ -28,6 +29,7 @@ public class Defender extends Player {
             this.lastShield = -10000L;
             this.shields = 0;
             this.boosted = false;
+            this.shieldLock = new Object();
         }
     }
 
@@ -38,6 +40,7 @@ public class Defender extends Player {
         this.lastRepair = -1l;
         this.lastShield = -1l;
         this.shields = 0;
+        this.shieldLock = new Object();
     }
 
     /**
@@ -63,6 +66,13 @@ public class Defender extends Player {
         return (unameToString() + " " + getScore() + " " + getCredits() + " " + speed + " " + shields + " " + repairRating + " " + toLevelUpRr + " " + toLevelUpSpeed);
     }
 
+    public String print() throws RemoteException{
+        return super.toString()+"\n"+
+                "Speed: "+speed+"\n"+
+                "Repair Rating: "+repairRating;
+
+    }
+
     /**
      * Return the speed of the player
      *
@@ -74,6 +84,7 @@ public class Defender extends Player {
 
     /**
      * Return the repair rating of the player
+     *
      * @return the repair rating of the player
      */
     public int getRepairRating() throws RemoteException {
@@ -82,6 +93,7 @@ public class Defender extends Player {
 
     /**
      * Return the number of shields available to the player
+     *
      * @return the number of shields available to the player
      */
     public int getShields() throws RemoteException {
@@ -90,6 +102,7 @@ public class Defender extends Player {
 
     /**
      * Returns true if the player can place another shield, false otherwise
+     *
      * @return true if the player can place another shield, false otherwise
      */
     public boolean canShield() throws RemoteException {
@@ -98,6 +111,7 @@ public class Defender extends Player {
 
     /**
      * Return true if the player can repair a block, false otherwise
+     *
      * @return true if the player can repair a block, false otherwise
      */
     public boolean canRepair() throws RemoteException {
@@ -114,6 +128,7 @@ public class Defender extends Player {
 
     /**
      * Increase the repair rating if the player has enough credits
+     *
      * @return true if the player had enough credits to level up repair rating, false otherwise
      * @throws RemoteException
      */
@@ -149,19 +164,29 @@ public class Defender extends Player {
 
     /**
      * Restore a block's hitpoints for an amount equal to the players repair rating
+     *
      * @param b the block to be repaired
      * @return true if the block was repaired, false if the block was already destoryed
      * @throws RemoteException if rmi fails
      */
-    public boolean repair(GameBlock b) throws RemoteException{
+    public boolean repair(GameBlock b) throws RemoteException {
         int p = b.repair(getRepairRating());
-        if(p >= 0){
+        if (p >= 0) {
             this.gainCredits(p);
             return true;
-        }else{
+        } else {
             return false;
         }
+    }
 
+
+    public boolean shield(GameBlock b) throws RemoteException {
+        synchronized (shieldLock) {
+            if (this.getShields() > 0) {
+                return b.shield(this, this.getRepairRating() * 5);
+            }
+        }
+        return false;
     }
 
     /**
@@ -171,12 +196,15 @@ public class Defender extends Player {
      * @throws RemoteException
      */
     public int buyShield() throws RemoteException {
-        if (super.removeCredits(shieldPrice)) {
-            shields++;
-        } else {
-            System.err.println("Not enough credits to buy a shield, " + shieldPrice + " credits needed");
+        synchronized (this.shieldLock) {
+            if (super.removeCredits(shieldPrice)) {
+                shields++;
+            } else {
+                System.err.println("Not enough credits to buy a shield, " + shieldPrice + " credits needed");
+                return -1;
+            }
+            return shields;
         }
-        return shields;
     }
 
     /**

@@ -53,6 +53,11 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
         this.logged = false;
     }
 
+    public String print() throws RemoteException{
+        return "Username:"+ userName+"\n"+
+                "Score: "+score+"\n"+
+                "Credits: "+credits+"\n";
+    }
     /**
      * Update the player from a server response
      * @param s String formatted as "SCORE CREDITS LEVEL"

@@ -171,8 +171,8 @@ public class Cube {
             faces.add(face4);
             faces.add(face5);
             faces.add(face6);
-            for(ArrayList<GameBlock> f: faces){
-                for(GameBlock b: f){
+            for (ArrayList<GameBlock> f : faces) {
+                for (GameBlock b : f) {
                     layer.add(b);
                 }
             }
@@ -187,6 +187,15 @@ public class Cube {
                 }
             }
             return false;
+        }
+
+        public String toString() {
+            String s = "";
+            for (GameBlock b : layer) {
+                s += (b.toString() + "\n");
+            }
+            return s;
+
         }
     }
 

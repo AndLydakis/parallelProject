@@ -14,5 +14,15 @@ public interface RemoteState extends java.rmi.Remote {
 
     boolean requestSecondary(String user, int role, String block) throws RemoteException;
 
+    boolean requestBoost(String user) throws RemoteException;
+
+    boolean levelPrimary(String user, int role) throws RemoteException;
+
+    boolean levelSecondary(String user, int role) throws RemoteException;
+
+    boolean buy(String user, int role) throws RemoteException;
+
+    String getTargets();
+
     String parseRequest(String req) throws RemoteException;
 }

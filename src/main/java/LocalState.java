@@ -165,18 +165,41 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
         return result;
     }
 
-    void getFace(int side) {
-        if (side > 5) {
-            throw new IllegalArgumentException("a cube can only have 6 sides");
-        }
-
-        int[] slice = new int[depth];
-//            for (int[][] ints : cube) {
-//                for (int[] anInt : ints) {
-//                    anInt[width-1]
-//                }
-//            }
-
-
+    @Override
+    public boolean requestBoost(String user) throws RemoteException {
+        return false;
     }
+
+    @Override
+    public boolean levelPrimary(String user, int role) throws RemoteException {
+        if(role == 1){
+            return attackers.get(user).levelUpAr();
+        }else{
+            return defenders.get(user).levelUpRr();
+        }
+    }
+
+    @Override
+    public boolean levelSecondary(String user, int role) throws RemoteException {
+        if(role == 1){
+            return attackers.get(user).levelUpSpeed();
+        }else{
+            return defenders.get(user).levelUpSpeed();
+        }
+    }
+
+    @Override
+    public boolean buy(String user, int role) throws RemoteException {
+        if(role == 1){
+            return attackers.get(user).levelUpSpeed();
+        }else{
+            return defenders.get(user).levelUpSpeed();
+        }
+    }
+
+    @Override
+    public String getTargets() {
+        return cube.currentLayer.toString();
+    }
+
 }

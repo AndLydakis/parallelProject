@@ -2,7 +2,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.Scanner;
+import java.sql.Statement;
+import java.util.*;
 
 /**
  * Created by lydakis-local on 4/3/17.
@@ -11,6 +12,10 @@ public class TestClient {
     private final RemoteState state;
     private String username;
     private RemotePlayer player;
+    private int role;
+    List<Integer> attackerOptions = Arrays.asList(1, 2, 3, 4, 5, 6);
+    List<Integer> defenderOptions = Arrays.asList(1, 2, 3, 4, 5, 6);
+
 
     private TestClient(String service) throws RemoteException, NotBoundException, MalformedURLException {
         state = (RemoteState) java.rmi.Naming.lookup(service);
@@ -64,6 +69,7 @@ public class TestClient {
                         if (reg) {
                             player = state.login(user);
                             System.err.println("Registered player " + player.unameToString());
+                            role = ch;
                         } else {
                             user = "";
                             System.err.println("Username already taken");
@@ -76,6 +82,104 @@ public class TestClient {
                 break;
             case 3:
                 break;
+        }
+    }
+
+    private void AttackerMenu() throws RemoteException {
+        Scanner reader = new Scanner(System.in);
+        int choice;
+        do {
+            System.err.println(" Attacker " + player.unameToString() + " select your action");
+            System.err.println("1. Get List Of Targets");
+            System.err.println("2. Attack A Block");
+            System.err.println("3. Bomb A Block");
+            System.err.println("4. Buy A Bomb");
+            System.err.println("5. Level Up Attack Rating");
+            System.err.println("6. Level Up Speed");
+            System.err.println("7. Boost");
+            System.err.println("8. Back to Menu");
+            choice = reader.nextInt();
+        } while (!attackerOptions.contains(choice));
+        processAttackerOptions(choice);
+
+    }
+
+    private void processAttackerOptions(int ch) throws RemoteException {
+        Scanner reader = new Scanner(System.in);
+        String bl;
+        switch (ch) {
+            case 1: {
+                System.err.println(state.getTargets());
+            }
+            case 2: {
+                reader.nextLine();
+                System.err.println("Type in Block Coordinates : (X_Y_Z)");
+                bl = reader.nextLine();
+                boolean suc = state.requestPrimary(username, role, bl);
+                if (suc) {
+                    System.err.println("Attack Successful");
+                } else {
+                    System.err.println("Attack Failed");
+                }
+            }
+            case 3: {
+                reader.nextLine();
+                System.err.println("Type in Block Coordinates : (X_Y_Z)");
+                bl = reader.nextLine();
+                boolean suc = state.requestSecondary(username, role, bl);
+                if (suc) {
+                    System.err.println("Bomb Successful");
+                } else {
+                    System.err.println("Bomb Failed");
+                }
+            }
+            case 4: {
+                boolean suc = state.buy(username, role);
+                if (suc) {
+                    System.err.println("Bomb Purchased");
+                } else {
+                    System.err.println("Not enough credits");
+                }
+            }
+            case 5: {
+                boolean suc = state.levelPrimary(username, role);
+                if (suc) {
+                    System.err.println("Attack Rating Increased");
+                } else {
+                    System.err.println("Not enough credits");
+                }
+            }
+            case 6: {
+                boolean suc = state.levelSecondary(username, role);
+                if (suc) {
+                    System.err.println("Speed Rating Increased");
+                } else {
+                    System.err.println("Not enough credits");
+                }
+            }
+            case 7: {
+                boolean suc = state.requestBoost(username);
+                if (suc) {
+                    System.err.println("Speed Temporarily Increased");
+                } else {
+                    System.err.println("Cannot Boost yet");
+                }
+            }
+            case 8: {
+                return;
+            }
+        }
+    }
+
+    private void DefenderMenu() {
+
+    }
+
+    private void actionMenu() throws IOException {
+        if (role == 1) {
+            AttackerMenu();
+        } else {
+            DefenderMenu();
         }
     }
 
@@ -140,10 +244,11 @@ public class TestClient {
             if (client.player == null) {
                 client.initialMenu();
             } else {
-                System.err.println("Exiting ");
-                return;
+                client.actionMenu();
             }
-
+            break;
         }
+        System.err.println("Thanks for playing, exiting ");
+        return;
     }
 }

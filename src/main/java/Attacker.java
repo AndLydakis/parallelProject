@@ -57,6 +57,12 @@ public class Attacker extends Player {
         return this.speed;
     }
 
+    public String print() throws RemoteException{
+        return super.toString()+"\n"+
+                "Speed: "+speed+"\n"+
+                "Attack Rating: "+attackRating;
+    }
+
     /**
      * Return the attack rating of the player
      *
@@ -168,6 +174,7 @@ public class Attacker extends Player {
             bombs++;
         } else {
             System.err.println("Not enough credits to buy a shield, " + bombPrice + " credits needed");
+            return -1;
         }
         return bombs;
     }
