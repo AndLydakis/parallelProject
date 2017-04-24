@@ -2,6 +2,7 @@ import com.sun.org.apache.regexp.internal.RE;
 import jdk.nashorn.internal.ir.Block;
 
 import java.io.Serializable;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -40,6 +41,8 @@ public interface RemotePlayer extends java.rmi.Remote {
      * @throws RemoteException
      */
     int getLevel() throws RemoteException;
+
+    int getRole() throws RemoteException;
 
     /**
      * @return the ammount of credits at the player's disposal

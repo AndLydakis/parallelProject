@@ -18,7 +18,7 @@ public class Attacker extends Player {
     private int bombPrice = 500;
 
     public Attacker(String un, int s, int cr) throws RemoteException {
-        super(un, s, cr);
+        super(un, 1, s, cr);
         this.speed = 1.0;
         this.attackRating = 1;
         this.lastAttack = -10000L;

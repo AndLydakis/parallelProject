@@ -13,8 +13,8 @@ public class TestClient {
     private String username;
     private RemotePlayer player;
     private int role;
-    List<Integer> attackerOptions = Arrays.asList(1, 2, 3, 4, 5, 6);
-    List<Integer> defenderOptions = Arrays.asList(1, 2, 3, 4, 5, 6);
+    List<Integer> attackerOptions = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
+    List<Integer> defenderOptions = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
 
 
     private TestClient(String service) throws RemoteException, NotBoundException, MalformedURLException {
@@ -38,7 +38,6 @@ public class TestClient {
             System.err.println("2. Sign in");
             System.err.println("3. Quit");
             s = reader.nextInt();
-            System.err.println(s);
         } while (s != 1 && s != 2 && s != 3);
         int ch;
         switch (s) {
@@ -64,11 +63,11 @@ public class TestClient {
                         if (user.equals("q")) {
                             return;
                         }
-                        if (user.equals("")) continue;
                         reg = state.register(user, ch);
                         if (reg) {
                             player = state.login(user);
                             System.err.println("Registered player " + player.unameToString());
+                            username = user;
                             role = ch;
                         } else {
                             user = "";
@@ -79,8 +78,16 @@ public class TestClient {
                 }
                 break;
             case 2:
+                reader.nextLine();
+                System.out.print("\033[H\033[2J");
+                System.err.println("Welcome back, enter your username");
+                String li = reader.nextLine();
+                player = state.login(li);
+                username = player.unameToString();
+                role = player.getRole();
                 break;
             case 3:
+                System.exit(-1);
                 break;
         }
     }
@@ -98,6 +105,7 @@ public class TestClient {
             System.err.println("6. Level Up Speed");
             System.err.println("7. Boost");
             System.err.println("8. Back to Menu");
+            System.err.println("9. Exit");
             choice = reader.nextInt();
         } while (!attackerOptions.contains(choice));
         processAttackerOptions(choice);
@@ -110,9 +118,9 @@ public class TestClient {
         switch (ch) {
             case 1: {
                 System.err.println(state.getTargets());
+                break;
             }
             case 2: {
-                reader.nextLine();
                 System.err.println("Type in Block Coordinates : (X_Y_Z)");
                 bl = reader.nextLine();
                 boolean suc = state.requestPrimary(username, role, bl);
@@ -121,6 +129,7 @@ public class TestClient {
                 } else {
                     System.err.println("Attack Failed");
                 }
+                break;
             }
             case 3: {
                 reader.nextLine();
@@ -132,6 +141,7 @@ public class TestClient {
                 } else {
                     System.err.println("Bomb Failed");
                 }
+                break;
             }
             case 4: {
                 boolean suc = state.buy(username, role);
@@ -140,6 +150,7 @@ public class TestClient {
                 } else {
                     System.err.println("Not enough credits");
                 }
+                break;
             }
             case 5: {
                 boolean suc = state.levelPrimary(username, role);
@@ -148,6 +159,7 @@ public class TestClient {
                 } else {
                     System.err.println("Not enough credits");
                 }
+                break;
             }
             case 6: {
                 boolean suc = state.levelSecondary(username, role);
@@ -156,7 +168,9 @@ public class TestClient {
                 } else {
                     System.err.println("Not enough credits");
                 }
+                break;
             }
+
             case 7: {
                 boolean suc = state.requestBoost(username);
                 if (suc) {
@@ -164,9 +178,14 @@ public class TestClient {
                 } else {
                     System.err.println("Cannot Boost yet");
                 }
+                break;
             }
             case 8: {
+                player = null;
                 return;
+            }
+            case 9: {
+                System.exit(-1);
             }
         }
     }
@@ -246,9 +265,8 @@ public class TestClient {
             } else {
                 client.actionMenu();
             }
-            break;
         }
-        System.err.println("Thanks for playing, exiting ");
-        return;
+//        System.err.println("Thanks for playing, exiting ");
+//        return;
     }
 }

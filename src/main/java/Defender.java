@@ -21,7 +21,7 @@ public class Defender extends Player {
     private volatile boolean boosted;
 
     public Defender(String un, int s, int cr) throws RemoteException {
-        super(un, s, cr);
+        super(un, 0, s, cr);
         synchronized (this) {
             this.speed = 1.0;
             this.repairRating = 1;

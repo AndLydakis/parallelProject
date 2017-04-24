@@ -49,6 +49,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
                 Attacker atk = new Attacker(username, 0, 0);
                 players.putIfAbsent(username, atk);
                 attackers.putIfAbsent(username, atk);
+                System.err.println(attackers.get(username).toString());
             }else{
                 System.err.println("Registered defender "+username);
                 Defender def = new Defender(username, 0, 0);
@@ -132,6 +133,8 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
     public boolean requestPrimary(String user, int role, String block) throws RemoteException{
         boolean result;
         if(role==1){
+            System.err.println("**" + user);
+            System.err.println("Attaker "+attackers.get(user).unameToString());
             result = attackers.get(user).attack(cube.getBlock(block));
         }else{
             result = defenders.get(user).repair(cube.getBlock(block));

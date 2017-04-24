@@ -22,7 +22,7 @@ public interface RemoteState extends java.rmi.Remote {
 
     boolean buy(String user, int role) throws RemoteException;
 
-    String getTargets();
+    String getTargets() throws RemoteException;
 
     String parseRequest(String req) throws RemoteException;
 }

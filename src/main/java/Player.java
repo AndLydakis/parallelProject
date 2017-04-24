@@ -13,6 +13,7 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
     private int score;
     private int credits;
     private int level;
+    private final int role;
     private final Object creditLock;
     private final Object logLock;
     private volatile boolean logged;
@@ -27,7 +28,7 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
      * @param cr credits
      * @throws RemoteException
      */
-    public Player(String un, int s, int cr) throws RemoteException {
+    public Player(String un, int role, int s, int cr) throws RemoteException {
         this.userName = un;
         this.score = s;
         this.credits = cr;
@@ -35,8 +36,12 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
         this.creditLock = new Object();
         this.logLock = new Object();
         this.logged = false;
+        this.role = role;
     }
 
+    public int getRole() throws RemoteException{
+        return this.role;
+    }
     /**
      * Load player from string for the socket service
      * @param s String formatted as "USERNAME SCORE CREDITS LEVEL"
@@ -45,9 +50,9 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
     public Player(String s) throws RemoteException{
         String[] tokens = s.split(" ");
         this.userName = tokens[0];
-        this.score = Integer.parseInt(tokens[1]);
-        this.credits = Integer.parseInt(tokens[2]);
-        this.level = Integer.parseInt(tokens[3]);;
+        this.role = Integer.parseInt(tokens[1]);
+        this.score = Integer.parseInt(tokens[2]);
+        this.credits = Integer.parseInt(tokens[3]);
         this.creditLock = new Object();
         this.logLock = new Object();
         this.logged = false;
