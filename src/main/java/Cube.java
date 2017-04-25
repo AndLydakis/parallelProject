@@ -244,10 +244,13 @@ public class Cube {
         }
 
         currentLayer = layers.poll();
-        Iterator it = cubeMap.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            System.out.println(pair.getKey() + " = " + pair.getValue().toString());
+//        Iterator it = cubeMap.entrySet().iterator();
+//        while (it.hasNext()) {
+//            Map.Entry pair = (Map.Entry) it.next();
+//            System.out.println(pair.getKey() + " = " + pair.getValue().toString());
+//        }
+        for(GameBlock gb : currentLayer.layer){
+            System.err.println(gb.toString());
         }
 //        cube = new GameBlock[size][size][size];
 //
