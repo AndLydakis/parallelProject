@@ -10,7 +10,7 @@ import java.util.*;
 /**
  * Created by lydakis-local on 4/3/17.
  */
-public class TestClient {
+public class TestClient extends Client{
     private final RemoteState state;
     private String username;
     private RemotePlayer player;
@@ -480,7 +480,6 @@ public class TestClient {
     }
 
     private void login(String li) throws RemoteException {
-
         player = state.login(li);
         if (player == null) {
             System.err.println("Name not registered, or user is already logged on");
