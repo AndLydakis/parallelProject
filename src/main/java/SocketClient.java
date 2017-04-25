@@ -578,7 +578,7 @@ public class SocketClient {
         }
     }
 
-    private static void main(String args[]) throws IOException {
+    public static void main(String args[]) throws IOException {
         SocketClient sc = new SocketClient(args[0], Integer.parseInt(args[1]));
     }
 }
