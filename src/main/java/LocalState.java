@@ -168,8 +168,6 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
     public int requestPrimary(String user, int role, String block) throws RemoteException {
         int result;
         if (role == 1) {
-            System.err.println("**" + user);
-            System.err.println("Attaker " + attackers.get(user).unameToString());
             try {
                 result = attackers.get(user).attack(cube.getBlock(block));
                 if (cube.getBlock(block).getHp() <= 0) {

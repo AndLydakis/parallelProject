@@ -72,17 +72,26 @@ public class Cube {
                 face4.add(block);
                 face5.add(block);
                 face6.add(block);
+                layer.add(block);
             } else {
                 int faceSize = size - 2;
                 int idx = 0;
                 for (int i = 0; i < faceSize * faceSize; i++) {
-
                     face1.add(new GameBlock(level, 1, idx++, blockHp));
                     face2.add(new GameBlock(level, 2, idx++, blockHp));
                     face3.add(new GameBlock(level, 3, idx++, blockHp));
                     face4.add(new GameBlock(level, 4, idx++, blockHp));
                     face5.add(new GameBlock(level, 5, idx++, blockHp));
                     face6.add(new GameBlock(level, 6, idx++, blockHp));
+                }
+
+                for (int i = 0; i < faceSize * faceSize; i++) {
+                    layer.add(face1.get(i));
+                    layer.add(face2.get(i));
+                    layer.add(face3.get(i));
+                    layer.add(face4.get(i));
+                    layer.add(face5.get(i));
+                    layer.add(face6.get(i));
                 }
 
                 for (int i = 0; i < faceSize; i++) {
@@ -98,6 +107,21 @@ public class Cube {
                     edge10.add(new GameBlock(level, 2, idx++, blockHp));
                     edge11.add(new GameBlock(level, 2, idx++, blockHp));
                     edge12.add(new GameBlock(level, 1, idx++, blockHp));
+                }
+
+                for(int i =0; i < edge1.size(); i++){
+                    layer.add(edge1.get(i));
+                    layer.add(edge2.get(i));
+                    layer.add(edge3.get(i));
+                    layer.add(edge4.get(i));
+                    layer.add(edge5.get(i));
+                    layer.add(edge6.get(i));
+                    layer.add(edge7.get(i));
+                    layer.add(edge8.get(i));
+                    layer.add(edge9.get(i));
+                    layer.add(edge10.get(i));
+                    layer.add(edge11.get(i));
+                    layer.add(edge12.get(i));
                 }
 
                 for (int i = 0; i < faceSize; i++) {
@@ -164,18 +188,16 @@ public class Cube {
                 face2.add(corner8);
                 face5.add(corner8);
                 face6.add(corner8);
+                layer.add(corner1);
+                layer.add(corner2);
+                layer.add(corner3);
+                layer.add(corner4);
+                layer.add(corner5);
+                layer.add(corner6);
+                layer.add(corner7);
+                layer.add(corner8);
             }
-            faces.add(face1);
-            faces.add(face2);
-            faces.add(face3);
-            faces.add(face4);
-            faces.add(face5);
-            faces.add(face6);
-            for (ArrayList<GameBlock> f : faces) {
-                for (GameBlock b : f) {
-                    layer.add(b);
-                }
-            }
+
         }
 
         public boolean isAlive() throws RemoteException {

@@ -67,6 +67,26 @@ public class TestClient {
             }
 
         } else if (lastAction == 4) {
+            int suc = state.buy(username, role);
+            if (role == 1) {
+                if (suc > 0) {
+                    System.err.println("Bought bomb, " + suc + " in inventory");
+                } else if (suc < 0) {
+                    System.err.println("Need " + (-suc) + " credits to buy a bomb");
+                } else {
+                    System.err.println("Purchase request could not go through");
+                }
+            } else {
+                if (suc > 0) {
+                    System.err.println("Bought shield, " + suc + " in inventory");
+                } else if (suc < 0) {
+                    System.err.println("Need " + (-suc) + " credits to buy a shield");
+                } else {
+                    System.err.println("Purchase request could not go through");
+                }
+            }
+
+        } else if (lastAction == 5) {
             int suc = state.levelPrimary(username, role);
             if (suc > 0) {
                 if (role == 1) {
@@ -83,7 +103,7 @@ public class TestClient {
             } else {
                 System.err.println("Level up request failed");
             }
-        } else if (lastAction == 5) {
+        } else if (lastAction == 6) {
             int suc = state.levelSecondary(username, role);
             if (suc > 0) {
                 System.err.println("Speed increased to " + suc);
@@ -144,12 +164,11 @@ public class TestClient {
                         System.err.println("Invalid Input");
                         reader.nextLine();
                         ch = -1;
-                        continue;
                     }
                 } while (ch != 1 && ch != 2 && ch != 3);
 
                 if ((ch == 1) || (ch == 2)) {
-                    String user = "";
+                    String user;
                     boolean reg;
                     do {
                         reader.nextLine();
@@ -222,7 +241,7 @@ public class TestClient {
                 bl = reader.nextLine();
                 int suc = state.requestPrimary(username, role, bl);
                 if (suc > 0) {
-                    System.err.println("Attacked Block for" + suc + " hitpoints");
+                    System.err.println("Attacked Block for " + suc + " damage");
                 } else if (suc == 0) {
                     System.err.println("Block already at 0 hitpoints");
                 } else {
@@ -238,7 +257,7 @@ public class TestClient {
                 bl = reader.nextLine();
                 int suc = state.requestSecondary(username, role, bl);
                 if (suc > 0) {
-                    System.err.println("Bomb successful for" + suc + " damage");
+                    System.err.println("Bomb successful for " + suc + " damage");
                 } else if (suc == 0) {
                     System.err.println("Block is destroyed");
                 } else {
@@ -352,7 +371,7 @@ public class TestClient {
                 bl = reader.nextLine();
                 int suc = state.requestPrimary(username, role, bl);
                 if (suc > 0) {
-                    System.err.println("Repair Block for" + suc + " hitpoints");
+                    System.err.println("Repaired Block for " + suc + " hitpoints");
                 } else if (suc == 0) {
                     System.err.println("Block already at full hitpoints");
                 } else {
