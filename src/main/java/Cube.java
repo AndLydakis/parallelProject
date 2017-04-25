@@ -33,6 +33,7 @@ public class Cube {
         ArrayList<GameBlock> layer;
 
         public Layer(int level, int size, int blockHp) {
+            System.err.println("Layer #"+level+",  size "+size);
             face1 = new ArrayList<>();
             face2 = new ArrayList<>();
             face3 = new ArrayList<>();
@@ -73,6 +74,7 @@ public class Cube {
                 face5.add(block);
                 face6.add(block);
                 layer.add(block);
+                System.err.println("1 "+layer.size());
             } else {
                 int faceSize = size - 2;
                 int idx = 0;
@@ -94,7 +96,7 @@ public class Cube {
                     layer.add(face6.get(i));
                 }
 
-                System.err.print("1 "+layer.size());
+                System.err.println("1 "+layer.size());
 
                 for (int i = 0; i < faceSize; i++) {
                     edge1.add(new GameBlock(level, 2, idx++, blockHp));
@@ -125,6 +127,7 @@ public class Cube {
                     layer.add(edge11.get(i));
                     layer.add(edge12.get(i));
                 }
+                System.err.println("2 "+layer.size());
 
                 for (int i = 0; i < faceSize; i++) {
                     face1.add(edge2.get(i));
@@ -190,7 +193,7 @@ public class Cube {
                 face2.add(corner8);
                 face5.add(corner8);
                 face6.add(corner8);
-                
+
                 layer.add(corner1);
                 layer.add(corner2);
                 layer.add(corner3);
@@ -199,17 +202,16 @@ public class Cube {
                 layer.add(corner6);
                 layer.add(corner7);
                 layer.add(corner8);
+                System.err.println("3 "+layer.size());
             }
 
         }
 
         public boolean isAlive() throws RemoteException {
-            for (ArrayList<GameBlock> f : faces) {
-                for (GameBlock gb : f) {
+                for (GameBlock gb : layer) {
                     if (gb.getHp() > 0) {
                         return true;
                     }
-                }
             }
             return false;
         }
@@ -235,11 +237,11 @@ public class Cube {
         }
 
         for (Layer layer : layers) {
-            for (ArrayList<GameBlock> face : layer.faces) {
-                for (GameBlock block : face) {
+//            for (ArrayList<GameBlock> face : layer.faces) {
+                for (GameBlock block : layer.layer) {
                     cubeMap.putIfAbsent(block.toString(), block);
                 }
-            }
+//            }
         }
 
         currentLayer = layers.poll();
