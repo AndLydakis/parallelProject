@@ -39,7 +39,7 @@ public class TestClient {
                 } else {
                     System.err.println("Repair Successful for " + suc + " hitpoints");
                 }
-            } else if (suc < 0) {
+            } else if (suc == 0) {
                 if (role == 1) {
                     System.err.println("Could not attack block");
                 } else {
@@ -56,7 +56,7 @@ public class TestClient {
                 } else {
                     System.err.println("Shield Successful for " + suc + " points");
                 }
-            } else if (suc < 0) {
+            } else if (suc == 0) {
                 if (role == 1) {
                     System.err.println("Could not bomb block");
                 } else {
