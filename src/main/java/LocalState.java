@@ -194,51 +194,35 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
         try {
             if (role == 1) {
                 String tokens[] = block.split("_");
+                ArrayList<GameBlock> targets = new ArrayList<>();
                 int number = Integer.parseInt(tokens[tokens.length - 1]);
                 int n1 = number - 2;
                 int n2 = number - 1;
                 int n3 = number + 1;
                 int n4 = number + 2;
-                int r1 = 0;
-                int r2 = 0;
-                int r3 = 0;
-                int r4 = 0;
-                int r5 = 0;
-                try {
-                    GameBlock b1 = cube.getBlock(block);
-                    r1 = attackers.get(user).attack(b1);
-                } catch (Exception e) {
-
+                int r1;
+                GameBlock b1 = cube.getBlock(block);
+                GameBlock b2 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n1);
+                GameBlock b3 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n2);
+                GameBlock b4 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n3);
+                GameBlock b5 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n4);
+                if(b1!=null){
+                    targets.add(b1);
                 }
-
-                try {
-                    GameBlock b2 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n1);
-                    r2 = attackers.get(user).attack(b2);
-                } catch (Exception e) {
-
+                if(b2!=null){
+                    targets.add(b1);
                 }
-
-                try {
-                    GameBlock b3 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n2);
-                    r3 = attackers.get(user).attack(b3);
-                } catch (Exception e) {
-
+                if(b3!=null){
+                    targets.add(b1);
                 }
-
-                try {
-                    GameBlock b4 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n3);
-                    r4 = attackers.get(user).attack(b4);
-                } catch (Exception e) {
-
+                if(b4!=null){
+                    targets.add(b1);
                 }
-
-                try {
-                    GameBlock b5 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n4);
-                    r5 = attackers.get(user).attack(b5);
-                } catch (Exception e) {
-
+                if(b5!=null){
+                    targets.add(b1);
                 }
-                return r1 + r2 + r3 + r4 + r5;
+                r1 = attackers.get(user).bomb(targets);
+                return r1 ;
             } else {
                 /*
                 positive : shielding succeded

@@ -1,6 +1,7 @@
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 
 /**
  * Created by lydakis-local on 4/2/17.
@@ -87,7 +88,7 @@ public class Attacker extends Player {
      * @return true iof the player can attack, false otherwise
      */
     public boolean canAttack() throws RemoteException {
-        return ((System.nanoTime() - this.lastAttack) > this.speed);
+        return (System.nanoTime() - (this.lastAttack+this.speed) < 0);
     }
 
     /**
@@ -149,14 +150,29 @@ public class Attacker extends Player {
         if (p >= 0) {
             this.gainCredits(p);
         }
+        lastAttack = System.nanoTime();
         return p;
 
     }
 
-    public int bomb(GameBlock[] blocks) throws RemoteException {
-        int sum = blocks[0].attack(getAttackRating() * 5);
-        for (int i = 1; i < blocks.length; i++) {
-            sum += blocks[i].attack(getAttackRating() * 2);
+    public int bomb(ArrayList<GameBlock> blocks) throws RemoteException {
+        int sum = 0;
+        if (blocks.size() == 0)return sum;
+        if(bombs > 0) {
+            bombs --;
+            try {
+                sum = blocks.get(0).attack(getAttackRating() * 5);
+            }catch (Exception e){
+
+            }
+            for (int i = 1; i < blocks.size(); i++) {
+                try {
+                    sum += blocks.get(i).attack(getAttackRating() * 2);
+                }catch (Exception e){
+
+                }
+            }
+            lastAttack = System.nanoTime();
         }
         return sum;
     }
@@ -186,7 +202,7 @@ public class Attacker extends Player {
     synchronized int boost() throws RemoteException {
         if (((System.nanoTime() - this.lastBoost) > this.speed)
                 && super.removeCredits(100)) {
-            this.speed = this.speed / 2;
+            this.speed = this.speed * 2;
             return 1;
         }
         return -1;

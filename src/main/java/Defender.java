@@ -115,7 +115,7 @@ public class Defender extends Player {
      * @return true if the player can repair a block, false otherwise
      */
     public boolean canRepair() throws RemoteException {
-        return ((System.nanoTime() - this.lastRepair) > this.speed);
+        return (System.nanoTime() - (this.lastRepair+this.speed) < 0);
     }
 
     /**
@@ -173,6 +173,7 @@ public class Defender extends Player {
         int p = b.repair(getRepairRating());
         if (p >= 0) {
             this.gainCredits(p);
+            lastRepair = System.nanoTime();
         }
         return p;
     }
@@ -182,6 +183,7 @@ public class Defender extends Player {
         synchronized (shieldLock) {
             if (this.getShields() > 0) {
                 shields--;
+                lastRepair = System.nanoTime();
                 return b.shield(this, this.getRepairRating() * 5);
             }
         }
@@ -215,7 +217,7 @@ public class Defender extends Player {
     synchronized int boost() throws RemoteException {
         if (((System.nanoTime() - this.lastBoost) > this.speed)
                 && super.removeCredits(100)) {
-            this.speed = this.speed / 2;
+            this.speed = this.speed * 2;
             return 1;
         }
         return 0;
