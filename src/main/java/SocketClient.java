@@ -1,6 +1,4 @@
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.lang.reflect.MalformedParameterizedTypeException;
 import java.net.MalformedURLException;
 import java.net.Socket;
@@ -13,18 +11,24 @@ import java.util.Scanner;
 /**
  * Created by lydakis-local on 4/3/17.
  */
-public class SocketClient implements ClientInterface{
+public class SocketClient {
     private int role;
     private int lastAction;
-    private int lastTarget;
+    private String lastTarget;
     private Player player;
+    private String playerToString;
+    private String targets;
     private Socket socket;
     private OutputStream outputStream;
     private InputStream inputStream;
+    private PrintWriter out;
+    BufferedReader in = null;
+    BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
+
     List<Integer> attackerOptions = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     List<Integer> defenderOptions = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
-    public void initialMenu(){
+    public void initialMenu() throws IOException {
         int s;
         Scanner reader = new Scanner(System.in);
         do {
@@ -84,68 +88,490 @@ public class SocketClient implements ClientInterface{
         }
     }
 
-    @Override
-    public void AttackerMenu() throws RemoteException {
+
+    private void AttackerMenu() throws IOException {
+        Scanner reader = new Scanner(System.in);
+        int choice;
+        do {
+            try {
+                System.err.println("------------------");
+                System.err.println(playerToString);
+                System.err.println("------------------");
+                System.err.println("1. Get List Of Targets");
+                System.err.println("2. Attack A Block");
+                System.err.println("3. Bomb A Block");
+                System.err.println("4. Buy A Bomb");
+                System.err.println("5. Level Up Attack Rating");
+                System.err.println("6. Level Up Speed");
+                System.err.println("7. Boost");
+                System.err.println("8. Repeat Last Action");
+                System.err.println("9. Back to Menu");
+                System.err.println("10. Exit");
+                choice = reader.nextInt();
+            } catch (Exception e) {
+                System.err.println("Invalid Input");
+                reader.nextLine();
+                choice = -1;
+            }
+        } while (!attackerOptions.contains(choice));
+        processAttackerOptions(choice);
+    }
+
+    private void processAttackerOptions(int ch) throws IOException {
+        Scanner reader = new Scanner(System.in);
+        String bl;
+        switch (ch) {
+            case 1: {
+                sendRequest("GETTARGETS");
+                System.err.println(targets);
+                lastAction = 1;
+                lastTarget = null;
+                break;
+            }
+            case 2: {
+                System.err.println("Type in Block Coordinates : (X_Y_Z)");
+                bl = reader.nextLine();
+//                int suc = state.requestPrimary(username, role, bl);
+                int suc = sendRequest("ATTACK-" + player + "-" + bl);
+                if (suc > 0) {
+                    System.err.println("Attacked Block for " + suc + " damage");
+                } else if (suc == 0) {
+                    System.err.println("Block already at 0 hitpoints");
+                } else {
+                    System.err.println("Could not reach block");
+                }
+                lastAction = 2;
+                lastTarget = bl;
+                break;
+            }
+            case 3: {
+                reader.nextLine();
+                System.err.println("Type in Block Coordinates : (X_Y_Z)");
+                bl = reader.nextLine();
+//                int suc = state.requestSecondary(username, role, bl);
+                int suc = sendRequest("BOMB-" + player + "-" + bl);
+                if (suc > 0) {
+                    System.err.println("Bomb successful for " + suc + " damage");
+                } else if (suc == 0) {
+                    System.err.println("Block is destroyed");
+                } else {
+                    System.err.println("Could not reach block");
+                }
+                lastAction = 3;
+                lastTarget = bl;
+                break;
+            }
+            case 4: {
+//                int suc = state.buy(username, role);
+                int suc = sendRequest("BUYBOMB-" + player);
+                if (suc > 0) {
+                    System.err.println("Bomb Purchased: " + suc + " available bombs");
+                } else if (suc < 0) {
+                    System.err.println("Need " + (-suc) + " credits to buy a bomb");
+                } else {
+                    System.err.println("Purchase failed");
+                }
+                lastAction = 4;
+                break;
+            }
+            case 5: {
+//                int suc = state.levelPrimary(username, role);
+                int suc = sendRequest("LVLATK-" + player);
+                if (suc > 0) {
+                    System.err.println("Attack Rating Increased to " + suc);
+                } else if (suc < 0) {
+                    System.err.println("Need " + (-suc) + " to increase attack rating");
+                } else {
+                    System.err.println("Level up failed");
+                }
+                lastAction = 5;
+                break;
+            }
+            case 6: {
+                int suc = sendRequest("LVLSPD-" + player);
+                if (suc > 0) {
+                    System.err.println("Speed Increased to " + suc);
+                } else if (suc < 0) {
+                    System.err.println("Need " + (-suc) + " to increase speed");
+                } else {
+                    System.err.println("Level up failed");
+                }
+                lastAction = 6;
+                break;
+            }
+            case 7: {
+//                int suc = state.requestBoost(username, role);
+                int suc = sendRequest("BOOST-ATK-" + player);
+                if (suc > 0) {
+                    System.err.println("Speed Temporarily Increased");
+                } else if (suc < 0) {
+                    System.err.println("Cannot Boost yet");
+                } else {
+                    System.err.println("Could not reach player");
+                }
+                lastAction = 7;
+                break;
+            }
+            case 9: {
+                logout();
+                return;
+            }
+            case 10: {
+                System.exit(-1);
+            }
+            case 8: {
+                repeat();
+            }
+        }
+    }
+
+    private void DefenderMenu() throws IOException {
+        Scanner reader = new Scanner(System.in);
+        int choice;
+        do {
+            try {
+                System.err.println("------------------");
+                System.err.println(playerToString);
+                System.err.println("------------------");
+                System.err.println("1. Get List Of Targets");
+                System.err.println("2. Repair A Block");
+                System.err.println("3. Shield A Block");
+                System.err.println("4. Buy A Shield");
+                System.err.println("5. Level Up Repair Rating");
+                System.err.println("6. Level Up Speed");
+                System.err.println("7. Boost");
+                System.err.println("8. Repeat Last Action");
+                System.err.println("9. Back to Menu");
+                System.err.println("10. Exit");
+                choice = reader.nextInt();
+            } catch (Exception e) {
+                System.err.println("Invalid Input");
+                reader.nextLine();
+                choice = -1;
+            }
+        } while (!defenderOptions.contains(choice));
+        processDefenderOptions(choice);
+    }
+
+
+    public void processDefenderOptions(int ch) throws IOException {
+        Scanner reader = new Scanner(System.in);
+        String bl;
+        switch (ch) {
+            case 1: {
+                sendRequest("GETTARGETS");
+                System.err.println(targets);
+                lastAction = 1;
+                lastTarget = null;
+                break;
+            }
+            case 2: {
+                System.err.println("Type in Block Coordinates : (X_Y_Z)");
+                bl = reader.nextLine();
+//                int suc = state.requestPrimary(username, role, bl);
+                int suc = sendRequest("REPAIR-" + player + "-" + bl);
+                if (suc > 0) {
+                    System.err.println("Repaired Block for " + suc + " hitpoints");
+                } else if (suc == 0) {
+                    System.err.println("Block already at full hitpoints or no shields available");
+                } else {
+                    System.err.println("Could not reach block to repair");
+                }
+                lastAction = 2;
+                lastTarget = bl;
+                break;
+            }
+            case 3: {
+                reader.nextLine();
+                System.err.println("Type in Block Coordinates : (X_Y_Z)");
+                bl = reader.nextLine();
+//                int suc = state.requestSecondary(username, role, bl);
+                int suc = sendRequest("SHIELD-" + player + "-" + bl);
+                if (suc > 0) {
+                    System.err.println("Block was shielded with " + suc + " shield points");
+                } else if (suc == 0) {
+                    System.err.println("Block is already shielded");
+                } else {
+                    System.err.println("Could not reach block to attack");
+                }
+                lastAction = 3;
+                lastTarget = bl;
+                break;
+            }
+            case 4: {
+//                int suc = state.buy(username, role);
+                int suc = sendRequest("BUYSHIELD-" + player);
+                if (suc > 0) {
+                    System.err.println("Shield Purchased: " + suc + " available shields");
+                } else if (suc < 0) {
+                    System.err.println("Need " + (-suc) + " credits to buy a shield");
+                } else {
+                    System.err.println("Purchase failed");
+                }
+                lastAction = 4;
+                break;
+            }
+            case 5: {
+                int suc = sendRequest("LVLREP-" + player);
+//                int suc = state.levelPrimary(username, role);
+                if (suc > 0) {
+                    System.err.println("Repair Rating Increased to " + suc);
+                } else if (suc < 0) {
+                    System.err.println("Need " + (-suc) + " to increase repair rating");
+                } else {
+                    System.err.println("Level up failed");
+                }
+                lastAction = 5;
+                break;
+            }
+            case 6: {
+//                int suc = state.levelSecondary(username, role);
+                int suc = sendRequest("LVLSPD-" + player);
+                if (suc > 0) {
+                    System.err.println("Speed Increased to " + suc);
+                } else if (suc < 0) {
+                    System.err.println("Need " + (-suc) + " to increase speed");
+                } else {
+                    System.err.println("Level up failed");
+                }
+                lastAction = 6;
+                break;
+            }
+            case 7: {
+//                int suc = state.requestBoost(username, role);
+                int suc = sendRequest("BOOST-" + player + "-" + role);
+                if (suc > 0) {
+                    System.err.println("Speed Temporarily Increased");
+                } else if (suc < 0) {
+                    System.err.println("Cannot Boost yet");
+                } else {
+                    System.err.println("Could not reach player");
+                }
+                lastAction = 7;
+                break;
+            }
+            case 9: {
+                player = null;
+                return;
+            }
+            case 10: {
+                System.exit(-1);
+            }
+            case 8: {
+                repeat();
+            }
+        }
+    }
+
+    private void actionMenu() throws IOException {
+        if (role == 1) {
+            AttackerMenu();
+        } else {
+            DefenderMenu();
+        }
+    }
+
+    public boolean processReply(String reply) {
+        return true;
+    }
+
+    private boolean Register(String username, int role) throws IOException {
+        if (sendRequest("REGISTER-" + username + "-" + role) == 1) {
+            return true;
+        }
+        return false;
 
     }
 
-    @Override
-    public void processAttackerOptions() throws RemoteException {
 
+    private void login(String username) throws IOException {
+        sendRequest("LOGIN-" + username + "-" + role);
     }
 
-    @Override
-    public void DefenderMenu() throws RemoteException {
 
+    private void logout() throws IOException {
+        sendRequest("LOGOUT-" + player + "-" + role);
     }
 
-    @Override
-    public void processDefenderOptions() throws RemoteException {
-
+    private int requestPrimary() throws IOException {
+        if (role == 1) {
+            return sendRequest("ATTACK-" + player + "-" + lastTarget);
+        } else {
+            return sendRequest("REPAIR-" + player + "-" + lastTarget);
+        }
     }
 
-    private void actionMenu(){
-
+    private int requestSecondary() throws IOException {
+        if (role == 1) {
+            return sendRequest("BOMB-" + player + "-" + lastTarget);
+        } else {
+            return sendRequest("SHIELD-" + player + "-" + lastTarget);
+        }
     }
 
-    @Override
-    public void Register() throws RemoteException {
-
+    private int requestBuy() throws IOException {
+        if (role == 1) {
+            return sendRequest("BUYBOMB-" + player);
+        } else {
+            return sendRequest("BUYSHIELD-" + player);
+        }
     }
 
-    @Override
-    public void login() throws RemoteException {
-
+    private int requestLVL() throws IOException {
+        if (role == 1) {
+            return sendRequest("LVLATK-" + player);
+        } else {
+            return sendRequest("LVLREP-" + player);
+        }
     }
 
-    @Override
-    public void logout() throws RemoteException {
-
+    private int requestLVLSPD() throws IOException {
+        return sendRequest("LVLSPD-"+player+"-"+role);
     }
 
-    @Override
-    public void repeat() throws RemoteException {
-
+    private int requestBoost() throws IOException {
+        return sendRequest("BOOST-"+player+"-"+role);
     }
 
-    private void testEnd(){
+    private void repeat() throws IOException {
+        System.err.println(lastAction);
+        System.err.println(lastTarget);
+        if (lastAction == 1) {
+            sendRequest("GETTARGETS");
+            System.err.println(targets);
+        } else if (lastAction == 2) {
+//            int suc = state.requestPrimary(username, role, lastTarget);
+            int suc = requestPrimary();
+            if (suc > 0) {
+                if (role == 1) {
+                    System.err.println("Attack Successful for " + suc + " hitpoints");
+                } else {
+                    System.err.println("Repair Successful for " + suc + " hitpoints");
+                }
+            } else if (suc == 0) {
+                if (role == 1) {
+                    System.err.println("Could not attack block");
+                } else {
+                    System.err.println("Could not repair block");
+                }
+            } else {
+                System.err.println("Block unreachable");
+            }
+        } else if (lastAction == 3) {
+//            int suc = state.requestSecondary(username, role, lastTarget);
+            int suc = requestSecondary();
+            if (suc > 0) {
+                if (role == 1) {
+                    System.err.println("Bomb Successful for " + suc + " points");
+                } else {
+                    System.err.println("Shield Successful for " + suc + " points");
+                }
+            } else if (suc == 0) {
+                if (role == 1) {
+                    System.err.println("Could not bomb block");
+                } else {
+                    System.err.println("Could not shield block");
+                }
+            } else {
+                System.err.println("Block unreachable");
+            }
 
+        } else if (lastAction == 4) {
+//            int suc = state.buy(username, role);
+            int suc = requestBuy();
+            if (role == 1) {
+                if (suc > 0) {
+                    System.err.println("Bought bomb, " + suc + " in inventory");
+                } else if (suc < 0) {
+                    System.err.println("Need " + (-suc) + " credits to buy a bomb");
+                } else {
+                    System.err.println("Purchase request could not go through");
+                }
+            } else {
+                if (suc > 0) {
+                    System.err.println("Bought shield, " + suc + " in inventory");
+                } else if (suc < 0) {
+                    System.err.println("Need " + (-suc) + " credits to buy a shield");
+                } else {
+                    System.err.println("Purchase request could not go through");
+                }
+            }
+
+        } else if (lastAction == 5) {
+//            int suc = state.levelPrimary(username, role);
+            int suc = requestLVL();
+            if (suc > 0) {
+                if (role == 1) {
+                    System.err.println("Attack rating increased to " + suc);
+                } else {
+                    System.err.println("Repair rating increased to " + suc);
+                }
+            } else if (suc < 0) {
+                if (role == 1) {
+                    System.err.println("Need " + (-suc) + " credits to upgrade attack rating");
+                } else {
+                    System.err.println("Need " + (-suc) + " credits to upgrade repair rating");
+                }
+            } else {
+                System.err.println("Level up request failed");
+            }
+        } else if (lastAction == 6) {
+//            int suc = state.levelSecondary(username, role);
+            int suc = requestLVLSPD();
+            if (suc > 0) {
+                System.err.println("Speed increased to " + suc);
+            } else if (suc < 0) {
+                System.err.println("Need " + (-suc) + " credits to upgrade speed");
+            } else {
+                System.err.println("Level up request failed");
+            }
+        } else if (lastAction == 7) {
+//            int suc = state.requestBoost(username, role);
+            int suc = requestBoost();
+            if (suc > 0) {
+                System.err.println("Speed temporarily increased");
+            } else if (suc < 0) {
+                System.err.println("Could not boost yet");
+            } else {
+                System.err.println("Boost request failed");
+            }
+        }
     }
 
+    private int testEnd() throws IOException {
+        return sendRequest("END");
+    }
+
+
+    private int sendRequest(String req) throws IOException {
+        while(true) {
+            try {
+                String resp = "";
+                out.print(req + "\r\n");
+                out.flush();
+                processReply(in.readLine());
+                return 0;
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
 
     private SocketClient(String host, int port) throws IOException {
         try {
             socket = new Socket(host, port);
-        }catch (Exception e){
+            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        } catch (Exception e) {
             System.err.println("Could not connect to server, exiting");
             System.exit(-1);
         }
         outputStream = socket.getOutputStream();
 
-        while(true){
-            if(player == null){
+        while (true) {
+            if (player == null) {
                 initialMenu();
-            }else{
+            } else {
                 actionMenu();
                 testEnd();
             }

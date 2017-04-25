@@ -10,7 +10,7 @@ import java.util.*;
 /**
  * Created by lydakis-local on 4/3/17.
  */
-public class TestClient extends Client{
+public class TestClient{
     private final RemoteState state;
     private String username;
     private RemotePlayer player;

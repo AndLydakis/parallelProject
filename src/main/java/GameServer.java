@@ -199,7 +199,7 @@ public class GameServer {
             try {
                 cubeExecutor.scheduleAtFixedRate(() -> {
                     try{
-                        server.printStatus();
+//                        server.printStatus();
                     }catch (Exception e){
                         e.printStackTrace();
                     }
