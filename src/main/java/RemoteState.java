@@ -1,3 +1,5 @@
+import com.sun.org.apache.regexp.internal.RE;
+
 import java.rmi.RemoteException;
 
 /**
@@ -10,21 +12,25 @@ public interface RemoteState extends java.rmi.Remote {
 
     boolean register(String username, int role) throws RemoteException;
 
-    boolean requestPrimary(String user, int role, String block) throws RemoteException;
+    int requestPrimary(String user, int role, String block) throws RemoteException;
 
-    boolean requestSecondary(String user, int role, String block) throws RemoteException;
+    int requestSecondary(String user, int role, String block) throws RemoteException;
 
-    boolean requestBoost(String user) throws RemoteException;
+    int requestBoost(String user, int role) throws RemoteException;
 
-    boolean levelPrimary(String user, int role) throws RemoteException;
+    int levelPrimary(String user, int role) throws RemoteException;
 
-    boolean levelSecondary(String user, int role) throws RemoteException;
+    int levelSecondary(String user, int role) throws RemoteException;
 
-    boolean buy(String user, int role) throws RemoteException;
+    int buy(String user, int role) throws RemoteException;
 
     String getTargets() throws RemoteException;
 
     String printPlayer(String player, int r) throws RemoteException;
 
     String parseRequest(String req) throws RemoteException;
+
+    String printLeaderBoards() throws RemoteException;
+
+    int printStatus() throws RemoteException;
 }

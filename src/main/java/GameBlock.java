@@ -74,7 +74,7 @@ public class GameBlock {
             }
         }
         System.err.println("Attack deflected");
-        return 0;
+        return -1;
     }
 
     /**
@@ -101,15 +101,15 @@ public class GameBlock {
      * @return true if the shield was placed successfully, false if otherwise
      * @throws RemoteException
      */
-    public boolean shield(Player p, int sp) throws RemoteException {
+    public int shield(Player p, int sp) throws RemoteException {
         synchronized (shieldLock) {
             if (isShielded() == 0) {
                 shielded.set(sp);
                 shielder = p;
-                return true;
+                return isShielded();
             }
         }
-        return false;
+        return 0;
     }
 
 

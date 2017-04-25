@@ -9,7 +9,7 @@ import java.rmi.RemoteException;
 public class Defender extends Player {
 
     int shields;
-    double speed;
+    int speed;
     int repairRating;
     long lastRepair;
     long lastShield;
@@ -23,7 +23,7 @@ public class Defender extends Player {
     public Defender(String un, int s, int cr) throws RemoteException {
         super(un, 0, s, cr);
         synchronized (this) {
-            this.speed = 1.0;
+            this.speed = 1;
             this.repairRating = 1;
             this.lastRepair = -10000L;
             this.lastShield = -10000L;
@@ -35,7 +35,7 @@ public class Defender extends Player {
 
     public Defender(String s) throws RemoteException {
         super(s);
-        this.speed = 1.0;
+        this.speed = 1;
         this.repairRating = 1;
         this.lastRepair = -1l;
         this.lastShield = -1l;
@@ -51,7 +51,7 @@ public class Defender extends Player {
     public void update(String s) throws RemoteException {
         super.update(s);
         String[] tokens = s.split(" ");
-        this.speed = Double.parseDouble(tokens[3]);
+        this.speed = Integer.parseInt(tokens[3]);
         this.repairRating = Integer.parseInt(tokens[4]);
         this.shields = Integer.parseInt(tokens[5]);
     }
@@ -132,15 +132,15 @@ public class Defender extends Player {
      * @return true if the player had enough credits to level up repair rating, false otherwise
      * @throws RemoteException
      */
-    public boolean levelUpRr() throws RemoteException {
+    public int levelUpRr() throws RemoteException {
         int cr = getCredits();
         if (super.removeCredits(toLevelUpRr)) {
             repairRating += 1;
             toLevelUpRr *= 10;
-            return true;
+            return repairRating;
         }
         System.err.println("Need " + toLevelUpRr + " credits to level up repair rating, current credits: " + cr);
-        return false;
+        return -toLevelUpRr;
     }
 
     /**
@@ -149,17 +149,17 @@ public class Defender extends Player {
      * @return true if the player had enough credits to level up speed, false otherwise
      * @throws RemoteException
      */
-    public boolean levelUpSpeed() throws RemoteException {
+    public int levelUpSpeed() throws RemoteException {
         int cr = getCredits();
         if (((System.nanoTime() - this.lastBoost) > this.speed)) {
             if (super.removeCredits(toLevelUpSpeed)) {
                 speed += 1;
                 toLevelUpSpeed *= 10;
-                return true;
+                return speed;
             }
         }
         System.err.println("Need " + toLevelUpSpeed + " credits to level up speed, current credits: " + cr);
-        return false;
+        return -toLevelUpSpeed;
     }
 
     /**
@@ -169,24 +169,22 @@ public class Defender extends Player {
      * @return true if the block was repaired, false if the block was already destoryed
      * @throws RemoteException if rmi fails
      */
-    public boolean repair(GameBlock b) throws RemoteException {
+    public int repair(GameBlock b) throws RemoteException {
         int p = b.repair(getRepairRating());
         if (p >= 0) {
             this.gainCredits(p);
-            return true;
-        } else {
-            return false;
         }
+        return p;
     }
 
 
-    public boolean shield(GameBlock b) throws RemoteException {
+    public int shield(GameBlock b) throws RemoteException {
         synchronized (shieldLock) {
             if (this.getShields() > 0) {
                 return b.shield(this, this.getRepairRating() * 5);
             }
         }
-        return false;
+        return -1;
     }
 
     /**
@@ -199,11 +197,11 @@ public class Defender extends Player {
         synchronized (this.shieldLock) {
             if (super.removeCredits(shieldPrice)) {
                 shields++;
+                return shields;
             } else {
                 System.err.println("Not enough credits to buy a shield, " + shieldPrice + " credits needed");
-                return -1;
+                return -shieldPrice;
             }
-            return shields;
         }
     }
 
@@ -213,13 +211,13 @@ public class Defender extends Player {
      * @return true if the boost succeeded, false otherwise
      * @throws RemoteException
      */
-    synchronized public boolean boost() throws RemoteException {
+    synchronized int boost() throws RemoteException {
         if (((System.nanoTime() - this.lastBoost) > this.speed)
                 && super.removeCredits(100)) {
             this.speed = this.speed / 2;
-            return true;
+            return 1;
         }
-        return false;
+        return -1;
     }
 
     /**

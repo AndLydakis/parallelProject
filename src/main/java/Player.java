@@ -91,15 +91,23 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
         return null;
     }
 
-    public void login() throws RemoteException{
+    public boolean login() throws RemoteException{
         synchronized (logLock) {
-            logged = true;
+            if(!logged) {
+                logged = true;
+                return true;
+            }
+            return false;
         }
     }
 
-    public void logout() throws RemoteException{
+    public boolean logout() throws RemoteException{
         synchronized (logLock) {
-            logged = false;
+            if(logged) {
+                logged = false;
+                return true;
+            }
+            return false;
         }
     }
 

@@ -8,7 +8,7 @@ import java.rmi.server.UnicastRemoteObject;
 public class Attacker extends Player {
 
     private int bombs;
-    private double speed;
+    private int speed;
     private int attackRating;
     private long lastAttack;
     private long lastBomb;
@@ -19,7 +19,7 @@ public class Attacker extends Player {
 
     public Attacker(String un, int s, int cr) throws RemoteException {
         super(un, 1, s, cr);
-        this.speed = 1.0;
+        this.speed = 1;
         this.attackRating = 1;
         this.lastAttack = -10000L;
         this.lastBomb = -10000L;
@@ -28,7 +28,7 @@ public class Attacker extends Player {
 
     public Attacker(String s) throws RemoteException {
         super(s);
-        this.speed = 1.0;
+        this.speed = 1;
         this.attackRating = 1;
         this.lastAttack = -10000L;
         this.lastBomb = -10000L;
@@ -43,7 +43,7 @@ public class Attacker extends Player {
     public void update(String s) throws RemoteException {
         super.update(s);
         String[] tokens = s.split(" ");
-        this.speed = Double.parseDouble(tokens[3]);
+        this.speed = Integer.parseInt(tokens[3]);
         this.attackRating = Integer.parseInt(tokens[4]);
         this.bombs = Integer.parseInt(tokens[5]);
     }
@@ -57,10 +57,10 @@ public class Attacker extends Player {
         return this.speed;
     }
 
-    public String print() throws RemoteException{
-        return super.print()+
-                "Speed: "+speed+"\n"+
-                "Attack Rating: "+attackRating;
+    public String print() throws RemoteException {
+        return super.print() +
+                "Speed: " + speed + "\n" +
+                "Attack Rating: " + attackRating;
     }
 
     /**
@@ -107,15 +107,15 @@ public class Attacker extends Player {
      * @return true if the player had enough credits to level up repair rating, false otherwise
      * @throws RemoteException
      */
-    public boolean levelUpAr() throws RemoteException {
+    public int levelUpAr() throws RemoteException {
         int cr = getCredits();
         if (super.removeCredits(toLevelUpAr)) {
             attackRating += 1;
             toLevelUpAr *= 10;
-            return true;
+            return attackRating;
         }
         System.err.println("Need " + toLevelUpAr + " credits to level up attack rating, current credits: " + cr);
-        return false;
+        return -toLevelUpAr;
     }
 
     /**
@@ -124,17 +124,17 @@ public class Attacker extends Player {
      * @return true if the player had enough credits to level up speed, false otherwise
      * @throws RemoteException
      */
-    public boolean levelUpSpeed() throws RemoteException {
+    public int levelUpSpeed() throws RemoteException {
         int cr = getCredits();
         if (((System.nanoTime() - this.lastBoost) > this.speed)) {
             if (super.removeCredits(toLevelUpSpeed)) {
                 speed += 1;
                 toLevelUpSpeed *= 10;
-                return true;
+                return speed;
             }
         }
         System.err.println("Need " + toLevelUpSpeed + " credits to level up speed, current credits: " + cr);
-        return false;
+        return -toLevelUpSpeed;
     }
 
     /**
@@ -144,23 +144,21 @@ public class Attacker extends Player {
      * @return true if the block was repaired, false if the block was already destroyed
      * @throws RemoteException if rmi fails
      */
-    public boolean attack(GameBlock b) throws RemoteException {
+    public int attack(GameBlock b) throws RemoteException {
         int p = b.attack(getAttackRating());
-        if (p > 0) {
+        if (p >= 0) {
             this.gainCredits(p);
-            return true;
-        } else {
-            return false;
         }
+        return p;
 
     }
 
-    public boolean bomb(GameBlock[] blocks) throws RemoteException {
-        int sum = blocks[0].attack(getAttackRating()*5);
-        for(int i = 1; i < blocks.length;i++){
-                blocks[i].attack(getAttackRating()*2);
+    public int bomb(GameBlock[] blocks) throws RemoteException {
+        int sum = blocks[0].attack(getAttackRating() * 5);
+        for (int i = 1; i < blocks.length; i++) {
+            sum += blocks[i].attack(getAttackRating() * 2);
         }
-        return false;
+        return sum;
     }
 
     /**
@@ -174,7 +172,7 @@ public class Attacker extends Player {
             bombs++;
         } else {
             System.err.println("Not enough credits to buy a shield, " + bombPrice + " credits needed");
-            return -1;
+            return -bombPrice;
         }
         return bombs;
     }
@@ -185,13 +183,13 @@ public class Attacker extends Player {
      * @return true if the boost succeeded, false otherwise
      * @throws RemoteException
      */
-    synchronized public boolean boost() throws RemoteException {
+    synchronized int boost() throws RemoteException {
         if (((System.nanoTime() - this.lastBoost) > this.speed)
                 && super.removeCredits(100)) {
             this.speed = this.speed / 2;
-            return true;
+            return 1;
         }
-        return false;
+        return -1;
     }
 
     /**
@@ -204,5 +202,4 @@ public class Attacker extends Player {
             this.speed = this.speed * 2;
         }
     }
-
 }
