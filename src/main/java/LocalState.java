@@ -171,7 +171,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
             try {
                 result = attackers.get(user).attack(cube.getBlock(block));
                 if (cube.getBlock(block).getHp() <= 0) {
-                    System.err.println("Removing "+block.toString());
+                    System.err.println("Removing "+cube.getBlock(block).toString());
                     int pos = cube.currentLayer.layer.indexOf(cube.getBlock(block));
                     System.err.println(pos);
                     System.err.println(cube.currentLayer.layer.remove(pos));

@@ -222,7 +222,6 @@ public class Cube {
                 s += (b.toString() + "\n");
             }
             return s;
-
         }
     }
 
