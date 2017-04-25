@@ -66,10 +66,10 @@ public class Defender extends Player {
         return (unameToString() + " " + getScore() + " " + getCredits() + " " + speed + " " + shields + " " + repairRating + " " + toLevelUpRr + " " + toLevelUpSpeed);
     }
 
-    public String print() throws RemoteException{
-        return super.print()+"\n"+
-                "Speed: "+speed+"\n"+
-                "Repair Rating: "+repairRating;
+    public String print() throws RemoteException {
+        return super.print() +
+                "Speed: " + speed + "\n" +
+                "Repair Rating: " + repairRating;
 
     }
 
@@ -181,10 +181,11 @@ public class Defender extends Player {
     public int shield(GameBlock b) throws RemoteException {
         synchronized (shieldLock) {
             if (this.getShields() > 0) {
+                shields--;
                 return b.shield(this, this.getRepairRating() * 5);
             }
         }
-        return -1;
+        return 0;
     }
 
     /**
@@ -217,7 +218,7 @@ public class Defender extends Player {
             this.speed = this.speed / 2;
             return 1;
         }
-        return -1;
+        return 0;
     }
 
     /**

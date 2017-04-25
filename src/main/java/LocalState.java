@@ -106,11 +106,11 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
         if (!this.cube.isAlive()) {
             //Attackers won
             System.err.println("Cube destroyed, attackers won!");
-            return -1;
+            return 1;
         }
         if (((System.nanoTime() - start) / 1e9) > 600) {
             System.err.println("Cube is not destoryed, defenders won");
-            return 1;
+            return -1;
         }
         System.err.println(this.cube.isAlive());
         return 0;
@@ -171,7 +171,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
             try {
                 result = attackers.get(user).attack(cube.getBlock(block));
                 if (cube.getBlock(block).getHp() <= 0) {
-                    System.err.println("Removing "+cube.getBlock(block).toString());
+                    System.err.println("Removing " + cube.getBlock(block).toString());
                     int pos = cube.currentLayer.layer.indexOf(cube.getBlock(block));
                     System.err.println(pos);
                     System.err.println(cube.currentLayer.layer.remove(pos));
@@ -191,25 +191,64 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
 
     @Override
     public int requestSecondary(String user, int role, String block) throws RemoteException {
-        if (role == 1) {
-            String tokens[] = block.split("_");
-            int number = Integer.parseInt(tokens[tokens.length - 1]);
-            int n1 = number - 2;
-            int n2 = number - 1;
-            int n3 = number + 1;
-            int n4 = number + 2;
-            GameBlock b1 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n1);
-            GameBlock b2 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n2);
-            GameBlock b3 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n3);
-            GameBlock b4 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n4);
-            int r1 = attackers.get(user).attack(cube.getBlock(block));
-            int r2 = attackers.get(user).attack(b1);
-            int r3 = attackers.get(user).attack(b2);
-            int r4 = attackers.get(user).attack(b3);
-            int r5 = attackers.get(user).attack(b4);
-            return r1 + r2 + r3 + r4 + r5;
-        } else {
-            return defenders.get(user).shield(cube.getBlock(block));
+        try {
+            if (role == 1) {
+                String tokens[] = block.split("_");
+                int number = Integer.parseInt(tokens[tokens.length - 1]);
+                int n1 = number - 2;
+                int n2 = number - 1;
+                int n3 = number + 1;
+                int n4 = number + 2;
+                int r1 = 0;
+                int r2 = 0;
+                int r3 = 0;
+                int r4 = 0;
+                int r5 = 0;
+                try {
+                    GameBlock b1 = cube.getBlock(block);
+                    r1 = attackers.get(user).attack(b1);
+                } catch (Exception e) {
+
+                }
+
+                try {
+                    GameBlock b2 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n1);
+                    r2 = attackers.get(user).attack(b2);
+                } catch (Exception e) {
+
+                }
+
+                try {
+                    GameBlock b3 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n2);
+                    r3 = attackers.get(user).attack(b3);
+                } catch (Exception e) {
+
+                }
+
+                try {
+                    GameBlock b4 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n3);
+                    r4 = attackers.get(user).attack(b4);
+                } catch (Exception e) {
+
+                }
+
+                try {
+                    GameBlock b5 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n4);
+                    r5 = attackers.get(user).attack(b5);
+                } catch (Exception e) {
+
+                }
+                return r1 + r2 + r3 + r4 + r5;
+            } else {
+                /*
+                positive : shielding succeded
+                negative : already shielded/ no shields available
+                0: error
+                 */
+                return defenders.get(user).shield(cube.getBlock(block));
+            }
+        } catch (Exception e) {
+            return -1;
         }
     }
 

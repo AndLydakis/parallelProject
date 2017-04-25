@@ -34,6 +34,7 @@ public class GameBlock {
 
     /**
      * check if the
+     *
      * @return
      * @throws RemoteException
      */
@@ -43,6 +44,7 @@ public class GameBlock {
 
     /**
      * return the block's hitpoins
+     *
      * @return the block's hitpoints
      * @throws RemoteException
      */
@@ -53,41 +55,42 @@ public class GameBlock {
     public int attack(int dmg) throws RemoteException {
         synchronized (shieldLock) {
             synchronized (hpLock) {
-                if (this.isShielded() >= dmg) {
-                    int dmgBlocked = this.isShielded() - dmg;
-                    shielder.gainCredits(dmgBlocked);
+                if (this.isShielded() > 0) {
+                    int dmgBlocked = 0;
+                    if (this.isShielded() > 0) {
+                        dmgBlocked = this.shielded.get() >= dmg ? this.shielded.get() - dmg : this.shielded.get();
+                        shielder.gainCredits(dmgBlocked);
+                        shielded.set(shielded.get() - dmgBlocked);
+                        if (shielded.get() == 0) {
+                            shielder = null;
+                        }
+                    }
                     dmg -= (dmgBlocked);
-                    if (dmg > 0) {
-                        this.shielded.set(this.shielded.get() >= dmg ? this.shielded.get() - dmg : 0);
-                        return (dmg);
-                    }
-                }else{
-                    if(this.hp>dmg){
-                        this.hp-=dmg;
-                        return dmg;
-                    }else{
-                        int ret = this.hp;
-                        this.hp = 0;
-                        return ret;
-                    }
+                }
+                if (this.hp > dmg) {
+                    this.hp -= dmg;
+                    return dmg;
+                } else {
+                    int ret = this.hp;
+                    this.hp = 0;
+                    return ret;
                 }
             }
         }
-        System.err.println("Attack deflected");
-        return -1;
     }
 
     /**
      * Restore some block hitpoints
+     *
      * @param rep a number of hit points to be
      * @return the amount of points that were repaired, so the player can gain the corresponding credits
      * @throws RemoteException
      */
     public int repair(int rep) throws RemoteException {
         synchronized (hpLock) {
-            if (this.hp==maxHp) return 0;
-            int r = (maxHp - this.hp) > rep?rep:maxHp - this.hp;
-            this.hp = (this.hp+rep)>=maxHp?maxHp:(this.hp+rep);
+            if (this.hp == maxHp) return 0;
+            int r = (maxHp - this.hp) > rep ? rep : maxHp - this.hp;
+            this.hp = (this.hp + rep) >= maxHp ? maxHp : (this.hp + rep);
             return r;
 //            repairer.gainCredits((maxHp - this.hp) > rep?rep:maxHp - this.hp);
 //            this.hp = (this.hp+rep)>maxHp?maxHp:(this.hp+rep);
@@ -96,7 +99,8 @@ public class GameBlock {
 
     /**
      * Receive shield from player
-     * @param p a player that is trying to shield a block
+     *
+     * @param p  a player that is trying to shield a block
      * @param sp the shield points to be given to the block
      * @return true if the shield was placed successfully, false if otherwise
      * @throws RemoteException
@@ -109,7 +113,7 @@ public class GameBlock {
                 return isShielded();
             }
         }
-        return 0;
+        return -1;
     }
 
 

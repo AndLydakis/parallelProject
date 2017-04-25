@@ -373,9 +373,9 @@ public class TestClient {
                 if (suc > 0) {
                     System.err.println("Repaired Block for " + suc + " hitpoints");
                 } else if (suc == 0) {
-                    System.err.println("Block already at full hitpoints");
+                    System.err.println("Block already at full hitpoints or no shields available");
                 } else {
-                    System.err.println("Could not reach block");
+                    System.err.println("Could not reach block to repair");
                 }
                 lastAction = 2;
                 lastTarget = bl;
@@ -391,7 +391,7 @@ public class TestClient {
                 } else if (suc == 0) {
                     System.err.println("Block is already shielded");
                 } else {
-                    System.err.println("Could not reach block");
+                    System.err.println("Could not reach block to attack");
                 }
                 lastAction = 3;
                 lastTarget = bl;
