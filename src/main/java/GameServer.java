@@ -190,8 +190,6 @@ public class GameServer {
         GameServer server = new GameServer(state);
         try {
             port = server.start(port);
-            Thread adminThread = new Thread();
-            Thread[] clientThreads = new Thread[16];
 
             ExecutorService clientExecutor = Executors.newFixedThreadPool(16);
 
