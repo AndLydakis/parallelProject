@@ -59,7 +59,7 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
     }
 
     public String print() throws RemoteException{
-        return "Username:"+ userName+"\n"+
+        return "Username: "+ userName+"\n"+
                 "Score: "+score+"\n"+
                 "Credits: "+credits+"\n";
     }

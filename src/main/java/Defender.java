@@ -67,7 +67,7 @@ public class Defender extends Player {
     }
 
     public String print() throws RemoteException{
-        return super.toString()+"\n"+
+        return super.print()+"\n"+
                 "Speed: "+speed+"\n"+
                 "Repair Rating: "+repairRating;
 
