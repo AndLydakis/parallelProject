@@ -94,6 +94,8 @@ public class Cube {
                     layer.add(face6.get(i));
                 }
 
+                System.err.print("1 "+layer.size());
+
                 for (int i = 0; i < faceSize; i++) {
                     edge1.add(new GameBlock(level, 2, idx++, blockHp));
                     edge2.add(new GameBlock(level, 1, idx++, blockHp));
@@ -109,7 +111,7 @@ public class Cube {
                     edge12.add(new GameBlock(level, 1, idx++, blockHp));
                 }
 
-                for(int i =0; i < edge1.size(); i++){
+                for(int i = 0; i < edge1.size(); i++){
                     layer.add(edge1.get(i));
                     layer.add(edge2.get(i));
                     layer.add(edge3.get(i));
@@ -188,6 +190,7 @@ public class Cube {
                 face2.add(corner8);
                 face5.add(corner8);
                 face6.add(corner8);
+                
                 layer.add(corner1);
                 layer.add(corner2);
                 layer.add(corner3);
