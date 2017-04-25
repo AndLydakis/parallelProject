@@ -58,7 +58,7 @@ public class Attacker extends Player {
     }
 
     public String print() throws RemoteException{
-        return super.toString()+"\n"+
+        return super.print()+
                 "Speed: "+speed+"\n"+
                 "Attack Rating: "+attackRating;
     }
@@ -146,7 +146,7 @@ public class Attacker extends Player {
      */
     public boolean attack(GameBlock b) throws RemoteException {
         int p = b.attack(getAttackRating());
-        if (p >= 0) {
+        if (p > 0) {
             this.gainCredits(p);
             return true;
         } else {

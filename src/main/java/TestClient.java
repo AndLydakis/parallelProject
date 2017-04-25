@@ -13,17 +13,75 @@ public class TestClient {
     private String username;
     private RemotePlayer player;
     private int role;
-    List<Integer> attackerOptions = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
-    List<Integer> defenderOptions = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
+    private int lastAction;
+    private String lastTarget;
+
+    List<Integer> attackerOptions = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    List<Integer> defenderOptions = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
 
     private TestClient(String service) throws RemoteException, NotBoundException, MalformedURLException {
         state = (RemoteState) java.rmi.Naming.lookup(service);
     }
 
-    private void selectTarget() {
-        while (true) {
+    private void repeat() throws RemoteException {
+        System.err.println(lastAction);
+        System.err.println(lastTarget);
+        if(lastAction == 1){
+            System.err.println(state.getTargets());
+        }
+        else if (lastAction == 2){
+            boolean suc = state.requestPrimary(username,role,lastTarget);
+            if (suc) {
+                if(role == 1) {
+                    System.err.println("Attack Successful");
+                }else{
+                    System.err.println("Repair Successful");
+                }
+            } else {
+                if(role == 1) {
+                    System.err.println("Could not attack block");
+                }else{
+                    System.err.println("Could not repair block");
+                }
+            }
+        }else if (lastAction == 3){
+            boolean suc = state.requestSecondary(username, role, lastTarget);
+            if (suc) {
+                if(role == 1) {
+                    System.err.println("Bomb Successful");
+                }else{
+                    System.err.println("Shield Successful");
+                }
+            } else {
+                if(role == 1) {
+                    System.err.println("Could not bomb block");
+                }else{
+                    System.err.println("Could not shield block");
+                }
+            }
 
+        }else if(lastAction == 4){
+            boolean suc = state.levelPrimary(username, role);
+            if (suc) {
+                System.err.println("Level up successful");
+            } else {
+                System.err.println("Not enough credits to level up");
+            }
+        }else if(lastAction == 5){
+            boolean suc = state.levelSecondary(username, role);
+            if (suc) {
+                System.err.println("Level up successful");
+            } else {
+                System.err.println("Not enough credits to level up");
+            }
+        }else if(lastAction == 7){
+            boolean suc = state.requestBoost(username);
+            if (suc) {
+                System.err.println("Speed temporarily increased");
+            } else {
+                System.err.println("Could not boost");
+            }
         }
     }
 
@@ -43,12 +101,19 @@ public class TestClient {
         switch (s) {
             case 1:
                 do {
-                    System.out.print("\033[H\033[2J");
-                    System.err.println("Select your role :");
-                    System.err.println("1. Attacker");
-                    System.err.println("2. Defender");
-                    System.err.println("3. Back to menu");
-                    ch = reader.nextInt();
+                    try {
+                        System.out.print("\033[H\033[2J");
+                        System.err.println("Select your role :");
+                        System.err.println("1. Attacker");
+                        System.err.println("2. Defender");
+                        System.err.println("3. Back to menu");
+                        ch = reader.nextInt();
+                    } catch (Exception e) {
+                        System.err.println("Invalid Input");
+                        reader.nextLine();
+                        ch = -1;
+                        continue;
+                    }
                 } while (ch != 1 && ch != 2 && ch != 3);
 
                 if ((ch == 1) || (ch == 2)) {
@@ -94,19 +159,29 @@ public class TestClient {
 
     private void AttackerMenu() throws RemoteException {
         Scanner reader = new Scanner(System.in);
-        int choice;
+        int choice = -1;
         do {
-            System.err.println(" Attacker " + player.unameToString() + " select your action");
-            System.err.println("1. Get List Of Targets");
-            System.err.println("2. Attack A Block");
-            System.err.println("3. Bomb A Block");
-            System.err.println("4. Buy A Bomb");
-            System.err.println("5. Level Up Attack Rating");
-            System.err.println("6. Level Up Speed");
-            System.err.println("7. Boost");
-            System.err.println("8. Back to Menu");
-            System.err.println("9. Exit");
-            choice = reader.nextInt();
+            try {
+                System.err.println("------------------");
+                System.err.println(state.printPlayer(username, role));
+                System.err.println("------------------");
+                System.err.println("1. Get List Of Targets");
+                System.err.println("2. Attack A Block");
+                System.err.println("3. Bomb A Block");
+                System.err.println("4. Buy A Bomb");
+                System.err.println("5. Level Up Attack Rating");
+                System.err.println("6. Level Up Speed");
+                System.err.println("7. Boost");
+                System.err.println("8. Repeat Last Action");
+                System.err.println("9. Back to Menu");
+                System.err.println("10. Exit");
+                choice = reader.nextInt();
+            } catch (Exception e) {
+                System.err.println("Invalid Input");
+                reader.nextLine();
+                choice = -1;
+                continue;
+            }
         } while (!attackerOptions.contains(choice));
         processAttackerOptions(choice);
 
@@ -118,6 +193,8 @@ public class TestClient {
         switch (ch) {
             case 1: {
                 System.err.println(state.getTargets());
+                lastAction = 1;
+                lastTarget = null;
                 break;
             }
             case 2: {
@@ -129,6 +206,8 @@ public class TestClient {
                 } else {
                     System.err.println("Attack Failed");
                 }
+                lastAction = 2;
+                lastTarget = bl;
                 break;
             }
             case 3: {
@@ -141,6 +220,8 @@ public class TestClient {
                 } else {
                     System.err.println("Bomb Failed");
                 }
+                lastAction = 3;
+                lastTarget = bl;
                 break;
             }
             case 4: {
@@ -150,6 +231,7 @@ public class TestClient {
                 } else {
                     System.err.println("Not enough credits");
                 }
+                lastAction = 4;
                 break;
             }
             case 5: {
@@ -159,6 +241,7 @@ public class TestClient {
                 } else {
                     System.err.println("Not enough credits");
                 }
+                lastAction = 5;
                 break;
             }
             case 6: {
@@ -168,6 +251,7 @@ public class TestClient {
                 } else {
                     System.err.println("Not enough credits");
                 }
+                lastAction = 6;
                 break;
             }
 
@@ -178,14 +262,18 @@ public class TestClient {
                 } else {
                     System.err.println("Cannot Boost yet");
                 }
+                lastAction = 7;
                 break;
             }
-            case 8: {
+            case 9: {
                 player = null;
                 return;
             }
-            case 9: {
+            case 10: {
                 System.exit(-1);
+            }
+            case 8: {
+                repeat();
             }
         }
     }

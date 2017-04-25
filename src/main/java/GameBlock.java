@@ -21,7 +21,7 @@ public class GameBlock {
         this.z = z;
         this.hp = hp;
         this.maxHp = hp;
-        this.shielded = new AtomicInteger(-1);
+        this.shielded = new AtomicInteger(0);
         this.shielder = null;
         this.hpLock = new Object();
         this.shieldLock = new Object();
@@ -61,9 +61,19 @@ public class GameBlock {
                         this.shielded.set(this.shielded.get() >= dmg ? this.shielded.get() - dmg : 0);
                         return (dmg);
                     }
+                }else{
+                    if(this.hp>dmg){
+                        this.hp-=dmg;
+                        return dmg;
+                    }else{
+                        int ret = this.hp;
+                        this.hp = 0;
+                        return ret;
+                    }
                 }
             }
         }
+        System.err.println("Attack deflected");
         return 0;
     }
 

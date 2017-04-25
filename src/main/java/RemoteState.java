@@ -24,5 +24,7 @@ public interface RemoteState extends java.rmi.Remote {
 
     String getTargets() throws RemoteException;
 
+    String printPlayer(String player, int r) throws RemoteException;
+
     String parseRequest(String req) throws RemoteException;
 }

@@ -135,9 +135,21 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
         if(role==1){
             System.err.println("**" + user);
             System.err.println("Attaker "+attackers.get(user).unameToString());
-            result = attackers.get(user).attack(cube.getBlock(block));
+            try {
+                result = attackers.get(user).attack(cube.getBlock(block));
+                System.err.println("***" + cube.getBlock(block).getHp());
+                if(cube.getBlock(block).getHp()<=0){
+                    System.err.println(cube.currentLayer.layer.remove(block));
+                }
+            }catch (Exception e){
+                result = false;
+            }
         }else{
-            result = defenders.get(user).repair(cube.getBlock(block));
+            try {
+                result = defenders.get(user).repair(cube.getBlock(block));
+            }catch (Exception e){
+                result = false;
+            }
         }
         return result;
     }
@@ -203,6 +215,15 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
     @Override
     public String getTargets() {
         return cube.currentLayer.toString();
+    }
+
+    @Override
+    public String printPlayer(String player, int r) throws RemoteException {
+        if(r == 1){
+            return attackers.get(player).print();
+        }else{
+            return defenders.get(player).print();
+        }
     }
 
 }
