@@ -108,7 +108,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
             System.err.println("Cube destroyed, attackers won!");
             return -1;
         }
-        if (((System.nanoTime() - start) * 1e9) > 600) {
+        if (((System.nanoTime() - start) / 1e9) > 600) {
             System.err.println("Cube is not destoryed, defenders won");
             return 1;
         }
