@@ -570,7 +570,7 @@ public class SocketClient {
                     out.print(req + "\r\n");
                     out.flush();
                     while ((line = in.readLine()) != null && line.length() != 0) {
-                        resp.append(line);
+                        resp.append(line+"\n");
                     }
                     System.err.println("Response received :" + resp);
 //                resp = processReply(in.readLine());
