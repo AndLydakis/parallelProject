@@ -559,28 +559,35 @@ public class SocketClient {
             socket = new Socket(host, port);
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            outputStream = socket.getOutputStream();
+
+            while(true) {
+                try {
+                    StringBuilder resp = new StringBuilder();
+                    String line = "";
+                    out.print(req + "\r\n");
+                    out.flush();
+                    while((line = in.readLine())!=null && line.length()!=0){
+                        resp.append(line);
+                    }
+                    System.err.println("Response received :" + resp);
+//                resp = processReply(in.readLine());
+                    return processReply(resp.toString());
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+
         } catch (Exception e) {
             System.err.println("Could not connect to server, exiting");
             System.exit(-1);
+        }finally {
+            out.close();
+            in.close();
+            socket.close();
         }
-        outputStream = socket.getOutputStream();
-
-        while(true) {
-            try {
-                StringBuilder resp = new StringBuilder();
-                String line = "";
-                out.print(req + "\r\n");
-                out.flush();
-                while((line = in.readLine())!=null && line.length()!=0){
-                    resp.append(line);
-                }
-                System.err.println("Response received :" + resp);
-//                resp = processReply(in.readLine());
-                return processReply(resp.toString());
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
+        return -1;
     }
 
     private SocketClient(String host, int port) throws IOException {
