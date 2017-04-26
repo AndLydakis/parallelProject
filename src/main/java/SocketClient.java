@@ -17,6 +17,8 @@ public class SocketClient {
     private String lastTarget;
     private Player player;
     private String username;
+    private String host;
+    private int port;
     private String playerToString;
     private String targets;
     private Socket socket;
@@ -553,6 +555,16 @@ public class SocketClient {
 
 
     private int sendRequest(String req) throws IOException {
+        try {
+            socket = new Socket(host, port);
+            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        } catch (Exception e) {
+            System.err.println("Could not connect to server, exiting");
+            System.exit(-1);
+        }
+        outputStream = socket.getOutputStream();
+
         while(true) {
             try {
                 StringBuilder resp = new StringBuilder();
@@ -572,15 +584,8 @@ public class SocketClient {
     }
 
     private SocketClient(String host, int port) throws IOException {
-        try {
-            socket = new Socket(host, port);
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        } catch (Exception e) {
-            System.err.println("Could not connect to server, exiting");
-            System.exit(-1);
-        }
-        outputStream = socket.getOutputStream();
+        this.host = host;
+        this.port = port;
 
         while (true) {
             if (player == null) {
