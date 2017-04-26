@@ -94,6 +94,7 @@ public class GameServer {
         }
     }
 
+    asldfkjhalskdfhaslkjhfd
     /**
      * create a server for the given game
      */
@@ -167,7 +168,6 @@ public class GameServer {
             }
         }
     }
-    tetststs
 
     private void printStatus() throws RemoteException {
         try {
