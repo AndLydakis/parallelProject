@@ -386,6 +386,14 @@ public class SocketClient {
                 }
                 return -1;
             }
+            case "TARGETS":{
+                String[] t = tokens[1].split(".");
+                targets = "";
+                for(String tar : t){
+                    targets += (t+"\n");
+                }
+                System.err.println(targets);
+            }
         }
         return 0;
     }
@@ -570,7 +578,7 @@ public class SocketClient {
                     out.print(req + "\r\n");
                     out.flush();
                     while ((line = in.readLine()) != null && line.length() != 0) {
-                        resp.append(line+"\n");
+                        resp.append(line+".");
                     }
                     System.err.println("Response received :" + resp);
 //                resp = processReply(in.readLine());
