@@ -118,7 +118,10 @@ public class GameServer {
      * </p>
      */
     private synchronized int start(int port) throws RemoteException, UnknownHostException {
-//        System.setProperty("java.rmi.server.hostname", "10.21.95.75");
+
+        System.setProperty("java.rmi.server.hostname", "127.0.0.1");
+
+
         if (registry != null)
             throw new IllegalStateException("Server already running");
         Registry reg;
