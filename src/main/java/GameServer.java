@@ -27,6 +27,7 @@ public class GameServer {
     static final String SERVER_NAME = "server";
     private final LocalState state;
     private Registry registry;
+    private Object socketLock = new Object();
 
     static class ServerThread implements Runnable {
         String line = null;
@@ -82,10 +83,10 @@ public class GameServer {
                         os.close();
                         System.out.println("Socket Out Closed");
                     }
-                    if (s != null) {
-                        s.close();
-                        System.out.println("Socket Closed");
-                    }
+//                    if (s != null) {
+//                        s.close();
+//                        System.out.println("Socket Closed");
+//                    }
                 } catch (IOException e) {
                     System.out.println("Socket Close Error");
                 }
