@@ -163,6 +163,7 @@ public class GameServer {
     public String parseRequest(String request) throws RemoteException {
         String[] tokens = request.split("-");
         String action = tokens[0];
+        System.err.println("Action : "+action);
         String resp = "";
         switch (action) {
             case "REGISTER": {
