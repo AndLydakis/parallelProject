@@ -164,6 +164,7 @@ public class GameServer {
             }
         }
     }
+    tetststs
 
     private void printStatus() throws RemoteException {
         try {
