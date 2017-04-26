@@ -119,60 +119,104 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
     public String parseRequest(String request) throws RemoteException {
         String[] tokens = request.split("-");
         String action = tokens[0];
-        System.err.println("Action : "+action);
+        System.err.println("Action : " + action);
         String resp = "";
+        int res;
         switch (action) {
             case "REGISTER": {
-                int res;
                 if (register(tokens[1], Integer.parseInt(tokens[2]))) {
                     res = 1;
                 } else {
                     res = 0;
                 }
                 resp = "REGISTER-" + res + "-" + tokens[1] + "-" + tokens[2];
-                System.err.println(resp);
                 break;
             }
             case "LOGIN": {
+                if (login(tokens[1]) != null) {
+                    res = 1;
+                } else {
+                    res = 0;
+                }
+                resp = "LOGIN-" + res + "-" + tokens[1];
                 break;
             }
             case "LOGOUT": {
+                if (logout(tokens[1])) {
+                    res = 1;
+                } else {
+                    res = 0;
+                }
+                resp = "LOGOUT-" + res + "-" + tokens[1];
                 break;
             }
             case "ATTACK": {
+                res = requestPrimary(tokens[1], 1, tokens[2]);
+                resp = "ATTACK-(" + res + ")-" + tokens[1];
                 break;
             }
             case "REPAIR": {
+                res = requestPrimary(tokens[1], 0, tokens[2]);
+                resp = "REPAIR-(" + res + ")-" + tokens[1];
                 break;
             }
             case "BOMB": {
+                res = requestPrimary(tokens[1], 0, tokens[2]);
+                resp = "BOMB-(" + res + ")-" + tokens[1];
                 break;
             }
             case "SHIELD": {
+                res = requestPrimary(tokens[1], 0, tokens[2]);
+                resp = "SHIELD-(" + res + ")-" + tokens[1];
                 break;
             }
             case "BUYBOMB": {
+                res = buy(tokens[1], 1);
+                resp = "BUYBOMB-(" + res + ")-" + tokens[1];
                 break;
             }
             case "BUYSHIELD": {
+                res = buy(tokens[1], 0);
+                resp = "BUYBOMB-(" + res + ")-" + tokens[1];
                 break;
             }
             case "LVLATK": {
+                res = levelPrimary(tokens[1], 0);
+                resp = "LVLATK-(" + res + ")-" + tokens[1];
+                break;
+            }
+            case "LVLREP": {
+                res = levelPrimary(tokens[1], 0);
+                resp = "LVLREP-(" + res + ")-" + tokens[1];
                 break;
             }
             case "LVLSPD": {
+                res = levelSecondary(tokens[1], 0);
+                resp = "LVLATK-(" + res + ")-" + tokens[1];
                 break;
             }
             case "GETTARGETS": {
                 resp = "TARGETS-" + getTargets() + "\r\n";
                 break;
             }
-            case "SPEED": {
-                int res = levelSecondary(tokens[1], Integer.parseInt(tokens[2]));
+            case "BOOST": {
+                res = requestBoost(tokens[1], Integer.parseInt(tokens[2]));
                 resp = res + "\r\n";
                 break;
             }
+            case "GETPLAYER": {
+                int role = Integer.parseInt(tokens[2]);
+                String pl;
+                if (role == 1) {
+                    pl = attackers.get(tokens[1]).print();
+                } else {
+                    pl = defenders.get(tokens[1]).print();
+                }
+                resp = "GETPLAYER-" + pl + "\r\n";
+                break;
+            }
         }
+        System.err.println(resp);
         return resp;
     }
 
@@ -217,23 +261,23 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
                 GameBlock b3 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n2);
                 GameBlock b4 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n3);
                 GameBlock b5 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n4);
-                if(b1!=null){
+                if (b1 != null) {
                     targets.add(b1);
                 }
-                if(b2!=null){
+                if (b2 != null) {
                     targets.add(b1);
                 }
-                if(b3!=null){
+                if (b3 != null) {
                     targets.add(b1);
                 }
-                if(b4!=null){
+                if (b4 != null) {
                     targets.add(b1);
                 }
-                if(b5!=null){
+                if (b5 != null) {
                     targets.add(b1);
                 }
                 r1 = attackers.get(user).bomb(targets);
-                return r1 ;
+                return r1;
             } else {
                 /*
                 positive : shielding succeded

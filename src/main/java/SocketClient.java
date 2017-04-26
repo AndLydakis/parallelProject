@@ -381,18 +381,54 @@ public class SocketClient {
             case "REGISTER": {
                 if (Integer.parseInt(tokens[1]) == 1) {
                     uName = tokens[2];
-                    role = Integer.parseInt(tokens[3].replaceAll(".",""));
+                    role = Integer.parseInt(tokens[3].replaceAll(".", ""));
                     return 1;
                 }
                 return -1;
             }
-            case "TARGETS":{
+            case "TARGETS": {
                 String[] t = tokens[1].split(".");
                 targets = "";
-                for(String tar : t){
-                    targets += (t+"\n");
+                for (String tar : t) {
+                    targets += (t + "\n");
                 }
                 System.err.println(targets);
+            }
+            case "LOGIN": {
+                break;
+            }
+            case "LOGOUT": {
+                break;
+            }
+            case "ATTACK": {
+                break;
+            }
+            case "REPAIR": {
+                break;
+            }
+            case "BOMB": {
+                break;
+            }
+            case "SHIELD": {
+                break;
+            }
+            case "BUYBOMB": {
+                break;
+            }
+            case "BUYSHIELD": {
+                break;
+            }
+            case "LVLREP": {
+                break;
+            }
+            case "LVLSPD": {
+                break;
+            }
+            case "BOOST": {
+                break;
+            }
+            case "GETPLAYER": {
+                break;
             }
         }
         return 0;
@@ -403,11 +439,9 @@ public class SocketClient {
 
     }
 
-
     private void login(String username) throws IOException {
         sendRequest("LOGIN-" + username + "-" + role);
     }
-
 
     private void logout() throws IOException {
         sendRequest("LOGOUT-" + player + "-" + role);
@@ -578,7 +612,7 @@ public class SocketClient {
                     out.print(req + "\r\n");
                     out.flush();
                     while ((line = in.readLine()) != null && line.length() != 0) {
-                        resp.append(line+".");
+                        resp.append(line + ".");
                     }
                     System.err.println("Response received :" + resp);
 //                resp = processReply(in.readLine());
