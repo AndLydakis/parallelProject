@@ -16,7 +16,7 @@ public class SocketClient {
     private int lastAction;
     private String lastTarget;
     private Player player;
-    private String username;
+    private String uName;
     private String host;
     private int port;
     private String playerToString;
@@ -73,6 +73,7 @@ public class SocketClient {
                             return;
                         }
                         reg = Register(user, ch);
+                        System.err.println("*" + reg);
                         if (!reg) user = "";
                     } while (user.equals(""));
                     break;
@@ -256,7 +257,6 @@ public class SocketClient {
         processDefenderOptions(choice);
     }
 
-
     private void processDefenderOptions(int ch) throws IOException {
         Scanner reader = new Scanner(System.in);
         String bl;
@@ -375,15 +375,16 @@ public class SocketClient {
     }
 
     private int processReply(String reply) {
-        System.err.println("Processing: "+reply);
+        System.err.println("Processing: " + reply);
         String tokens[] = reply.split("-");
-        switch (tokens[0]){
-            case "REGISTER":{
-                if(Integer.parseInt(tokens[1])==1){
-                    username = tokens[2];
+        switch (tokens[0]) {
+            case "REGISTER": {
+                if (Integer.parseInt(tokens[1]) == 1) {
+                    uName = tokens[2];
                     role = Integer.parseInt(tokens[3]);
                     return 1;
-                }return -1;
+                }
+                return -1;
             }
         }
         return 0;
@@ -437,11 +438,11 @@ public class SocketClient {
     }
 
     private int requestLVLSPD() throws IOException {
-        return sendRequest("LVLSPD-"+player+"-"+role);
+        return sendRequest("LVLSPD-" + player + "-" + role);
     }
 
     private int requestBoost() throws IOException {
-        return sendRequest("BOOST-"+player+"-"+role);
+        return sendRequest("BOOST-" + player + "-" + role);
     }
 
     private void repeat() throws IOException {
@@ -562,19 +563,20 @@ public class SocketClient {
 
             outputStream = socket.getOutputStream();
 
-            while(true) {
+            while (true) {
                 try {
                     StringBuilder resp = new StringBuilder();
                     String line = "";
                     out.print(req + "\r\n");
                     out.flush();
-                    while((line = in.readLine())!=null && line.length()!=0){
+                    while ((line = in.readLine()) != null && line.length() != 0) {
                         resp.append(line);
                     }
                     System.err.println("Response received :" + resp);
 //                resp = processReply(in.readLine());
-                    return processReply(resp.toString());
-                }catch (Exception e){
+                    int ret = processReply(resp.toString());
+                    return ret;
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -582,7 +584,7 @@ public class SocketClient {
         } catch (Exception e) {
             System.err.println("Could not connect to server, exiting");
             System.exit(-1);
-        }finally {
+        } finally {
             out.close();
             in.close();
             socket.close();
@@ -595,7 +597,7 @@ public class SocketClient {
         this.port = port;
 
         while (true) {
-            if (player == null) {
+            if (uName == null) {
                 initialMenu();
             } else {
                 actionMenu();
