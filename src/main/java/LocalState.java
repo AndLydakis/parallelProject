@@ -116,53 +116,64 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
         return 0;
     }
 
-    public String parseRequest(String req) throws RemoteException {
-        String[] tokens = req.split(" ");
-        String operation = tokens[0];
-        String username = tokens[1];
-        switch (operation) {
+    public String parseRequest(String request) throws RemoteException {
+        String[] tokens = request.split("-");
+        String action = tokens[0];
+        System.err.println("Action : "+action);
+        String resp = "";
+        switch (action) {
+            case "REGISTER": {
+                int res;
+                if (register(tokens[1], Integer.parseInt(tokens[2]))) {
+                    res = 1;
+                } else {
+                    res = 0;
+                }
+                resp = "REGISTER-" + res + "-" + tokens[1] + "-" + tokens[2];
+                System.err.println(resp);
+                break;
+            }
+            case "LOGIN": {
+                break;
+            }
+            case "LOGOUT": {
+                break;
+            }
             case "ATTACK": {
-                Attacker atk = (Attacker) players.get(username);
-                GameBlock gb = cube.getBlock(tokens[2]);
-                atk.gainCredits(gb.attack(atk.getAttackRating()));
-                return atk.toString();
+                break;
             }
             case "REPAIR": {
-                Defender def = (Defender) players.get(username);
-                GameBlock gb = cube.getBlock(tokens[2]);
-                def.gainCredits(gb.repair(def.getRepairRating()));
-                return def.toString();
+                break;
             }
-            case "SHIELD":
-                Defender def = (Defender) players.get(username);
-                GameBlock gb = cube.getBlock(tokens[2]);
-                gb.shield(def, def.getRepairRating());
+            case "BOMB": {
                 break;
-            case "REGISTER":
-
+            }
+            case "SHIELD": {
                 break;
-            case "LOGIN":
+            }
+            case "BUYBOMB": {
                 break;
-            case "LOGOUT":
+            }
+            case "BUYSHIELD": {
                 break;
-            case "LVL_REP":
+            }
+            case "LVLATK": {
                 break;
-            case "LVL_AR":
+            }
+            case "LVLSPD": {
                 break;
-            case "LVL_SP":
+            }
+            case "GETTARGETS": {
+                resp = "TARGETS-" + getTargets() + "\r\n";
                 break;
-            case "BOOST":
+            }
+            case "SPEED": {
+                int res = levelSecondary(tokens[1], Integer.parseInt(tokens[2]));
+                resp = res + "\r\n";
                 break;
-            case "BB":
-                break;
-            case "BS":
-                break;
-            case "LDB":
-                break;
-            default:
-                break;
+            }
         }
-        return "";
+        return resp;
     }
 
     public int requestPrimary(String user, int role, String block) throws RemoteException {

@@ -24,7 +24,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  */
 public class GameServer {
 
-    public static final String SERVER_NAME = "server";
+    static final String SERVER_NAME = "server";
     private final LocalState state;
     private Registry registry;
 
@@ -35,15 +35,17 @@ public class GameServer {
         Socket s = null;
         RemoteState state = null;
 
-        public ServerThread(Socket s, RemoteState st) {
+        ServerThread(Socket s, RemoteState st) {
             this.s = s;
             this.state = st;
         }
 
         public void run() {
-            /**
-             * Connect to socket
+
+            /*
+              Connect to socket
              */
+
             try {
                 is = new BufferedReader(new InputStreamReader(s.getInputStream()));
                 os = new PrintWriter(s.getOutputStream());
@@ -51,9 +53,11 @@ public class GameServer {
                 System.out.println("IO error in server thread");
                 e.printStackTrace();
             }
-            /**
+
+            /*
              * Read/Parse Command
              */
+
             try {
                 line = is.readLine();
                 System.err.println(line);
@@ -92,7 +96,7 @@ public class GameServer {
     /**
      * create a server for the given game
      */
-    public GameServer(LocalState localState) {
+    private GameServer(LocalState localState) {
         this.state = localState;
     }
 
@@ -112,7 +116,7 @@ public class GameServer {
      * </ul>
      * </p>
      */
-    public synchronized int start(int port) throws RemoteException, UnknownHostException {
+    private synchronized int start(int port) throws RemoteException, UnknownHostException {
 //        System.setProperty("java.rmi.server.hostname", "10.21.95.75");
         if (registry != null)
             throw new IllegalStateException("Server already running");
@@ -148,7 +152,7 @@ public class GameServer {
     /**
      * Stops the server by removing the game from the registry
      */
-    public synchronized void stop() {
+    private synchronized void stop() {
         if (registry != null) {
             try {
                 registry.unbind(state.name);
@@ -160,68 +164,7 @@ public class GameServer {
         }
     }
 
-    public String parseRequest(String request) throws RemoteException {
-        String[] tokens = request.split("-");
-        String action = tokens[0];
-        System.err.println("Action : "+action);
-        String resp = "";
-        switch (action) {
-            case "REGISTER": {
-                int res;
-                if (state.register(tokens[1], Integer.parseInt(tokens[2]))) {
-                    res = 1;
-                } else {
-                    res = 0;
-                }
-                resp = "REGISTER-" + res + "-" + tokens[1] + "-" + tokens[2];
-                System.err.println(resp);
-                break;
-            }
-            case "LOGIN": {
-                break;
-            }
-            case "LOGOUT": {
-                break;
-            }
-            case "ATTACK": {
-                break;
-            }
-            case "REPAIR": {
-                break;
-            }
-            case "BOMB": {
-                break;
-            }
-            case "SHIELD": {
-                break;
-            }
-            case "BUYBOMB": {
-                break;
-            }
-            case "BUYSHIELD": {
-                break;
-            }
-            case "LVLATK": {
-                break;
-            }
-            case "LVLSPD": {
-                break;
-            }
-            case "GETTARGETS": {
-                resp = "TARGETS-" + state.getTargets() + "\r\n";
-                break;
-            }
-            case "SPEED": {
-                int res = state.levelSecondary(tokens[1], Integer.parseInt(tokens[2]));
-                resp = res + "\r\n";
-                break;
-            }
-        }
-        return resp;
-    }
-
-
-    public void printStatus() throws RemoteException {
+    private void printStatus() throws RemoteException {
         try {
             this.state.printStatus();
         } catch (RemoteException re) {
@@ -252,7 +195,7 @@ public class GameServer {
             try {
                 cubeExecutor.scheduleAtFixedRate(() -> {
                     try {
-//                        server.printStatus();
+                        server.printStatus();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -262,7 +205,7 @@ public class GameServer {
             }
 
 
-            Socket s = null;
+            Socket s;
             ServerSocket serverSocket = new ServerSocket(port + 1);
             while (true) {
                 try {
