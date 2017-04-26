@@ -564,7 +564,7 @@ public class SocketClient {
                 while((line = in.readLine())!=null && line.length()!=0){
                     resp+=line;
                 }
-                System.err.println(resp);
+                System.err.println("Response received :" + resp);
 //                resp = processReply(in.readLine());
                 return processReply(resp);
             }catch (Exception e){

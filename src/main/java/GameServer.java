@@ -58,6 +58,7 @@ public class GameServer {
                 line = is.readLine();
                 System.err.println(line);
                 String s = state.parseRequest(line);
+                System.err.println("Response -> " + s);
                 os.println(s);
                 os.flush();
             } catch (IOException e) {
@@ -166,12 +167,13 @@ public class GameServer {
         switch (action) {
             case "REGISTER": {
                 int res;
-                if(state.register(tokens[1], Integer.parseInt(tokens[2]))){
+                if (state.register(tokens[1], Integer.parseInt(tokens[2]))) {
                     res = 1;
-                }else{
+                } else {
                     res = 0;
                 }
-                resp = "REGISTER-"+res+"-"+tokens[1]+"-"+tokens[2];
+                resp = "REGISTER-" + res + "-" + tokens[1] + "-" + tokens[2];
+                System.err.println(resp);
                 break;
             }
             case "LOGIN": {
