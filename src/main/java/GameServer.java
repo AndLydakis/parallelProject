@@ -56,9 +56,9 @@ public class GameServer {
              */
             try {
                 line = is.readLine();
-                os.println("GOTCHA");
                 System.err.println(line);
-
+                String s = state.parseRequest(line);
+                os.println(s);
                 os.flush();
             } catch (IOException e) {
                 System.out.println("IO Error/ Client " + line + " terminated abruptly");
@@ -138,7 +138,7 @@ public class GameServer {
                 }
             }
         }
-        System.err.println("Rebinding registry for " + state.name );
+        System.err.println("Rebinding registry for " + state.name);
         reg.rebind(state.name, state);
         System.err.println("Bind successful");
         return port;
@@ -159,24 +159,76 @@ public class GameServer {
         }
     }
 
-    public void parseRequest(RemoteState state, String request) {
-        String[] tokens = request.split(" ");
-        String username = tokens[0];
-        String action = tokens[1];
+    public String parseRequest(String request) throws RemoteException {
+        String[] tokens = request.split("-");
+        String action = tokens[0];
+        String resp = "";
+        switch (action) {
+            case "REGISTER": {
+                int res;
+                if(state.register(tokens[1], Integer.parseInt(tokens[2]))){
+                    res = 1;
+                }else{
+                    res = 0;
+                }
+                resp = "REGISTER-"+res+"-"+tokens[1]+"-"+tokens[2];
+                break;
+            }
+            case "LOGIN": {
+                break;
+            }
+            case "LOGOUT": {
+                break;
+            }
+            case "ATTACK": {
+                break;
+            }
+            case "REPAIR": {
+                break;
+            }
+            case "BOMB": {
+                break;
+            }
+            case "SHIELD": {
+                break;
+            }
+            case "BUYBOMB": {
+                break;
+            }
+            case "BUYSHIELD": {
+                break;
+            }
+            case "LVLATK": {
+                break;
+            }
+            case "LVLSPD": {
+                break;
+            }
+            case "GETTARGETS": {
+                resp = "TARGETS-" + state.getTargets() + "\r\n";
+                break;
+            }
+            case "SPEED": {
+                int res = state.levelSecondary(tokens[1], Integer.parseInt(tokens[2]));
+                resp = res + "\r\n";
+                break;
+            }
+        }
+        return resp;
     }
 
-
-    /**
-     * Command line program
-     */
 
     public void printStatus() throws RemoteException {
         try {
             this.state.printStatus();
-        }catch (RemoteException re){
+        } catch (RemoteException re) {
             re.printStackTrace();
         }
     }
+
+    /**
+     * Command line program
+     */
 
     public static void main(String[] args) throws Exception {
         int port = 0;
@@ -196,19 +248,19 @@ public class GameServer {
             ScheduledExecutorService cubeExecutor = Executors.newScheduledThreadPool(1);
             try {
                 cubeExecutor.scheduleAtFixedRate(() -> {
-                    try{
+                    try {
 //                        server.printStatus();
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }, 10, 10, SECONDS);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
 
             Socket s = null;
-            ServerSocket serverSocket = new ServerSocket(port+1);
+            ServerSocket serverSocket = new ServerSocket(port + 1);
             while (true) {
                 try {
                     s = serverSocket.accept();

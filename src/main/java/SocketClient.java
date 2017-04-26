@@ -16,6 +16,7 @@ public class SocketClient {
     private int lastAction;
     private String lastTarget;
     private Player player;
+    private String username;
     private String playerToString;
     private String targets;
     private Socket socket;
@@ -371,8 +372,18 @@ public class SocketClient {
         }
     }
 
-    public boolean processReply(String reply) {
-        return true;
+    public int processReply(String reply) {
+        String tokens[] = reply.split("-");
+        switch (tokens[0]){
+            case "REGISTER":{
+                if(Integer.parseInt(tokens[1])==1){
+                    username = tokens[2];
+                    role = Integer.parseInt(tokens[3]);
+                    return 1;
+                }return -1;
+            }
+        }
+        return 0;
     }
 
     private boolean Register(String username, int role) throws IOException {
@@ -547,10 +558,15 @@ public class SocketClient {
         while(true) {
             try {
                 String resp = "";
+                String line = "";
                 out.print(req + "\r\n");
                 out.flush();
-                processReply(in.readLine());
-                return 0;
+                while((line = in.readLine())!=null && line.length()!=0){
+                    resp+=line;
+                }
+                System.err.println(resp);
+//                resp = processReply(in.readLine());
+                return processReply(resp);
             }catch (Exception e){
                 e.printStackTrace();
             }
