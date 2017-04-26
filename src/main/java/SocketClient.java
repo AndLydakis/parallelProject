@@ -255,7 +255,7 @@ public class SocketClient {
     }
 
 
-    public void processDefenderOptions(int ch) throws IOException {
+    private void processDefenderOptions(int ch) throws IOException {
         Scanner reader = new Scanner(System.in);
         String bl;
         switch (ch) {
@@ -372,7 +372,8 @@ public class SocketClient {
         }
     }
 
-    public int processReply(String reply) {
+    private int processReply(String reply) {
+        System.err.println("Processing: "+reply);
         String tokens[] = reply.split("-");
         switch (tokens[0]){
             case "REGISTER":{
@@ -387,10 +388,7 @@ public class SocketClient {
     }
 
     private boolean Register(String username, int role) throws IOException {
-        if (sendRequest("REGISTER-" + username + "-" + role) == 1) {
-            return true;
-        }
-        return false;
+        return sendRequest("REGISTER-" + username + "-" + role) == 1;
 
     }
 
@@ -557,16 +555,16 @@ public class SocketClient {
     private int sendRequest(String req) throws IOException {
         while(true) {
             try {
-                String resp = "";
+                StringBuilder resp = new StringBuilder();
                 String line = "";
                 out.print(req + "\r\n");
                 out.flush();
                 while((line = in.readLine())!=null && line.length()!=0){
-                    resp+=line;
+                    resp.append(line);
                 }
                 System.err.println("Response received :" + resp);
 //                resp = processReply(in.readLine());
-                return processReply(resp);
+                return processReply(resp.toString());
             }catch (Exception e){
                 e.printStackTrace();
             }
