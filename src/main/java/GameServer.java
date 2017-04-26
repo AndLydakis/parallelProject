@@ -72,26 +72,25 @@ public class GameServer {
             } catch (NullPointerException e) {
 //                line = this.getName(); //reused String line for getting thread name
                 System.out.println("Client " + line + " Closed");
+            } finally {
+                try {
+                    System.err.println("Connection Closing");
+                    if (is != null) {
+                        is.close();
+                        System.out.println(" Socket Input Stream Closed");
+                    }
+                    if (os != null) {
+                        os.close();
+                        System.out.println("Socket Out Closed");
+                    }
+                    if (s != null) {
+                        s.close();
+                        System.out.println("Socket Closed");
+                    }
+                } catch (IOException e) {
+                    System.out.println("Socket Close Error");
+                }
             }
-//            finally {
-//                try {
-//                    System.err.println("Connection Closing");
-//                    if (is != null) {
-//                        is.close();
-//                        System.out.println(" Socket Input Stream Closed");
-//                    }
-//                    if (os != null) {
-//                        os.close();
-//                        System.out.println("Socket Out Closed");
-//                    }
-//                    if (s != null) {
-//                        s.close();
-//                        System.out.println("Socket Closed");
-//                    }
-//                } catch (IOException e) {
-//                    System.out.println("Socket Close Error");
-//                }
-//            }
         }
     }
 
