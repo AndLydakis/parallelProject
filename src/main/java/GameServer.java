@@ -79,10 +79,10 @@ public class GameServer {
                         is.close();
                         System.out.println(" Socket Input Stream Closed");
                     }
-                    if (os != null) {
-                        os.close();
-                        System.out.println("Socket Out Closed");
-                    }
+                    if (os != null)
+
+
+                        System.out.println("ppoppp");
                     if (s != null) {
                         s.close();
                         System.out.println("Socket Closed");
