@@ -79,10 +79,10 @@ public class GameServer {
                         is.close();
                         System.out.println(" Socket Input Stream Closed");
                     }
-                    if (os != null) {
-                        os.close();
-                        System.out.println("Socket Out Closed");
-                    }
+                    if (os != null)
+
+
+                        System.out.println("ppoppp");
                     if (s != null) {
                         s.close();
                         System.out.println("Socket Closed");
@@ -94,6 +94,7 @@ public class GameServer {
         }
     }
 
+    asldfkjhalskdfhaslkjhfd
     /**
      * create a server for the given game
      */
@@ -118,7 +119,10 @@ public class GameServer {
      * </p>
      */
     private synchronized int start(int port) throws RemoteException, UnknownHostException {
-//        System.setProperty("java.rmi.server.hostname", "10.21.95.75");
+
+        System.setProperty("java.rmi.server.hostname", "127.0.0.1");
+
+
         if (registry != null)
             throw new IllegalStateException("Server already running");
         Registry reg;
