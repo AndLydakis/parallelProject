@@ -17,9 +17,10 @@ public class Defender extends Player {
     private final Object shieldLock;
     private int toLevelUpRr = 10;
     private int toLevelUpSpeed = 10;
-    private final int shieldPrice = 50;
-    private final int boostCost = 50;
-    private final int boostCooldown = 10;
+    private int shieldPrice = 50;
+    private int boostCost = 50;
+    private int boostCooldown = 10;
+    private int baseCooldown = 5;
     private volatile boolean boosted;
 
     public Defender(String un, int s, int cr) throws RemoteException {
@@ -117,7 +118,12 @@ public class Defender extends Player {
      * @return true if the player can repair a block, false otherwise
      */
     public boolean canRepair() throws RemoteException {
-        return (System.nanoTime() - (this.lastRepair + this.speed) < 0);
+        resetBoost();
+        if (boosted) {
+            return (System.nanoTime() - this.lastRepair) / 1e9 + 2 * this.speed > baseCooldown;
+        } else {
+            return (System.nanoTime() - this.lastRepair) / 1e9 + this.speed > baseCooldown;
+        }
     }
 
     /**
@@ -172,6 +178,7 @@ public class Defender extends Player {
      * @throws RemoteException if rmi fails
      */
     public int repair(GameBlock b) throws RemoteException {
+        if(!canRepair()) return 0;
         int p = b.repair(getRepairRating());
         if (p >= 0) {
             this.gainCredits(p);
@@ -182,6 +189,7 @@ public class Defender extends Player {
 
 
     public int shield(GameBlock b) throws RemoteException {
+        if(!canRepair()) return 0;
         synchronized (shieldLock) {
             if (this.getShields() > 0) {
                 shields--;
@@ -217,12 +225,13 @@ public class Defender extends Player {
      * @throws RemoteException
      */
     synchronized int boost() throws RemoteException {
-        if (((System.nanoTime() - this.lastBoost)/1e9 > boostCooldown)
-                && super.removeCredits(boostCost)) {
+        if ((System.nanoTime() - this.lastBoost)/1e9 > boostCooldown){
+            if(super.removeCredits(boostCost)) {
 //            this.speed = this.speed * 2;
-            lastBoost = System.nanoTime();
-            this.boosted = true;
-            return 1;
+                lastBoost = System.nanoTime();
+                this.boosted = true;
+                return 1;
+            }
         }
         return 0;
     }
@@ -233,9 +242,8 @@ public class Defender extends Player {
      * @throws RemoteException
      */
     synchronized public void resetBoost() throws RemoteException {
-        if ((System.nanoTime() - this.lastBoost) > this.speed) {
-            this.speed = this.speed * 2;
-        }
+        if ((System.nanoTime() - this.lastBoost) > boostCooldown)
+            boosted = false;
     }
 }
 

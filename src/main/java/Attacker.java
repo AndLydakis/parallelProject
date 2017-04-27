@@ -17,8 +17,9 @@ public class Attacker extends Player {
     private int toLevelUpAr = 1;
     private int toLevelUpSpeed = 1;
     private int bombPrice = 50;
-    private int boostPrice = 50;
-    private final int boostCooldown = 10;
+    private int boostCost = 50;
+    private int boostCooldown = 10;
+    private int baseCooldown = 5;
     private volatile boolean boosted = false;
 
     public Attacker(String un, int s, int cr) throws RemoteException {
@@ -91,7 +92,12 @@ public class Attacker extends Player {
      * @return true iof the player can attack, false otherwise
      */
     public boolean canAttack() throws RemoteException {
-        return (System.nanoTime() - (this.lastAttack+this.speed) < 0);
+        resetBoost();
+        if (boosted) {
+            return (System.nanoTime() - this.lastAttack) / 1e9 + 2 * this.speed > baseCooldown;
+        } else {
+            return (System.nanoTime() - this.lastAttack) / 1e9 + this.speed > baseCooldown;
+        }
     }
 
     /**
@@ -101,7 +107,7 @@ public class Attacker extends Player {
      * @throws RemoteException if rmi fails
      */
     public boolean canBoost() throws RemoteException {
-        return ((System.nanoTime() - this.lastBoost) > getBoostCooldown());
+        return ((System.nanoTime() - this.lastBoost) > boostCooldown);
     }
 
 
@@ -149,6 +155,7 @@ public class Attacker extends Player {
      * @throws RemoteException if rmi fails
      */
     public int attack(GameBlock b) throws RemoteException {
+        if(!canAttack())return 0;
         int p = b.attack(getAttackRating());
         if (p >= 0) {
             this.gainCredits(p);
@@ -159,19 +166,20 @@ public class Attacker extends Player {
     }
 
     public int bomb(ArrayList<GameBlock> blocks) throws RemoteException {
+        if(!canAttack())return 0;
         int sum = 0;
-        if (blocks.size() == 0)return sum;
-        if(bombs > 0) {
-            bombs --;
+        if (blocks.size() == 0) return sum;
+        if (bombs > 0) {
+            bombs--;
             try {
                 sum = blocks.get(0).attack(getAttackRating() * 5);
-            }catch (Exception e){
+            } catch (Exception e) {
 
             }
             for (int i = 1; i < blocks.size(); i++) {
                 try {
                     sum += blocks.get(i).attack(getAttackRating() * 2);
-                }catch (Exception e){
+                } catch (Exception e) {
 
                 }
             }
@@ -203,12 +211,15 @@ public class Attacker extends Player {
      * @throws RemoteException
      */
     synchronized int boost() throws RemoteException {
-        if (((System.nanoTime() - this.lastBoost) > this.speed)
-                && super.removeCredits(100)) {
-            this.speed = this.speed * 2;
-            return 1;
+        if ((System.nanoTime() - this.lastBoost)/1e9 > boostCooldown){
+            if(super.removeCredits(boostCost)) {
+//            this.speed = this.speed * 2;
+                lastBoost = System.nanoTime();
+                this.boosted = true;
+                return 1;
+            }
         }
-        return -1;
+        return 0;
     }
 
     /**
@@ -217,8 +228,7 @@ public class Attacker extends Player {
      * @throws RemoteException
      */
     synchronized public void resetBoost() throws RemoteException {
-        if ((System.nanoTime() - this.lastBoost) > this.speed) {
-            this.speed = this.speed * 2;
-        }
+        if ((System.nanoTime() - this.lastBoost) > boostCooldown)
+            boosted = false;
     }
 }
