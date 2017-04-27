@@ -150,7 +150,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
                 } else {
                     res = 0;
                 }
-                resp = "LOGIN-" + res + "-" + tokens[1];
+                resp = "LOGIN-" + res + "-" + tokens[1] + "-" + findRole(tokens[1]);
                 break;
             }
             case "LOGOUT": {
@@ -213,7 +213,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
             }
             case "BOOST": {
                 res = requestBoost(tokens[1], Integer.parseInt(tokens[2]));
-                resp = res + "\r\n";
+                resp = "BOOST-(" + res + ")\r\n";
                 break;
             }
             case "GETPLAYER": {

@@ -382,7 +382,8 @@ public class SocketClient {
             case "REGISTER": {
                 if (Integer.parseInt(tokens[1]) == 1) {
                     uName = tokens[2];
-                    role = Integer.parseInt(tokens[3].replaceAll(".", ""));
+                    role = Integer.parseInt(
+                            tokens[3].replaceAll(".", ""));
                     return 1;
                 }
                 return -1;
@@ -391,51 +392,152 @@ public class SocketClient {
                 String[] t = tokens[1].split(".");
                 targets = "";
                 for (String tar : t) {
-                    targets += (t + "\n");
+                    targets += (tar + "\n");
                 }
                 System.err.println(targets);
             }
             case "LOGIN": {
                 res = Integer.parseInt(tokens[1]);
-                if(res == 1){
+                if (res == 1) {
                     uName = tokens[2];
                     role = Integer.parseInt(tokens[2]);
-                }else{
+                } else {
                     System.err.println("Could not login");
                 }
                 break;
             }
             case "LOGOUT": {
+                res = Integer.parseInt(tokens[1]);
+                if (res == 1) {
+                    System.err.println("Successfully loged out");
+                    uName = null;
+                } else {
+                    System.err.println("Could not log out");
+                }
                 break;
             }
             case "ATTACK": {
+                res = Integer.parseInt(reply.substring(
+                        reply.indexOf("(") + 1, reply.indexOf(")")));
+                if (res > 0) {
+                    System.err.println("Successfully hit for " + res + " damage");
+                } else if (res == 0) {
+                    System.err.println("Block already destroyed");
+                } else {
+                    System.err.println("Could not reach block");
+                }
                 break;
             }
             case "REPAIR": {
+                res = Integer.parseInt(reply.substring(
+                        reply.indexOf("(") + 1, reply.indexOf(")")));
+                if (res > 0) {
+                    System.err.println("Successfully repaired " + res + " hitpoints");
+                } else if (res == 0) {
+                    System.err.println("Block already at full hitpoints");
+                } else {
+                    System.err.println("Could not reach block");
+                }
                 break;
             }
             case "BOMB": {
+                res = Integer.parseInt(reply.substring(
+                        reply.indexOf("(") + 1, reply.indexOf(")")));
+                if (res > 0) {
+                    System.err.println("Successfully bombed for " + res + " damage");
+                } else if (res == 0) {
+                    System.err.println("Block already destroyed");
+                } else {
+                    System.err.println("Could not reach block");
+                }
                 break;
             }
             case "SHIELD": {
+                res = Integer.parseInt(reply.substring(
+                        reply.indexOf("(") + 1, reply.indexOf(")")));
+                if (res > 0) {
+                    System.err.println("Successfully shielded for " + res + " damage");
+                } else if (res == 0) {
+                    System.err.println("Block already destroyed");
+                } else {
+                    System.err.println("Could not reach block");
+                }
                 break;
             }
             case "BUYBOMB": {
+                res = Integer.parseInt(reply.substring(
+                        reply.indexOf("(") + 1, reply.indexOf(")")));
+                if (res > 0) {
+                    System.err.println("Bomb bought, " + res + " bombs in inventory");
+                } else if (res == 0) {
+                    System.err.println("Need " + (-res) + " credits to buy a bomb");
+                } else {
+                    System.err.println("Could perform purchase");
+                }
                 break;
             }
             case "BUYSHIELD": {
+                res = Integer.parseInt(reply.substring(
+                        reply.indexOf("(") + 1, reply.indexOf(")")));
+                if (res > 0) {
+                    System.err.println("Shield bought, " + res + " shields in inventory");
+                } else if (res == 0) {
+                    System.err.println("Need " + (-res) + " credits to buy a shield");
+                } else {
+                    System.err.println("Could perform purchase");
+                }
+                break;
+            }
+            case "LVLATK": {
+                res = Integer.parseInt(reply.substring(
+                        reply.indexOf("(") + 1, reply.indexOf(")")));
+                if (res > 0) {
+                    System.err.println("Attack rating increased to "+res);
+                } else if (res == 0) {
+                    System.err.println("Need " + (-res) + " credits to level up attack rating");
+                } else {
+                    System.err.println("Could perform level up");
+                }
                 break;
             }
             case "LVLREP": {
+                res = Integer.parseInt(reply.substring(
+                        reply.indexOf("(") + 1, reply.indexOf(")")));
+                if (res > 0) {
+                    System.err.println("Repair rating increased to "+res);
+                } else if (res == 0) {
+                    System.err.println("Need " + (-res) + " credits to level up attack rating");
+                } else {
+                    System.err.println("Could perform level up");
+                }
                 break;
             }
             case "LVLSPD": {
+                res = Integer.parseInt(reply.substring(
+                        reply.indexOf("(") + 1, reply.indexOf(")")));
+                if (res > 0) {
+                    System.err.println("Speed increased to "+res);
+                } else if (res == 0) {
+                    System.err.println("Need " + (-res) + " credits to level up speed");
+                } else {
+                    System.err.println("Could perform level up");
+                }
                 break;
             }
             case "BOOST": {
+                res = Integer.parseInt(reply.substring(
+                        reply.indexOf("(") + 1, reply.indexOf(")")));
+                if (res > 0) {
+                    System.err.println("Speed temporarily increased");
+                } else if (res == 0) {
+                    System.err.println("Can't boost yet");
+                } else {
+                    System.err.println("Could reach server");
+                }
                 break;
             }
             case "GETPLAYER": {
+                System.err.println(tokens[1]);
                 break;
             }
         }

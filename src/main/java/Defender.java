@@ -17,7 +17,9 @@ public class Defender extends Player {
     private final Object shieldLock;
     private int toLevelUpRr = 10;
     private int toLevelUpSpeed = 10;
-    private final int shieldPrice = 500;
+    private final int shieldPrice = 50;
+    private final int boostCost = 50;
+    private final int boostCooldown = 10;
     private volatile boolean boosted;
 
     public Defender(String un, int s, int cr) throws RemoteException {
@@ -115,7 +117,7 @@ public class Defender extends Player {
      * @return true if the player can repair a block, false otherwise
      */
     public boolean canRepair() throws RemoteException {
-        return (System.nanoTime() - (this.lastRepair+this.speed) < 0);
+        return (System.nanoTime() - (this.lastRepair + this.speed) < 0);
     }
 
     /**
@@ -215,9 +217,11 @@ public class Defender extends Player {
      * @throws RemoteException
      */
     synchronized int boost() throws RemoteException {
-        if (((System.nanoTime() - this.lastBoost) > this.speed)
-                && super.removeCredits(100)) {
-            this.speed = this.speed * 2;
+        if (((System.nanoTime() - this.lastBoost)/1e9 > boostCooldown)
+                && super.removeCredits(boostCost)) {
+//            this.speed = this.speed * 2;
+            lastBoost = System.nanoTime();
+            this.boosted = true;
             return 1;
         }
         return 0;

@@ -14,9 +14,12 @@ public class Attacker extends Player {
     private long lastAttack;
     private long lastBomb;
     private long lastBoost;
-    private int toLevelUpAr = 10;
-    private int toLevelUpSpeed = 10;
-    private int bombPrice = 500;
+    private int toLevelUpAr = 1;
+    private int toLevelUpSpeed = 1;
+    private int bombPrice = 50;
+    private int boostPrice = 50;
+    private final int boostCooldown = 10;
+    private volatile boolean boosted = false;
 
     public Attacker(String un, int s, int cr) throws RemoteException {
         super(un, 1, s, cr);
