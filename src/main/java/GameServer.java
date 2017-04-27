@@ -80,8 +80,7 @@ public class GameServer {
                         System.out.println(" Socket Input Stream Closed");
                     }
                     if (os != null)
-
-
+                        os.close();
                         System.out.println("ppoppp");
                     if (s != null) {
                         s.close();
@@ -94,7 +93,6 @@ public class GameServer {
         }
     }
 
-    asldfkjhalskdfhaslkjhfd
     /**
      * create a server for the given game
      */

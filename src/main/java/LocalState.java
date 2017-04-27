@@ -62,6 +62,18 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
         return null;
     }
 
+    public int findRole(String username) {
+        int role;
+        if (attackers.containsKey(username)) {
+            role = 1;
+        } else if (defenders.containsKey(username)) {
+            role = 0;
+        } else {
+            role = -1;
+        }
+        return role;
+    }
+
     public synchronized boolean logout(String username) throws RemoteException {
         if (players.get(username) != null) {
             players.get(username).logout();

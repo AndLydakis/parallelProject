@@ -377,6 +377,7 @@ public class SocketClient {
     private int processReply(String reply) {
         System.err.println("Processing: " + reply);
         String tokens[] = reply.split("-");
+        int res;
         switch (tokens[0]) {
             case "REGISTER": {
                 if (Integer.parseInt(tokens[1]) == 1) {
@@ -395,6 +396,13 @@ public class SocketClient {
                 System.err.println(targets);
             }
             case "LOGIN": {
+                res = Integer.parseInt(tokens[1]);
+                if(res == 1){
+                    uName = tokens[2];
+                    role = Integer.parseInt(tokens[2]);
+                }else{
+                    System.err.println("Could not login");
+                }
                 break;
             }
             case "LOGOUT": {
