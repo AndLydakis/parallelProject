@@ -386,7 +386,7 @@ public class SocketClient {
                 if (Integer.parseInt(tokens[1]) == 1) {
                     uName = tokens[2];
                     role = Integer.parseInt(
-                            tokens[3].replaceAll(".", ""));
+                            tokens[3].replace(".", ""));
                     return 1;
                 }
                 return -1;
