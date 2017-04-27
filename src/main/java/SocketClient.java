@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Created by lydakis-local on 4/3/17.
@@ -98,6 +99,7 @@ public class SocketClient {
         int choice;
         do {
             try {
+                sendRequest("GETPLAYER-" + uName + "-1");
                 System.err.println("------------------");
                 System.err.println(playerToString);
                 System.err.println("------------------");
@@ -136,7 +138,7 @@ public class SocketClient {
                 System.err.println("Type in Block Coordinates : (X_Y_Z)");
                 bl = reader.nextLine();
 //                int suc = state.requestPrimary(username, role, bl);
-                int suc = sendRequest("ATTACK-" + player + "-" + bl);
+                int suc = sendRequest("ATTACK-" + uName + "-" + bl);
                 if (suc > 0) {
                     System.err.println("Attacked Block for " + suc + " damage");
                 } else if (suc == 0) {
@@ -153,7 +155,7 @@ public class SocketClient {
                 System.err.println("Type in Block Coordinates : (X_Y_Z)");
                 bl = reader.nextLine();
 //                int suc = state.requestSecondary(username, role, bl);
-                int suc = sendRequest("BOMB-" + player + "-" + bl);
+                int suc = sendRequest("BOMB-" + uName + "-" + bl);
                 if (suc > 0) {
                     System.err.println("Bomb successful for " + suc + " damage");
                 } else if (suc == 0) {
@@ -167,7 +169,7 @@ public class SocketClient {
             }
             case 4: {
 //                int suc = state.buy(username, role);
-                int suc = sendRequest("BUYBOMB-" + player);
+                int suc = sendRequest("BUYBOMB-" + uName);
                 if (suc > 0) {
                     System.err.println("Bomb Purchased: " + suc + " available bombs");
                 } else if (suc < 0) {
@@ -180,7 +182,7 @@ public class SocketClient {
             }
             case 5: {
 //                int suc = state.levelPrimary(username, role);
-                int suc = sendRequest("LVLATK-" + player);
+                int suc = sendRequest("LVLATK-" + uName);
                 if (suc > 0) {
                     System.err.println("Attack Rating Increased to " + suc);
                 } else if (suc < 0) {
@@ -192,7 +194,7 @@ public class SocketClient {
                 break;
             }
             case 6: {
-                int suc = sendRequest("LVLSPD-" + player);
+                int suc = sendRequest("LVLSPD-" + uName);
                 if (suc > 0) {
                     System.err.println("Speed Increased to " + suc);
                 } else if (suc < 0) {
@@ -205,7 +207,7 @@ public class SocketClient {
             }
             case 7: {
 //                int suc = state.requestBoost(username, role);
-                int suc = sendRequest("BOOST-ATK-" + player);
+                int suc = sendRequest("BOOST-ATK-" + uName);
                 if (suc > 0) {
                     System.err.println("Speed Temporarily Increased");
                 } else if (suc < 0) {
@@ -217,6 +219,8 @@ public class SocketClient {
                 break;
             }
             case 9: {
+                player = null;
+                uName = null;
                 logout();
                 return;
             }
@@ -235,6 +239,7 @@ public class SocketClient {
         int choice;
         do {
             try {
+                sendRequest("GETPLAYER-" + uName + "-0");
                 System.err.println("------------------");
                 System.err.println(playerToString);
                 System.err.println("------------------");
@@ -273,7 +278,7 @@ public class SocketClient {
                 System.err.println("Type in Block Coordinates : (X_Y_Z)");
                 bl = reader.nextLine();
 //                int suc = state.requestPrimary(username, role, bl);
-                int suc = sendRequest("REPAIR-" + player + "-" + bl);
+                int suc = sendRequest("REPAIR-" + uName + "-" + bl);
                 if (suc > 0) {
                     System.err.println("Repaired Block for " + suc + " hitpoints");
                 } else if (suc == 0) {
@@ -290,7 +295,7 @@ public class SocketClient {
                 System.err.println("Type in Block Coordinates : (X_Y_Z)");
                 bl = reader.nextLine();
 //                int suc = state.requestSecondary(username, role, bl);
-                int suc = sendRequest("SHIELD-" + player + "-" + bl);
+                int suc = sendRequest("SHIELD-" + uName + "-" + bl);
                 if (suc > 0) {
                     System.err.println("Block was shielded with " + suc + " shield points");
                 } else if (suc == 0) {
@@ -304,7 +309,7 @@ public class SocketClient {
             }
             case 4: {
 //                int suc = state.buy(username, role);
-                int suc = sendRequest("BUYSHIELD-" + player);
+                int suc = sendRequest("BUYSHIELD-" + uName);
                 if (suc > 0) {
                     System.err.println("Shield Purchased: " + suc + " available shields");
                 } else if (suc < 0) {
@@ -316,7 +321,7 @@ public class SocketClient {
                 break;
             }
             case 5: {
-                int suc = sendRequest("LVLREP-" + player);
+                int suc = sendRequest("LVLREP-" + uName);
 //                int suc = state.levelPrimary(username, role);
                 if (suc > 0) {
                     System.err.println("Repair Rating Increased to " + suc);
@@ -330,7 +335,7 @@ public class SocketClient {
             }
             case 6: {
 //                int suc = state.levelSecondary(username, role);
-                int suc = sendRequest("LVLSPD-" + player);
+                int suc = sendRequest("LVLSPD-" + uName);
                 if (suc > 0) {
                     System.err.println("Speed Increased to " + suc);
                 } else if (suc < 0) {
@@ -343,7 +348,7 @@ public class SocketClient {
             }
             case 7: {
 //                int suc = state.requestBoost(username, role);
-                int suc = sendRequest("BOOST-" + player + "-" + role);
+                int suc = sendRequest("BOOST-" + uName + "-" + role);
                 if (suc > 0) {
                     System.err.println("Speed Temporarily Increased");
                 } else if (suc < 0) {
@@ -356,9 +361,12 @@ public class SocketClient {
             }
             case 9: {
                 player = null;
+                uName = null;
+                logout();
                 return;
             }
             case 10: {
+                logout();
                 System.exit(-1);
             }
             case 8: {
@@ -382,7 +390,6 @@ public class SocketClient {
         int res;
         switch (tokens[0]) {
             case "REGISTER": {
-
                 if (Integer.parseInt(tokens[1]) == 1) {
                     uName = tokens[2];
                     role = Integer.parseInt(
@@ -392,18 +399,15 @@ public class SocketClient {
                 return -1;
             }
             case "TARGETS": {
-                String[] t = tokens[1].split(".");
-                targets = "";
-                for (String tar : t) {
-                    targets += (tar + "\n");
-                }
+                targets = tokens[1].replace(".", "\n");
                 System.err.println(targets);
+                break;
             }
             case "LOGIN": {
                 res = Integer.parseInt(tokens[1]);
                 if (res == 1) {
                     uName = tokens[2];
-                    role = Integer.parseInt(tokens[2]);
+                    role = Integer.parseInt(tokens[3].replace(".", ""));
                 } else {
                     System.err.println("Could not login");
                 }
@@ -412,7 +416,7 @@ public class SocketClient {
             case "LOGOUT": {
                 res = Integer.parseInt(tokens[1]);
                 if (res == 1) {
-                    System.err.println("Successfully loged out");
+                    System.err.println("Successfully logged out");
                     uName = null;
                 } else {
                     System.err.println("Could not log out");
@@ -495,7 +499,7 @@ public class SocketClient {
                 res = Integer.parseInt(reply.substring(
                         reply.indexOf("(") + 1, reply.indexOf(")")));
                 if (res > 0) {
-                    System.err.println("Attack rating increased to "+res);
+                    System.err.println("Attack rating increased to " + res);
                 } else if (res == 0) {
                     System.err.println("Need " + (-res) + " credits to level up attack rating");
                 } else {
@@ -507,7 +511,7 @@ public class SocketClient {
                 res = Integer.parseInt(reply.substring(
                         reply.indexOf("(") + 1, reply.indexOf(")")));
                 if (res > 0) {
-                    System.err.println("Repair rating increased to "+res);
+                    System.err.println("Repair rating increased to " + res);
                 } else if (res == 0) {
                     System.err.println("Need " + (-res) + " credits to level up attack rating");
                 } else {
@@ -519,7 +523,7 @@ public class SocketClient {
                 res = Integer.parseInt(reply.substring(
                         reply.indexOf("(") + 1, reply.indexOf(")")));
                 if (res > 0) {
-                    System.err.println("Speed increased to "+res);
+                    System.err.println("Speed increased to " + res);
                 } else if (res == 0) {
                     System.err.println("Need " + (-res) + " credits to level up speed");
                 } else {
@@ -540,8 +544,26 @@ public class SocketClient {
                 break;
             }
             case "GETPLAYER": {
-                System.err.println(tokens[1]);
+                playerToString = tokens[1].replace(".", "\n");
                 break;
+            }
+            case "GETEND": {
+                res = Integer.parseInt(reply.substring(
+                        reply.indexOf("(") + 1, reply.indexOf(")")));
+                if (res == 0) break;
+                try {
+                    if (res == 1) {
+                        System.err.println("Attackers won, thanks for playing");
+                        System.err.println(tokens[2].replace(".", "\n"));
+                    }
+                    if (res == -1) {
+                        System.err.println("Defenders won, thanks for playing");
+                        System.err.println(tokens[2].replace(".", "\n"));
+                    }
+                }catch (Exception e){
+                    System.err.println("Game crashed, we apologise for the inconvenience");
+                }
+                System.exit(0);
             }
         }
         return 0;
@@ -557,47 +579,47 @@ public class SocketClient {
     }
 
     private void logout() throws IOException {
-        sendRequest("LOGOUT-" + player + "-" + role);
+        sendRequest("LOGOUT-" + uName + "-" + role);
     }
 
     private int requestPrimary() throws IOException {
         if (role == 1) {
-            return sendRequest("ATTACK-" + player + "-" + lastTarget);
+            return sendRequest("ATTACK-" + uName + "-" + lastTarget);
         } else {
-            return sendRequest("REPAIR-" + player + "-" + lastTarget);
+            return sendRequest("REPAIR-" + uName + "-" + lastTarget);
         }
     }
 
     private int requestSecondary() throws IOException {
         if (role == 1) {
-            return sendRequest("BOMB-" + player + "-" + lastTarget);
+            return sendRequest("BOMB-" + uName + "-" + lastTarget);
         } else {
-            return sendRequest("SHIELD-" + player + "-" + lastTarget);
+            return sendRequest("SHIELD-" + uName + "-" + lastTarget);
         }
     }
 
     private int requestBuy() throws IOException {
         if (role == 1) {
-            return sendRequest("BUYBOMB-" + player);
+            return sendRequest("BUYBOMB-" + uName);
         } else {
-            return sendRequest("BUYSHIELD-" + player);
+            return sendRequest("BUYSHIELD-" + uName);
         }
     }
 
     private int requestLVL() throws IOException {
         if (role == 1) {
-            return sendRequest("LVLATK-" + player);
+            return sendRequest("LVLATK-" + uName);
         } else {
-            return sendRequest("LVLREP-" + player);
+            return sendRequest("LVLREP-" + uName);
         }
     }
 
     private int requestLVLSPD() throws IOException {
-        return sendRequest("LVLSPD-" + player + "-" + role);
+        return sendRequest("LVLSPD-" + uName + "-" + role);
     }
 
     private int requestBoost() throws IOException {
-        return sendRequest("BOOST-" + player + "-" + role);
+        return sendRequest("BOOST-" + uName + "-" + role);
     }
 
     private void repeat() throws IOException {
@@ -752,6 +774,7 @@ public class SocketClient {
         this.port = port;
 
         while (true) {
+            sendRequest("GETEND");
             if (uName == null) {
                 initialMenu();
             } else {

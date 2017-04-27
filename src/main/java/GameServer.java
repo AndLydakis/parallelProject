@@ -169,7 +169,7 @@ public class GameServer {
 
     private void printStatus() throws RemoteException {
         try {
-            this.state.printStatus();
+            int status = this.state.printStatus();
         } catch (RemoteException re) {
             re.printStackTrace();
         }

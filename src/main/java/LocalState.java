@@ -109,22 +109,27 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
         int min = leaderboard.size() >= 10 ? 10 : leaderboard.size();
         String s = "";
         for (int i = 0; i < min; i++) {
-            s += "1. " + leaderboard.get(i).unameToString() + " " + leaderboard.get(i).getScore() + "\n";
+            s += (i + 1) + ": " + leaderboard.get(i).unameToString() + " " + leaderboard.get(i).getScore() + "\n";
         }
         return s;
     }
 
     public int printStatus() throws RemoteException {
-        if (!this.cube.isAlive()) {
-            //Attackers won
-            System.err.println("Cube destroyed, attackers won!");
+        try {
+            if (!this.cube.isAlive()) {
+                //Attackers won
+                System.err.println("Cube destroyed, attackers won!");
+                return 1;
+            }
+            if (((System.nanoTime() - start) / 1e9) > 600) {
+                System.err.println("Cube is not destoryed, defenders won");
+                return -1;
+            }
+            System.err.println(this.cube.isAlive());
+        } catch (NullPointerException npe) {
+            System.err.println("Cube is destoryed, attackers won");
             return 1;
         }
-        if (((System.nanoTime() - start) / 1e9) > 600) {
-            System.err.println("Cube is not destoryed, defenders won");
-            return -1;
-        }
-        System.err.println(this.cube.isAlive());
         return 0;
     }
 
@@ -211,9 +216,14 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
                 resp = "TARGETS-" + getTargets() + "\r\n";
                 break;
             }
+            case "GETEND": {
+                res = printStatus();
+                resp = "GETEND-(" + res + ")-" + printLeaderBoards();
+                break;
+            }
             case "BOOST": {
                 res = requestBoost(tokens[1], Integer.parseInt(tokens[2]));
-                resp = "BOOST-(" + res + ")\r\n";
+                resp = "BOOST-(" + res + ")";
                 break;
             }
             case "GETPLAYER": {

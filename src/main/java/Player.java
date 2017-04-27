@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by lydakis-local on 4/2/17.
  */
-public class Player extends UnicastRemoteObject implements Comparable<Player>, RemotePlayer, Serializable{
+public class Player extends UnicastRemoteObject implements Comparable<Player>, RemotePlayer, Serializable {
     final String userName;
     private int score;
     private int credits;
@@ -23,8 +23,9 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
 
     /**
      * Create player from string for the socket service
+     *
      * @param un username
-     * @param s score
+     * @param s  score
      * @param cr credits
      * @throws RemoteException
      */
@@ -39,15 +40,17 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
         this.role = role;
     }
 
-    public int getRole() throws RemoteException{
+    public int getRole() throws RemoteException {
         return this.role;
     }
+
     /**
      * Load player from string for the socket service
+     *
      * @param s String formatted as "USERNAME SCORE CREDITS LEVEL"
      * @throws RemoteException
      */
-    public Player(String s) throws RemoteException{
+    public Player(String s) throws RemoteException {
         String[] tokens = s.split(" ");
         this.userName = tokens[0];
         this.role = Integer.parseInt(tokens[1]);
@@ -58,31 +61,33 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
         this.logged = false;
     }
 
-    public String print() throws RemoteException{
-        return "Username: "+ userName+"\n"+
-                "Score: "+score+"\n"+
-                "Credits: "+credits+"\n";
+    public String print() throws RemoteException {
+        return "Username: " + userName + "\n" +
+                "Score: " + score + "\n" +
+                "Credits: " + credits + "\n";
     }
+
     /**
      * Update the player from a server response
+     *
      * @param s String formatted as "SCORE CREDITS LEVEL"
      */
-    public void update(String s) throws RemoteException{
+    public void update(String s) throws RemoteException {
         String[] tokens = s.split(" ");
         this.score = Integer.parseInt(tokens[0]);
         this.credits = Integer.parseInt(tokens[1]);
         this.level = Integer.parseInt(tokens[2]);
     }
 
-    public void assignTargets(ConcurrentHashMap map) throws RemoteException{
+    public void assignTargets(ConcurrentHashMap map) throws RemoteException {
         this.targets = map;
     }
 
-    public RemoteBlock blockFromString(String coords) throws RemoteException{
+    public RemoteBlock blockFromString(String coords) throws RemoteException {
         return targets.get(coords);
     }
 
-    public String unameToString()throws RemoteException{
+    public String unameToString() throws RemoteException {
         return this.userName;
     }
 
@@ -91,9 +96,9 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
         return null;
     }
 
-    public boolean login() throws RemoteException{
+    public boolean login() throws RemoteException {
         synchronized (logLock) {
-            if(!logged) {
+            if (!logged) {
                 logged = true;
                 return true;
             }
@@ -101,9 +106,9 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
         }
     }
 
-    public boolean logout() throws RemoteException{
+    public boolean logout() throws RemoteException {
         synchronized (logLock) {
-            if(logged) {
+            if (logged) {
                 logged = false;
                 return true;
             }
@@ -111,32 +116,32 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
         }
     }
 
-    public int getLevel()throws RemoteException{
+    public int getLevel() throws RemoteException {
         return this.level;
     }
 
-    public int getCredits()throws RemoteException{
+    public int getCredits() throws RemoteException {
         return this.credits;
     }
 
-    public int getScore()throws RemoteException{
+    public int getScore() throws RemoteException {
         return this.score;
     }
 
-    public double getBoostCooldown()throws RemoteException{
+    public double getBoostCooldown() throws RemoteException {
         return this.boostCooldown;
     }
 
-    public void gainCredits(int c)throws RemoteException{
+    public void gainCredits(int c) throws RemoteException {
         synchronized (creditLock) {
             this.credits += c;
             this.score += c;
         }
     }
 
-    public boolean removeCredits(int c)throws RemoteException{
+    public boolean removeCredits(int c) throws RemoteException {
         synchronized (creditLock) {
-            if(this.credits>=c){
+            if (this.credits >= c) {
                 credits -= c;
                 return true;
             }
@@ -144,12 +149,12 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
         return false;
     }
 
-    public ArrayList<GameBlock> requestFace()throws RemoteException{
-        return  new ArrayList<>();
+    public ArrayList<GameBlock> requestFace() throws RemoteException {
+        return new ArrayList<>();
     }
 
     @Override
     public int compareTo(Player o) {
-        return this.score-o.score;
+        return o.score - this.score;
     }
 }
