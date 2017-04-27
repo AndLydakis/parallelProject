@@ -221,6 +221,7 @@ public class SocketClient {
                 return;
             }
             case 10: {
+                logout();
                 System.exit(-1);
             }
             case 8: {
