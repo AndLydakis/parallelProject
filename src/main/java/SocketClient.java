@@ -378,9 +378,11 @@ public class SocketClient {
     private int processReply(String reply) {
         System.err.println("Processing: " + reply);
         String tokens[] = reply.split("-");
+        System.err.println(tokens);
         int res;
         switch (tokens[0]) {
             case "REGISTER": {
+
                 if (Integer.parseInt(tokens[1]) == 1) {
                     uName = tokens[2];
                     role = Integer.parseInt(
