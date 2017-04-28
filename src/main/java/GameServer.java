@@ -1,7 +1,5 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import javax.sound.midi.SysexMessage;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -27,7 +25,6 @@ public class GameServer {
     static final String SERVER_NAME = "server";
     private final LocalState state;
     private Registry registry;
-    private Object socketLock = new Object();
 
     static class ServerThread implements Runnable {
         String line = null;
@@ -187,7 +184,29 @@ public class GameServer {
         String name = args[1];
         int size = Integer.parseInt(args[2]);
         int bhp = Integer.parseInt(args[3]);
-        LocalState state = new LocalState(name, size, bhp);
+        LocalState state = null;
+        if (args.length == 4) {
+            state = new LocalState(name, size, bhp);
+        }else{
+            ObjectInputStream objectinputstream = null;
+            try {
+                FileInputStream streamIn = new FileInputStream(args[4]);
+                objectinputstream = new ObjectInputStream(streamIn);
+                System.err.println("Loading state");
+                state = (LocalState) objectinputstream.readObject();
+                System.err.println("Resetting locks");
+                state.reset();
+            } catch (Exception e) {
+                System.err.println("Could not load state, exiting");
+                System.exit(0);
+                e.printStackTrace();
+            } finally {
+                if(objectinputstream != null){
+                    objectinputstream .close();
+                }
+            }
+        }
+
         GameServer server = new GameServer(state);
         try {
             port = server.start(port);

@@ -69,12 +69,12 @@ public class AdminMenu extends Thread {
                 case "SAVE" :{
                     try {
                         FileOutputStream fileOut =
-                                new FileOutputStream("/tmp/"+tokens[1]);
+                                new FileOutputStream("/tmp/"+tokens[1]+".ser");
                         ObjectOutputStream out = new ObjectOutputStream(fileOut);
                         out.writeObject(state);
                         out.close();
                         fileOut.close();
-                        System.out.printf("Serialized data is saved in /tmp/employee.ser");
+                        System.out.printf("Serialized data is saved in /tmp/"+tokens[1]+".ser");
                     }catch(IOException i) {
                         i.printStackTrace();
                     }

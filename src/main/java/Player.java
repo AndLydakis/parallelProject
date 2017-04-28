@@ -14,8 +14,8 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
     private int credits;
     private int level;
     private final int role;
-    private final Object creditLock;
-    private final Object logLock;
+    private transient Object creditLock;
+    private transient Object logLock;
     private volatile boolean logged;
     ConcurrentHashMap<String, RemoteBlock> targets;
 
@@ -40,6 +40,10 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
         this.role = role;
     }
 
+    public void resetLocks(){
+        creditLock = new Object();
+        logLock = new Object();
+    }
     public int getRole() throws RemoteException {
         return this.role;
     }

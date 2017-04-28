@@ -15,7 +15,7 @@ public class Defender extends Player implements Serializable {
     long lastRepair;
     long lastShield;
     private long lastBoost;
-    private final Object shieldLock;
+    private transient Object shieldLock;
     private int toLevelUpRr = 1;
     private int toLevelUpSpeed = 1;
     private int shieldPrice = 1;
@@ -48,6 +48,9 @@ public class Defender extends Player implements Serializable {
         this.shieldLock = new Object();
     }
 
+    public void resetLock(){
+        this.shieldLock = new Object();
+    }
     public void setRepairRating(int a){
         this.repairRating= a;
     }

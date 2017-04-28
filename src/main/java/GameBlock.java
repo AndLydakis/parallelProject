@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by lydakis-local on 4/2/17.
  */
-public class GameBlock implements Serializable{
+public class GameBlock implements Serializable {
     private int x;
     private int y;
     private int z;
@@ -13,8 +13,8 @@ public class GameBlock implements Serializable{
     private final int maxHp;
     private AtomicInteger shielded;
     private Player shielder;
-    private final Object hpLock;
-    private final Object shieldLock;
+    private transient Object hpLock;
+    private transient Object shieldLock;
 
     public GameBlock(int x, int y, int z, int hp) {
         this.x = x;
@@ -24,6 +24,11 @@ public class GameBlock implements Serializable{
         this.maxHp = hp;
         this.shielded = new AtomicInteger(0);
         this.shielder = null;
+        this.hpLock = new Object();
+        this.shieldLock = new Object();
+    }
+
+    public void resetLock() {
         this.hpLock = new Object();
         this.shieldLock = new Object();
     }
@@ -66,9 +71,9 @@ public class GameBlock implements Serializable{
                             shielder = null;
                         }
                     }
-                    System.err.println("Damage blocked : "+dmgBlocked);
+                    System.err.println("Damage blocked : " + dmgBlocked);
                     dmg -= (dmgBlocked);
-                    System.err.println("Damage dealt : "+dmg);
+                    System.err.println("Damage dealt : " + dmg);
                 }
                 if (this.hp > dmg) {
                     this.hp -= dmg;

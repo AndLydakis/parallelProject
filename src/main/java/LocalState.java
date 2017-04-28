@@ -22,8 +22,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     private final int depth;
     private final Cube cube;
     private final long start;
-    private final Object playerLock;
-    private ExecutorService stateExecutor;
+    private transient Object playerLock;
 
     private ConcurrentHashMap<String, Player> players;
     private ConcurrentHashMap<String, Attacker> attackers;
@@ -36,7 +35,6 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
             this.width = size;
             this.height = size;
             this.depth = size;
-            this.stateExecutor = Executors.newFixedThreadPool(16);
             this.cube = new Cube(size, blockHp);
 
             this.players = new ConcurrentHashMap<>();
@@ -49,6 +47,27 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         }
     }
 
+    public void reset() throws RemoteException {
+        System.err.println("Reseting player lock");
+        this.playerLock = new Object();
+        System.err.println("Reseting block locks");
+        for(GameBlock gb : cube.cubeMap.values()){
+            gb.resetLock();
+        }
+        System.err.println("Reseting player locks");
+        for(Player p : players.values()){
+            p.resetLocks();
+        }
+        System.err.println("Reseting defender locks");
+        for(Defender d: defenders.values()){
+            d.logout();
+            d.resetLock();
+        }
+        System.err.println("Reseting attacker locks");
+        for(Attacker a: attackers.values()){
+            a.logout();
+        }
+    }
     public RemotePlayer login(String username) throws RemoteException {
         synchronized (playerLock) {
             try {
