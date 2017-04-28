@@ -2,10 +2,7 @@ import javax.net.ssl.SSLContext;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -346,22 +343,32 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     public int requestSecondary(String user, int role, String block) throws RemoteException {
         try {
             if (role == 1) {
+                Random rand = new Random();
                 String tokens[] = block.split("_");
                 ArrayList<GameBlock> targets = new ArrayList<>();
                 int number = Integer.parseInt(tokens[tokens.length - 1]);
-                int n1 = number - 2;
-                int n2 = number - 1;
-                int n3 = number + 1;
-                int n4 = number + 2;
                 int r1;
+                int idx = 0;
+                int attempts = 0;
+                int limit = cube.currentLayer.layer.size()>=4 ? 4:cube.currentLayer.layer.size();
+                while((idx < limit)&&(attempts<10)) {
+                    GameBlock b = cube.currentLayer.layer.get(rand.nextInt(limit));
+                    if(!targets.contains(b)){
+                        idx++;
+                        targets.add(b);
+                    }
+                    attempts++;
+                }
                 GameBlock b1 = cube.getBlock(block);
+                if (b1 != null) {
+                    targets.add(b1);
+                }
+                /*
                 GameBlock b2 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n1);
                 GameBlock b3 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n2);
                 GameBlock b4 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n3);
                 GameBlock b5 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n4);
-                if (b1 != null) {
-                    targets.add(b1);
-                }
+
                 if (b2 != null) {
                     targets.add(b1);
                 }
@@ -374,6 +381,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
                 if (b5 != null) {
                     targets.add(b1);
                 }
+                */
                 r1 = attackers.get(user).bomb(targets);
                 return r1;
             } else {
