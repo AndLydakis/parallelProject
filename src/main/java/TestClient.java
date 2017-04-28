@@ -10,8 +10,8 @@ import java.util.*;
 /**
  * Created by lydakis-local on 4/3/17.
  */
-public class TestClient{
-    private final RemoteState state;
+public class TestClient {
+    private RemoteState state;
     private String username;
     private RemotePlayer player;
     private int role;
@@ -23,7 +23,12 @@ public class TestClient{
 
 
     private TestClient(String service) throws RemoteException, NotBoundException, MalformedURLException {
-        state = (RemoteState) java.rmi.Naming.lookup(service);
+        try {
+            state = (RemoteState) java.rmi.Naming.lookup(service);
+        }catch (Exception e){
+            System.err.println("Could not connect to server, we apologize for the inconvenience");
+            System.exit(0);
+        }
     }
 
     private void repeat() throws RemoteException {
@@ -128,12 +133,14 @@ public class TestClient{
         int status = state.printStatus();
         if (status == 1) {
             System.err.println("Attackers won, thanks for playing !");
+            System.err.println("----- Top Players -----");
             System.err.println(state.printLeaderBoards());
-            System.exit(-1);
+            System.exit(0);
         } else if (status == -1) {
             System.err.println("Defenders won, thanks for playing !");
+            System.err.println("----- Top Players -----");
             System.err.println(state.printLeaderBoards());
-            System.exit(-1);
+            System.exit(0);
         }
     }
 
@@ -193,7 +200,7 @@ public class TestClient{
                 login(li);
                 break;
             case 3:
-                System.exit(-1);
+                System.exit(0);
                 break;
         }
     }
@@ -252,7 +259,6 @@ public class TestClient{
                 break;
             }
             case 3: {
-                reader.nextLine();
                 System.err.println("Type in Block Coordinates : (X_Y_Z)");
                 bl = reader.nextLine();
                 int suc = state.requestSecondary(username, role, bl);
@@ -317,11 +323,12 @@ public class TestClient{
             }
             case 9: {
                 logout();
+                player = null;
                 return;
             }
             case 10: {
                 logout();
-                System.exit(-1);
+                System.exit(0);
             }
             case 8: {
                 repeat();
@@ -383,7 +390,6 @@ public class TestClient{
                 break;
             }
             case 3: {
-                reader.nextLine();
                 System.err.println("Type in Block Coordinates : (X_Y_Z)");
                 bl = reader.nextLine();
                 int suc = state.requestSecondary(username, role, bl);
@@ -447,11 +453,13 @@ public class TestClient{
                 break;
             }
             case 9: {
+                logout();
                 player = null;
                 return;
             }
             case 10: {
-                System.exit(-1);
+                logout();
+                System.exit(0);
             }
             case 8: {
                 repeat();

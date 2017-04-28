@@ -194,6 +194,9 @@ public class GameServer {
 
             ExecutorService clientExecutor = Executors.newFixedThreadPool(16);
 
+            AdminMenu menu = new AdminMenu(state);
+            menu.start();
+
             ScheduledExecutorService cubeExecutor = Executors.newScheduledThreadPool(1);
             try {
                 cubeExecutor.scheduleAtFixedRate(() -> {

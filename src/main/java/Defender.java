@@ -1,12 +1,13 @@
 import jdk.nashorn.internal.ir.Block;
 
+import java.io.Serializable;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
  * Created by lydakis-local on 4/2/17.
  */
-public class Defender extends Player {
+public class Defender extends Player implements Serializable {
 
     int shields;
     int speed;
@@ -15,21 +16,22 @@ public class Defender extends Player {
     long lastShield;
     private long lastBoost;
     private final Object shieldLock;
-    private int toLevelUpRr = 10;
-    private int toLevelUpSpeed = 10;
-    private int shieldPrice = 50;
-    private int boostCost = 50;
-    private int boostCooldown = 10;
+    private int toLevelUpRr = 1;
+    private int toLevelUpSpeed = 1;
+    private int shieldPrice = 1;
+    private int boostCost = 1;
+    private int boostCooldown = 1;
     private int baseCooldown = 5;
     private volatile boolean boosted;
 
-    public Defender(String un, int s, int cr) throws RemoteException {
+    Defender(String un, int s, int cr) throws RemoteException {
         super(un, 0, s, cr);
         synchronized (this) {
             this.speed = 1;
             this.repairRating = 1;
             this.lastRepair = -10000L;
             this.lastShield = -10000L;
+            this.lastBoost = -10000L;
             this.shields = 0;
             this.boosted = false;
             this.shieldLock = new Object();
@@ -44,6 +46,22 @@ public class Defender extends Player {
         this.lastShield = -1l;
         this.shields = 0;
         this.shieldLock = new Object();
+    }
+
+    public void setRepairRating(int a){
+        this.repairRating= a;
+    }
+    public void setShields(int a){
+        this.shields= a;
+    }
+    public void setSpd(int a){
+        this.speed = a;
+    }
+    public void setLevelRr(int a){
+        this.toLevelUpRr = a;
+    }
+    public void setLevelSpd(int a){
+        this.toLevelUpSpeed= a;
     }
 
     /**
@@ -72,7 +90,8 @@ public class Defender extends Player {
     public String print() throws RemoteException {
         return super.print() +
                 "Speed: " + speed + "\n" +
-                "Repair Rating: " + repairRating;
+                "Repair Rating: " + repairRating + "\n" +
+                "Shields Available: " + shields;
 
     }
 
@@ -120,7 +139,7 @@ public class Defender extends Player {
     public boolean canRepair() throws RemoteException {
         resetBoost();
         if (boosted) {
-            return (System.nanoTime() - this.lastRepair) / 1e9 + 2 * this.speed > baseCooldown;
+            return (System.nanoTime() - this.lastRepair) / 1e9 + 10 * this.speed > baseCooldown;
         } else {
             return (System.nanoTime() - this.lastRepair) / 1e9 + this.speed > baseCooldown;
         }
@@ -144,7 +163,7 @@ public class Defender extends Player {
         int cr = getCredits();
         if (super.removeCredits(toLevelUpRr)) {
             repairRating += 1;
-            toLevelUpRr *= 10;
+            toLevelUpRr *= 2;
             return repairRating;
         }
         System.err.println("Need " + toLevelUpRr + " credits to level up repair rating, current credits: " + cr);
@@ -162,7 +181,7 @@ public class Defender extends Player {
         if (((System.nanoTime() - this.lastBoost) > this.speed)) {
             if (super.removeCredits(toLevelUpSpeed)) {
                 speed += 1;
-                toLevelUpSpeed *= 10;
+                toLevelUpSpeed *= 2;
                 return speed;
             }
         }
@@ -178,7 +197,7 @@ public class Defender extends Player {
      * @throws RemoteException if rmi fails
      */
     public int repair(GameBlock b) throws RemoteException {
-        if(!canRepair()) return 0;
+        if (!canRepair()) return 0;
         int p = b.repair(getRepairRating());
         if (p >= 0) {
             this.gainCredits(p);
@@ -189,7 +208,7 @@ public class Defender extends Player {
 
 
     public int shield(GameBlock b) throws RemoteException {
-        if(!canRepair()) return 0;
+        if (!canRepair()) return 0;
         synchronized (shieldLock) {
             if (this.getShields() > 0) {
                 shields--;
@@ -225,8 +244,8 @@ public class Defender extends Player {
      * @throws RemoteException
      */
     synchronized int boost() throws RemoteException {
-        if ((System.nanoTime() - this.lastBoost)/1e9 > boostCooldown){
-            if(super.removeCredits(boostCost)) {
+        if ((System.nanoTime() - this.lastBoost) / 1e9 > boostCooldown) {
+            if (super.removeCredits(boostCost)) {
 //            this.speed = this.speed * 2;
                 lastBoost = System.nanoTime();
                 this.boosted = true;
@@ -242,8 +261,10 @@ public class Defender extends Player {
      * @throws RemoteException
      */
     synchronized public void resetBoost() throws RemoteException {
-        if ((System.nanoTime() - this.lastBoost) > boostCooldown)
+        if ((System.nanoTime() - this.lastBoost)/1e9 > boostCooldown*10) {
             boosted = false;
+            System.err.println("Boost reset");
+        }
     }
 }
 

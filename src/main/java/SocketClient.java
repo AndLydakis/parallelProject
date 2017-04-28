@@ -88,7 +88,7 @@ public class SocketClient {
                 login(li);
                 break;
             case 3:
-                System.exit(-1);
+                System.exit(0);
                 break;
         }
     }
@@ -151,7 +151,6 @@ public class SocketClient {
                 break;
             }
             case 3: {
-                reader.nextLine();
                 System.err.println("Type in Block Coordinates : (X_Y_Z)");
                 bl = reader.nextLine();
 //                int suc = state.requestSecondary(username, role, bl);
@@ -207,7 +206,7 @@ public class SocketClient {
             }
             case 7: {
 //                int suc = state.requestBoost(username, role);
-                int suc = sendRequest("BOOST-ATK-" + uName);
+                int suc = sendRequest("BOOST-" + uName);
                 if (suc > 0) {
                     System.err.println("Speed Temporarily Increased");
                 } else if (suc < 0) {
@@ -226,7 +225,7 @@ public class SocketClient {
             }
             case 10: {
                 logout();
-                System.exit(-1);
+                System.exit(0);
             }
             case 8: {
                 repeat();
@@ -291,7 +290,6 @@ public class SocketClient {
                 break;
             }
             case 3: {
-                reader.nextLine();
                 System.err.println("Type in Block Coordinates : (X_Y_Z)");
                 bl = reader.nextLine();
 //                int suc = state.requestSecondary(username, role, bl);
@@ -367,7 +365,7 @@ public class SocketClient {
             }
             case 10: {
                 logout();
-                System.exit(-1);
+                System.exit(0);
             }
             case 8: {
                 repeat();
@@ -554,10 +552,12 @@ public class SocketClient {
                 try {
                     if (res == 1) {
                         System.err.println("Attackers won, thanks for playing");
+                        System.err.println("----- Top Players -----");
                         System.err.println(tokens[2].replace(".", "\n"));
                     }
                     if (res == -1) {
                         System.err.println("Defenders won, thanks for playing");
+                        System.err.println("----- Top Players -----");
                         System.err.println(tokens[2].replace(".", "\n"));
                     }
                 }catch (Exception e){
@@ -760,7 +760,7 @@ public class SocketClient {
 
         } catch (Exception e) {
             System.err.println("Could not connect to server, exiting");
-            System.exit(-1);
+            System.exit(0);
         } finally {
             out.close();
             in.close();

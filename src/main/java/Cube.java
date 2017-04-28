@@ -1,5 +1,6 @@
 import jdk.nashorn.internal.ir.Block;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -10,7 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * Created by lydakis-local on 4/2/17.
  */
-public class Cube {
+public class Cube implements Serializable{
     //    final int height;
 //    final int width;
 //    final int depth;
@@ -22,7 +23,7 @@ public class Cube {
     Layer currentLayer;
     ConcurrentHashMap<String, GameBlock> activeCubes;
 
-    class Layer {
+    class Layer implements Serializable{
         ArrayList<ArrayList<GameBlock>> faces;
         ArrayList<GameBlock> face1;
         ArrayList<GameBlock> face2;

@@ -1,10 +1,11 @@
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by lydakis-local on 4/2/17.
  */
-public class GameBlock {
+public class GameBlock implements Serializable{
     private int x;
     private int y;
     private int z;
@@ -58,14 +59,16 @@ public class GameBlock {
                 if (this.isShielded() > 0) {
                     int dmgBlocked = 0;
                     if (this.isShielded() > 0) {
-                        dmgBlocked = this.shielded.get() >= dmg ? this.shielded.get() - dmg : this.shielded.get();
+                        dmgBlocked = this.shielded.get() >= dmg ? dmg : this.shielded.get();
                         shielder.gainCredits(dmgBlocked);
                         shielded.set(shielded.get() - dmgBlocked);
                         if (shielded.get() == 0) {
                             shielder = null;
                         }
                     }
+                    System.err.println("Damage blocked : "+dmgBlocked);
                     dmg -= (dmgBlocked);
+                    System.err.println("Damage dealt : "+dmg);
                 }
                 if (this.hp > dmg) {
                     this.hp -= dmg;
@@ -82,7 +85,8 @@ public class GameBlock {
     /**
      * Restore some block hitpoints
      *
-     * @param rep a number of hit points to be
+     * @param rep a number of hit point8
+     *            s to be
      * @return the amount of points that were repaired, so the player can gain the corresponding credits
      * @throws RemoteException
      */

@@ -1,9 +1,11 @@
 import javax.net.ssl.SSLContext;
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -12,23 +14,23 @@ import java.util.concurrent.Executors;
 /**
  * Created by ChunkLightTuna on 4/2/17.
  */
-public class LocalState extends UnicastRemoteObject implements RemoteState {
+public class LocalState extends UnicastRemoteObject implements RemoteState, Serializable {
     final String name;
 
-    final int height;
-    final int width;
-    final int depth;
+    private final int height;
+    private final int width;
+    private final int depth;
     private final Cube cube;
     private final long start;
     private final Object playerLock;
-    ExecutorService stateExecutor;
+    private ExecutorService stateExecutor;
 
     private ConcurrentHashMap<String, Player> players;
     private ConcurrentHashMap<String, Attacker> attackers;
     private ConcurrentHashMap<String, Defender> defenders;
     private ArrayList<Player> leaderboard;
 
-    public LocalState(String name, int size, int blockHp) throws RemoteException {
+    LocalState(String name, int size, int blockHp) throws RemoteException {
         synchronized (this) {
             this.name = name;
             this.width = size;
@@ -62,7 +64,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
         return null;
     }
 
-    public int findRole(String username) {
+    private int findRole(String username) {
         int role;
         if (attackers.containsKey(username)) {
             role = 1;
@@ -178,12 +180,12 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
                 break;
             }
             case "BOMB": {
-                res = requestPrimary(tokens[1], 0, tokens[2]);
+                res = requestSecondary(tokens[1], 1, tokens[2]);
                 resp = "BOMB-(" + res + ")-" + tokens[1];
                 break;
             }
             case "SHIELD": {
-                res = requestPrimary(tokens[1], 0, tokens[2]);
+                res = requestSecondary(tokens[1], 0, tokens[2]);
                 resp = "SHIELD-(" + res + ")-" + tokens[1];
                 break;
             }
@@ -194,7 +196,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
             }
             case "BUYSHIELD": {
                 res = buy(tokens[1], 0);
-                resp = "BUYBOMB-(" + res + ")-" + tokens[1];
+                resp = "BUYSHIELD-(" + res + ")-" + tokens[1];
                 break;
             }
             case "LVLATK": {
@@ -240,6 +242,61 @@ public class LocalState extends UnicastRemoteObject implements RemoteState {
         }
         System.err.println(resp);
         return resp;
+    }
+
+    void setAtk(String u, int a) {
+        attackers.get(u).setAttackRating(a);
+    }
+
+    void setRep(String u, int a) {
+        defenders.get(u).setRepairRating(a);
+    }
+
+    void setBombs(String u, int a) {
+        attackers.get(u).setBombs(a);
+    }
+
+    void setShields(String u, int a) {
+        defenders.get(u).setShields(a);
+    }
+
+    void setCredits(String u, int a) throws RemoteException {
+        players.get(u).gainCredits(a);
+    }
+
+    void setSpeed(String u, int r, int a) {
+        if (r == 1)
+            this.attackers.get(u).setSpd(a);
+        else
+            this.defenders.get(u).setSpd(a);
+    }
+
+    void setLevelAr(String u, int a) {
+        attackers.get(u).setLevelAr(a);
+    }
+
+    void setLevelRr(String u, int a) {
+        defenders.get(u).setLevelRr(a);
+    }
+
+    void setLevelSpd(String u, int r, int a) {
+        if (r == 1)
+            attackers.get(u).setLevelSpd(a);
+        else
+            defenders.get(u).setLevelSpd(a);
+
+
+    }
+
+    void printPlayers() throws RemoteException {
+        for (Map.Entry<String, Attacker> entry : attackers.entrySet()) {
+            System.err.println(entry.getValue().print());
+            System.err.println("---------------");
+        }
+        for (Map.Entry<String, Defender> entry : defenders.entrySet()) {
+            System.err.println(entry.getValue().print());
+            System.err.println("---------------");
+        }
     }
 
     public int requestPrimary(String user, int role, String block) throws RemoteException {
