@@ -18,7 +18,9 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     private final int width;
     private final int depth;
     private final Cube cube;
-    private final long start;
+    private long start;
+    public long timeleft;
+    public long timeLimit;
     private transient Object playerLock;
 
     private ConcurrentHashMap<String, Player> players;
@@ -41,10 +43,13 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
 
             this.playerLock = new Object();
             this.start = System.nanoTime();
+            this.timeLimit = (long) (600*1e9);
         }
     }
 
     public void reset() throws RemoteException {
+        timeLimit = timeleft;
+        start = System.nanoTime();
         System.err.println("Reseting player lock");
         this.playerLock = new Object();
         System.err.println("Reseting block locks");
@@ -139,7 +144,9 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
                 System.err.println("Cube destroyed, attackers won!");
                 return 1;
             }
-            if (((System.nanoTime() - start) / 1e9) > 600) {
+            long timePassed =System.nanoTime() - start;
+            if (timePassed > timeLimit) {
+                timeleft = timeLimit - timePassed;
                 System.err.println("Cube is not destoryed, defenders won");
                 return -1;
             }
