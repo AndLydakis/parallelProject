@@ -1,15 +1,16 @@
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.Objects;
 import java.util.Scanner;
 
 /**
  * Created by andreas on 4/27/17.
  */
 public class AdminMenu extends Thread {
-    public final LocalState state;
+    private final LocalState state;
 
-    public void process(String in) {
+    private void process(String in) {
         String tokens[] = in.split(" ");
         try {
             switch (tokens[0]) {
@@ -94,10 +95,10 @@ public class AdminMenu extends Thread {
         do {
             input = reader.nextLine();
             process(input);
-        } while (input != "Q");
+        } while (!Objects.equals(input, "Q"));
     }
 
-    public AdminMenu(LocalState state) {
+    AdminMenu(LocalState state) {
         this.state = state;
     }
 }

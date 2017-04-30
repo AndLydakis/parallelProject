@@ -93,7 +93,6 @@ public class SocketClient {
         }
     }
 
-
     private void AttackerMenu() throws IOException {
         Scanner reader = new Scanner(System.in);
         int choice;
@@ -730,7 +729,6 @@ public class SocketClient {
     private int testEnd() throws IOException {
         return sendRequest("END");
     }
-
 
     private int sendRequest(String req) throws IOException {
         try {

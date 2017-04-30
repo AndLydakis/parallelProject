@@ -43,7 +43,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
 
             this.playerLock = new Object();
             this.start = System.nanoTime();
-            this.timeLimit = (long) (600*1e9);
+            this.timeLimit = (long) (600 * 1e9);
         }
     }
 
@@ -53,23 +53,24 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         System.err.println("Reseting player lock");
         this.playerLock = new Object();
         System.err.println("Reseting block locks");
-        for(GameBlock gb : cube.cubeMap.values()){
+        for (GameBlock gb : cube.cubeMap.values()) {
             gb.resetLock();
         }
         System.err.println("Reseting player locks");
-        for(Player p : players.values()){
+        for (Player p : players.values()) {
             p.resetLocks();
         }
         System.err.println("Reseting defender locks");
-        for(Defender d: defenders.values()){
+        for (Defender d : defenders.values()) {
             d.logout();
             d.resetLock();
         }
         System.err.println("Reseting attacker locks");
-        for(Attacker a: attackers.values()){
+        for (Attacker a : attackers.values()) {
             a.logout();
         }
     }
+
     public RemotePlayer login(String username) throws RemoteException {
         synchronized (playerLock) {
             try {
@@ -144,7 +145,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
                 System.err.println("Cube destroyed, attackers won!");
                 return 1;
             }
-            long timePassed =System.nanoTime() - start;
+            long timePassed = System.nanoTime() - start;
             if (timePassed > timeLimit) {
                 timeleft = timeLimit - timePassed;
                 System.err.println("Cube is not destoryed, defenders won");
@@ -156,6 +157,11 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
             return 1;
         }
         return 0;
+    }
+
+    public boolean isAlive() throws RemoteException {
+        long timePassed = System.nanoTime() - start;
+        return (this.cube.isAlive() || (timePassed < timeLimit));
     }
 
     public String parseRequest(String request) throws RemoteException {
@@ -357,10 +363,10 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
                 int r1;
                 int idx = 0;
                 int attempts = 0;
-                int limit = cube.currentLayer.layer.size()>=4 ? 4:cube.currentLayer.layer.size();
-                while((idx < limit)&&(attempts<10)) {
+                int limit = cube.currentLayer.layer.size() >= 4 ? 4 : cube.currentLayer.layer.size();
+                while ((idx < limit) && (attempts < 10)) {
                     GameBlock b = cube.currentLayer.layer.get(rand.nextInt(limit));
-                    if(!targets.contains(b)){
+                    if (!targets.contains(b)) {
                         idx++;
                         targets.add(b);
                     }

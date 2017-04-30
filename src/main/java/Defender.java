@@ -9,11 +9,11 @@ import java.rmi.RemoteException;
  */
 public class Defender extends Player implements Serializable {
 
-    int shields;
-    int speed;
-    int repairRating;
-    long lastRepair;
-    long lastShield;
+    private int shields;
+    private int speed;
+    private int repairRating;
+    private long lastRepair;
+    private long lastShield;
     private long lastBoost;
     private transient Object shieldLock;
     private int toLevelUpRr = 1;

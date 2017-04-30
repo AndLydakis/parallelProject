@@ -12,6 +12,8 @@ public interface RemoteState extends java.rmi.Remote {
 
     boolean register(String username, int role) throws RemoteException;
 
+    boolean isAlive() throws RemoteException;
+
     int requestPrimary(String user, int role, String block) throws RemoteException;
 
     int requestSecondary(String user, int role, String block) throws RemoteException;
