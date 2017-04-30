@@ -54,6 +54,7 @@ public class RmiBot extends Bot {
         this.sleep = sleep;
         this.regString = regString;
         if(!Objects.equals(regString, "")) {
+            System.err.println(regString);
             String[] tokens = regString.split("-");
             this.primary = Integer.parseInt(tokens[2]);
             this.secondary = Integer.parseInt(tokens[3]);
