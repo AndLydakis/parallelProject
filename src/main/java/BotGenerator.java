@@ -20,7 +20,7 @@ public class BotGenerator {
 
     }
 
-    public BotGenerator(int num, String host, int port, double ratio, long sleep) {
+    public BotGenerator(int num, String host, int port, double ratio, long sleep) throws InterruptedException {
         String service = "rmi://" + host + ":" + port + "/" + GameServer.SERVER_NAME;
         RemoteState state = null;
         try {
@@ -38,11 +38,16 @@ public class BotGenerator {
             } else {
                 bots.add(new RmiBot(state, username, random.nextInt(2), sleep));
             }
-
+        }
+        for (Bot b : bots) {
+            b.run();
+        }
+        for (Bot b : bots) {
+            b.join();
         }
     }
 
-    public static void main(String args[]) {
+    public static void main(String args[]) throws InterruptedException {
         System.err.println("Creating new bot generator");
         BotGenerator gen = new BotGenerator(Integer.parseInt(args[0]), args[1],
                 Integer.parseInt(args[2]), Double.parseDouble(args[3]), Long.parseLong(args[4]));
