@@ -549,6 +549,9 @@ public class SocketClient {
                         reply.indexOf("(") + 1, reply.indexOf(")")));
                 if (res == 0) break;
                 try {
+                    if(res == 666){
+                        System.err.println("Game crashed, we apologise for the inconvenience");
+                    }
                     if (res == 1) {
                         System.err.println("Attackers won, thanks for playing");
                         System.err.println("----- Top Players -----");

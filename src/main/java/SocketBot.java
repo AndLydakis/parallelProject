@@ -51,12 +51,13 @@ public class SocketBot extends Bot {
 
     private int requestPrimary() throws IOException {
         String tokens[] = targets.split("\n");
-        String target = tokens[0];
+        String target = tokens[0].split(":")[0];
         if (target == null) {
             running = false;
             return -1;
         }
         int res;
+//        System.err.println("Socket " + roles[role] + " " + username + " targeting " + tokens[0].split(":")[0]);
         if (role == 1) {
             res = sendRequest("ATTACK-" + username + "-" + target);
         } else {
@@ -73,9 +74,8 @@ public class SocketBot extends Bot {
     }
 
     private int processReply(String reply) {
-        System.err.println("Processing: " + reply);
         String tokens[] = reply.split("-");
-        System.err.println(tokens);
+//        System.err.println(tokens);
         int res;
         switch (tokens[0]) {
             case "REGISTER": {
@@ -85,11 +85,11 @@ public class SocketBot extends Bot {
                             tokens[3].replace(".", ""));
                     return 1;
                 }
+                System.err.println("Could not register");
                 return -1;
             }
             case "TARGETS": {
                 targets = tokens[1].replace(".", "\n");
-                System.err.println(targets);
                 break;
             }
             case "LOGIN": {
@@ -105,25 +105,11 @@ public class SocketBot extends Bot {
             case "ATTACK": {
                 res = Integer.parseInt(reply.substring(
                         reply.indexOf("(") + 1, reply.indexOf(")")));
-                if (res > 0) {
-                    System.err.println("Successfully hit for " + res + " damage");
-                } else if (res == 0) {
-                    System.err.println("Block already destroyed");
-                } else {
-                    System.err.println("Could not reach block");
-                }
                 break;
             }
             case "REPAIR": {
                 res = Integer.parseInt(reply.substring(
                         reply.indexOf("(") + 1, reply.indexOf(")")));
-                if (res > 0) {
-                    System.err.println("Successfully repaired " + res + " hitpoints");
-                } else if (res == 0) {
-                    System.err.println("Block already at full hitpoints");
-                } else {
-                    System.err.println("Could not reach block");
-                }
                 break;
             }
             case "GETEND": {
@@ -131,18 +117,22 @@ public class SocketBot extends Bot {
                         reply.indexOf("(") + 1, reply.indexOf(")")));
                 if (res == 0) break;
                 try {
+                    if (res == 666) {
+                        System.err.println("Game crashed, we apologise for the inconvenience");
+                        running = false;
+                    }
                     if (res == 1) {
-                        System.err.println("Attackers won, thanks for playing");
+                        System.err.println(username + " Attackers won, thanks for playing");
                         System.err.println("----- Top Players -----");
                         System.err.println(tokens[2].replace(".", "\n"));
                     }
                     if (res == -1) {
-                        System.err.println("Defenders won, thanks for playing");
+                        System.err.println(username + " Defenders won, thanks for playing");
                         System.err.println("----- Top Players -----");
                         System.err.println(tokens[2].replace(".", "\n"));
                     }
                 } catch (Exception e) {
-                    System.err.println("Game crashed, we apologise for the inconvenience");
+                    System.err.println(username + " Game crashed, we apologise for the inconvenience");
                 }
                 System.exit(0);
             }
@@ -152,6 +142,7 @@ public class SocketBot extends Bot {
 
     private int sendRequest(String req) throws IOException {
         try {
+//            System.err.println(host + " " + port + 1);
             socket = new Socket(host, port);
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -167,7 +158,7 @@ public class SocketBot extends Bot {
                     while ((line = in.readLine()) != null && line.length() != 0) {
                         resp.append(line + ".");
                     }
-                    System.err.println("Response received :" + resp);
+//                    System.err.println("Response received :" + resp);
 //                resp = processReply(in.readLine());
                     int ret = processReply(resp.toString());
                     return ret;
@@ -192,13 +183,26 @@ public class SocketBot extends Bot {
         try {
             if (sendRequest("REGISTER-" + username + "-" + role) != 1)
                 return;
+            if (role == 1) {
+                System.err.println("Created new Socket attacker bot: " + username);
+            } else {
+                System.err.println("Created new Socket defender bot: " + username);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
         while (running) {
             try {
                 if (targets == null) {
-                    continue;
+                    start = System.nanoTime();
+                    sendRequest("GETTARGETS");
+                    avgDelay += (System.nanoTime() - start);
+                    numOps++;
+                    if (targets.equals("") || targets == null) {
+                        running = false;
+                    } else {
+                        continue;
+                    }
                 }
                 start = System.nanoTime();
                 if (sendRequest("GETEND") != 0) {
@@ -213,18 +217,22 @@ public class SocketBot extends Bot {
                 }
                 avgDelay += (System.nanoTime() - start);
                 numOps++;
-                Thread.sleep(sleep);
+                start = System.nanoTime();
+                while ((System.nanoTime() - start) > sleep) {
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
                 if (numOps != 0) {
                     avgDelay /= numOps;
+                    System.err.println(username + " adding stats");
                     addStats();
                     return;
                 }
             }
         }
         avgDelay /= numOps;
+        System.err.println(username + " adding stats");
         addStats();
     }
 }

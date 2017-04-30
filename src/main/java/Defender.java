@@ -37,6 +37,17 @@ public class Defender extends Player implements Serializable {
             this.shieldLock = new Object();
         }
     }
+    Defender(String un, int score, int credits, int speed, int attack, int shields) throws RemoteException {
+        super(un, 1, score, credits);
+        this.speed = speed;
+        this.repairRating= attack;
+        this.lastRepair = -10000L;
+        this.lastShield = -10000L;
+        this.lastBoost = -10000L;
+        this.shields = shields;
+        this.boosted = false;
+        this.shieldLock = new Object();
+    }
 
     public Defender(String s) throws RemoteException {
         super(s);
@@ -48,22 +59,22 @@ public class Defender extends Player implements Serializable {
         this.shieldLock = new Object();
     }
 
-    public void resetLock(){
+    void resetLock(){
         this.shieldLock = new Object();
     }
-    public void setRepairRating(int a){
+    void setRepairRating(int a){
         this.repairRating= a;
     }
-    public void setShields(int a){
+    void setShields(int a){
         this.shields= a;
     }
-    public void setSpd(int a){
+    void setSpd(int a){
         this.speed = a;
     }
-    public void setLevelRr(int a){
+    void setLevelRr(int a){
         this.toLevelUpRr = a;
     }
-    public void setLevelSpd(int a){
+    void setLevelSpd(int a){
         this.toLevelUpSpeed= a;
     }
 
@@ -92,10 +103,10 @@ public class Defender extends Player implements Serializable {
 
     public String print() throws RemoteException {
         return super.print() +
+                "Role: Attacker\n" +
                 "Speed: " + speed + "\n" +
                 "Repair Rating: " + repairRating + "\n" +
                 "Shields Available: " + shields;
-
     }
 
     /**
@@ -112,7 +123,7 @@ public class Defender extends Player implements Serializable {
      *
      * @return the repair rating of the player
      */
-    public int getRepairRating() throws RemoteException {
+    private int getRepairRating() throws RemoteException {
         return this.repairRating;
     }
 
@@ -121,7 +132,7 @@ public class Defender extends Player implements Serializable {
      *
      * @return the number of shields available to the player
      */
-    public int getShields() throws RemoteException {
+    private int getShields() throws RemoteException {
         return this.shields;
     }
 
@@ -179,7 +190,7 @@ public class Defender extends Player implements Serializable {
      * @return true if the player had enough credits to level up speed, false otherwise
      * @throws RemoteException
      */
-    public int levelUpSpeed() throws RemoteException {
+    int levelUpSpeed() throws RemoteException {
         int cr = getCredits();
         if (((System.nanoTime() - this.lastBoost) > this.speed)) {
             if (super.removeCredits(toLevelUpSpeed)) {
@@ -188,7 +199,7 @@ public class Defender extends Player implements Serializable {
                 return speed;
             }
         }
-        System.err.println("Need " + toLevelUpSpeed + " credits to level up speed, current credits: " + cr);
+//        System.err.println("Need " + toLevelUpSpeed + " credits to level up speed, current credits: " + cr);
         return -toLevelUpSpeed;
     }
 
@@ -266,7 +277,7 @@ public class Defender extends Player implements Serializable {
     synchronized public void resetBoost() throws RemoteException {
         if ((System.nanoTime() - this.lastBoost)/1e9 > boostCooldown*10) {
             boosted = false;
-            System.err.println("Boost reset");
+//            System.err.println("Boost reset");
         }
     }
 }

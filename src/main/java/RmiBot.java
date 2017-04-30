@@ -28,12 +28,17 @@ public class RmiBot extends Bot {
 
     public void selectAttack() throws RemoteException {
         if (targets == null) {
+            System.err.println("could not find targets");
             running = false;
             return;
         }
         String[] tokens = targets.split("\n");
-        int res = state.requestPrimary(username, role, tokens[0]);
-        if (res < 0) running = false;
+//        System.err.println("RMI " + roles[role] + " " + username + " targeting " + tokens[0].split(":")[0]);
+        int res = state.requestPrimary(username, role, tokens[0].split(":")[0]);
+        if (res < 0) {
+            System.err.println(roles[role] + " " + username + " Could not contact server");
+            running = false;
+        }
     }
 
     public RmiBot(RemoteState s, String username, int role, long sleep) {
@@ -42,22 +47,23 @@ public class RmiBot extends Bot {
         this.username = username;
         this.role = role;
         this.sleep = sleep;
-        if (role == 1) {
-            System.err.println("Created new RMI attacker bot");
-        } else {
-            System.err.println("Created new RMI defender bot");
-        }
     }
 
     public void run() {
         long start;
+        System.err.println("Trying to register " + roles[role] + " " + username);
         try {
             if (!state.register(username, role)) {
-                return;
+                System.err.println("Registration failed");
             }
-        }catch (RemoteException re){
+        } catch (RemoteException re) {
             re.printStackTrace();
             return;
+        }
+        if (role == 1) {
+            System.err.println("Created new RMI attacker bot: " + username);
+        } else {
+            System.err.println("Created new RMI defender bot: " + username);
         }
         try {
             while (state.isAlive() && running) {
@@ -73,15 +79,19 @@ public class RmiBot extends Bot {
                 selectAttack();
                 avgDelay += (System.nanoTime() - start);
                 numOps++;
+                start = System.nanoTime();
+                while((System.nanoTime() - start)>sleep){}
 
             }
             avgDelay /= numOps;
+            System.err.println(username + " adding stats");
             addStats();
 
         } catch (Exception e) {
             e.printStackTrace();
             if (numOps != 0) {
                 avgDelay /= numOps;
+                System.err.println(username + " adding stats");
                 addStats();
             }
         }

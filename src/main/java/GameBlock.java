@@ -16,7 +16,7 @@ public class GameBlock implements Serializable {
     private transient Object hpLock;
     private transient Object shieldLock;
 
-    public GameBlock(int x, int y, int z, int hp) {
+    GameBlock(int x, int y, int z, int hp) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -28,14 +28,26 @@ public class GameBlock implements Serializable {
         this.shieldLock = new Object();
     }
 
-    public void resetLock() {
+    void resetLock() {
         this.hpLock = new Object();
         this.shieldLock = new Object();
     }
 
     @Override
     public String toString() {
-        return x + "_" + y + "_" + z;
+        try {
+            return x + "_" + y + "_" + z;
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    public String toStringHp() {
+        try {
+            return x + "_" + y + "_" + z + ":" + getHp();
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     /**

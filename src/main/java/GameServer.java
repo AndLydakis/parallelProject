@@ -58,9 +58,9 @@ public class GameServer {
 
             try {
                 line = is.readLine();
-                System.err.println(line);
+//                System.err.println(line);
                 String s = state.parseRequest(line);
-                System.err.println("Response -> " + s);
+//                System.err.println("Response -> " + s);
                 os.println(s);
                 os.flush();
             } catch (IOException e) {
@@ -71,17 +71,17 @@ public class GameServer {
                 System.out.println("Client " + line + " Closed");
             } finally {
                 try {
-                    System.err.println("Connection Closing");
+//                    System.err.println("Connection Closing");
                     if (is != null) {
                         is.close();
-                        System.out.println(" Socket Input Stream Closed");
+//                        System.out.println(" Socket Input Stream Closed");
                     }
                     if (os != null)
                         os.close();
-                        System.out.println("ppoppp");
+//                        System.out.println("ppoppp");
                     if (s != null) {
                         s.close();
-                        System.out.println("Socket Closed");
+//                        System.out.println("Socket Closed");
                     }
                 } catch (IOException e) {
                     System.out.println("Socket Close Error");

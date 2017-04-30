@@ -67,6 +67,14 @@ public class AdminMenu extends Thread {
                     state.printPlayers();
                     break;
                 }
+                case "STATUS": {
+                    System.err.println(state.getTargets());
+                    break;
+                }
+                case "LEAD": {
+                    System.err.println(state.printLeaderBoards());
+                    break;
+                }
                 case "SAVE" :{
                     try {
                         FileOutputStream fileOut =

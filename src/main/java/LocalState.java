@@ -47,7 +47,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         }
     }
 
-    public void reset() throws RemoteException {
+    void reset() throws RemoteException {
         timeLimit = timeleft;
         start = System.nanoTime();
         System.err.println("Reseting player lock");
@@ -114,7 +114,6 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
                     Attacker atk = new Attacker(username, 0, 0);
                     players.putIfAbsent(username, atk);
                     attackers.putIfAbsent(username, atk);
-                    System.err.println(attackers.get(username).toString());
                 } else {
                     System.err.println("Registered defender " + username);
                     Defender def = new Defender(username, 0, 0);
@@ -148,26 +147,26 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
             long timePassed = System.nanoTime() - start;
             if (timePassed > timeLimit) {
                 timeleft = timeLimit - timePassed;
-                System.err.println("Cube is not destoryed, defenders won");
+                System.err.println("Cube survived, defenders won");
                 return -1;
             }
-            System.err.println(this.cube.isAlive());
+//            System.err.println(this.cube.isAlive());
         } catch (NullPointerException npe) {
-            System.err.println("Cube is destoryed, attackers won");
-            return 1;
+            System.err.println("Could not find cube, something went wrong");
+            return 666;
         }
         return 0;
     }
 
     public boolean isAlive() throws RemoteException {
         long timePassed = System.nanoTime() - start;
-        return (this.cube.isAlive() || (timePassed < timeLimit));
+        return (this.cube.isAlive() && (timePassed < timeLimit));
     }
 
     public String parseRequest(String request) throws RemoteException {
         String[] tokens = request.split("-");
         String action = tokens[0];
-        System.err.println("Action : " + action);
+//        System.err.println("Action : " + action);
         String resp = "";
         int res;
         switch (action) {
@@ -269,7 +268,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
                 break;
             }
         }
-        System.err.println(resp);
+//        System.err.println("Response : " + resp);
         return resp;
     }
 
@@ -329,6 +328,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     }
 
     public int requestPrimary(String user, int role, String block) throws RemoteException {
+//        System.err.println("Primary for " + block);
         int result;
         if (role == 1) {
             try {
@@ -340,6 +340,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
                     System.err.println(cube.currentLayer.layer.remove(pos));
                 }
             } catch (Exception e) {
+//                e.printStackTrace();
                 result = -1;
             }
         } else {
@@ -466,7 +467,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
 
     @Override
     public String getTargets() {
-        return cube.currentLayer.toString();
+        return cube.currentLayer.toStringHp();
     }
 
     @Override

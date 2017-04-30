@@ -9,6 +9,7 @@ public class Bot extends Thread {
     static final ArrayList<statsEntry> defendStats = new ArrayList<>();
     static final ArrayList<statsEntry> defendStatsSocket = new ArrayList<>();
     static final ArrayList<statsEntry> attackStatsSocket = new ArrayList<>();
+    static final String[] roles = {"Defender", "Attacker"};
 
     class statsEntry {
         private int role;
@@ -19,6 +20,10 @@ public class Bot extends Thread {
             this.role = role;
             this.numOps = numOps;
             this.avgDelay = avgDelay;
+        }
+
+        public String toString() {
+            return this.role + " " + this.numOps + " " + this.avgDelay / 1e9 + "\n";
         }
     }
 

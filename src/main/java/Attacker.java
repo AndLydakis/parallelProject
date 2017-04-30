@@ -1,13 +1,11 @@
 import java.io.Serializable;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
 /**
  * Created by lydakis-local on 4/2/17.
  */
-public class Attacker extends Player implements Serializable{
+public class Attacker extends Player implements Serializable {
 
     private int bombs;
     private int speed;
@@ -23,7 +21,7 @@ public class Attacker extends Player implements Serializable{
     private int baseCooldown = 5;
     private volatile boolean boosted = false;
 
-    public Attacker(String un, int s, int cr) throws RemoteException {
+    Attacker(String un, int s, int cr) throws RemoteException {
         super(un, 1, s, cr);
         this.speed = 1;
         this.attackRating = 1;
@@ -31,6 +29,16 @@ public class Attacker extends Player implements Serializable{
         this.lastBoost = -10000L;
         this.lastBomb = -10000L;
         this.bombs = 0;
+    }
+
+    Attacker(String un, int score, int credits, int speed, int attack, int bombs) throws RemoteException {
+        super(un, 1, score, credits);
+        this.speed = speed;
+        this.attackRating = attack;
+        this.lastAttack = -10000L;
+        this.lastBoost = -10000L;
+        this.lastBomb = -10000L;
+        this.bombs = bombs;
     }
 
     public Attacker(String s) throws RemoteException {
@@ -42,21 +50,26 @@ public class Attacker extends Player implements Serializable{
         this.bombs = 0;
     }
 
-    public void setAttackRating(int a){
+    void setAttackRating(int a) {
         this.attackRating = a;
     }
-    public void setBombs(int a){
+
+    void setBombs(int a) {
         this.bombs = a;
     }
-    public void setSpd(int a){
+
+    void setSpd(int a) {
         this.speed = a;
     }
-    public void setLevelAr(int a){
+
+    void setLevelAr(int a) {
         this.toLevelUpAr = a;
     }
-    public void setLevelSpd(int a){
-        this.toLevelUpSpeed= a;
+
+    void setLevelSpd(int a) {
+        this.toLevelUpSpeed = a;
     }
+
     /**
      * Update player from a socket response
      *
@@ -81,6 +94,7 @@ public class Attacker extends Player implements Serializable{
 
     public String print() throws RemoteException {
         return super.print() +
+                "Role: Attacker\n" +
                 "Speed: " + speed + "\n" +
                 "Attack Rating: " + attackRating + "\n" +
                 "Bombs Available: " + bombs;
@@ -91,7 +105,7 @@ public class Attacker extends Player implements Serializable{
      *
      * @return the attack rating of the player
      */
-    public int getAttackRating() throws RemoteException {
+    private int getAttackRating() throws RemoteException {
         return this.attackRating;
     }
 
@@ -109,7 +123,7 @@ public class Attacker extends Player implements Serializable{
      *
      * @return true iof the player can attack, false otherwise
      */
-    public boolean canAttack() throws RemoteException {
+    private boolean canAttack() throws RemoteException {
         resetBoost();
         if (boosted) {
             return (System.nanoTime() - this.lastAttack) / 1e9 + 10 * this.speed > baseCooldown;
@@ -135,7 +149,7 @@ public class Attacker extends Player implements Serializable{
      * @return true if the player had enough credits to level up repair rating, false otherwise
      * @throws RemoteException
      */
-    public int levelUpAr() throws RemoteException {
+    int levelUpAr() throws RemoteException {
         int cr = getCredits();
         if (super.removeCredits(toLevelUpAr)) {
             attackRating += 1;
@@ -152,7 +166,7 @@ public class Attacker extends Player implements Serializable{
      * @return true if the player had enough credits to level up speed, false otherwise
      * @throws RemoteException
      */
-    public int levelUpSpeed() throws RemoteException {
+    int levelUpSpeed() throws RemoteException {
         int cr = getCredits();
         if (((System.nanoTime() - this.lastBoost) > this.speed)) {
             if (super.removeCredits(toLevelUpSpeed)) {
@@ -172,8 +186,9 @@ public class Attacker extends Player implements Serializable{
      * @return true if the block was repaired, false if the block was already destroyed
      * @throws RemoteException if rmi fails
      */
-    public int attack(GameBlock b) throws RemoteException {
+    int attack(GameBlock b) throws RemoteException {
         if (!canAttack()) return 0;
+//        System.err.println(userName + " attacking " + b.toString());
         int p = b.attack(getAttackRating());
         if (p >= 0) {
             this.gainCredits(p);
@@ -183,8 +198,8 @@ public class Attacker extends Player implements Serializable{
 
     }
 
-    public int bomb(ArrayList<GameBlock> blocks) throws RemoteException {
-        System.err.println("Bombing "+blocks.get(0).toString());
+    int bomb(ArrayList<GameBlock> blocks) throws RemoteException {
+//        System.err.println("Bombing " + blocks.get(0).toString());
         if (!canAttack()) return 0;
         int sum = 0;
         if (blocks.size() == 0) return sum;
@@ -204,7 +219,7 @@ public class Attacker extends Player implements Serializable{
             }
             lastAttack = System.nanoTime();
         }
-        if(sum>0)gainCredits(sum);
+        if (sum > 0) gainCredits(sum);
         return sum;
     }
 
@@ -214,11 +229,11 @@ public class Attacker extends Player implements Serializable{
      * @return the number of bombs available to the player
      * @throws RemoteException
      */
-    public int buyBomb() throws RemoteException {
+    int buyBomb() throws RemoteException {
         if (super.removeCredits(bombPrice)) {
             bombs++;
         } else {
-            System.err.println("Not enough credits to buy a shield, " + bombPrice + " credits needed");
+//            System.err.println("Not enough credits to buy a shield, " + bombPrice + " credits needed");
             return -bombPrice;
         }
         return bombs;
@@ -247,10 +262,10 @@ public class Attacker extends Player implements Serializable{
      *
      * @throws RemoteException
      */
-    synchronized public void resetBoost() throws RemoteException {
-        if ((System.nanoTime() - this.lastBoost)/1e9 > boostCooldown*10) {
+    private synchronized void resetBoost() throws RemoteException {
+        if ((System.nanoTime() - this.lastBoost) / 1e9 > boostCooldown * 10) {
             boosted = false;
-            System.err.println("Boost reset");
+//            System.err.println("Boost reset");
         }
     }
 }

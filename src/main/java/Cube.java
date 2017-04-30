@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * Created by lydakis-local on 4/2/17.
  */
-public class Cube implements Serializable{
+public class Cube implements Serializable {
     //    final int height;
 //    final int width;
 //    final int depth;
@@ -23,7 +23,7 @@ public class Cube implements Serializable{
     Layer currentLayer;
     ConcurrentHashMap<String, GameBlock> activeCubes;
 
-    class Layer implements Serializable{
+    class Layer implements Serializable {
         ArrayList<ArrayList<GameBlock>> faces;
         ArrayList<GameBlock> face1;
         ArrayList<GameBlock> face2;
@@ -34,7 +34,7 @@ public class Cube implements Serializable{
         ArrayList<GameBlock> layer;
 
         public Layer(int level, int size, int blockHp) {
-            System.err.println("Layer #"+level+",  size "+size);
+            System.err.println("Layer #" + level + ",  size " + size);
             face1 = new ArrayList<>();
             face2 = new ArrayList<>();
             face3 = new ArrayList<>();
@@ -75,7 +75,7 @@ public class Cube implements Serializable{
                 face5.add(block);
                 face6.add(block);
                 layer.add(block);
-                System.err.println("1 "+layer.size());
+                System.err.println("1 " + layer.size());
             } else {
                 int faceSize = size - 2;
                 int idx = 0;
@@ -97,7 +97,7 @@ public class Cube implements Serializable{
                     layer.add(face6.get(i));
                 }
 
-                System.err.println("1 "+layer.size());
+                System.err.println("1 " + layer.size());
 
                 for (int i = 0; i < faceSize; i++) {
                     edge1.add(new GameBlock(level, 2, idx++, blockHp));
@@ -114,7 +114,7 @@ public class Cube implements Serializable{
                     edge12.add(new GameBlock(level, 1, idx++, blockHp));
                 }
 
-                for(int i = 0; i < edge1.size(); i++){
+                for (int i = 0; i < edge1.size(); i++) {
                     layer.add(edge1.get(i));
                     layer.add(edge2.get(i));
                     layer.add(edge3.get(i));
@@ -128,7 +128,7 @@ public class Cube implements Serializable{
                     layer.add(edge11.get(i));
                     layer.add(edge12.get(i));
                 }
-                System.err.println("2 "+layer.size());
+                System.err.println("2 " + layer.size());
 
                 for (int i = 0; i < faceSize; i++) {
                     face1.add(edge2.get(i));
@@ -203,16 +203,18 @@ public class Cube implements Serializable{
                 layer.add(corner6);
                 layer.add(corner7);
                 layer.add(corner8);
-                System.err.println("3 "+layer.size());
+                System.err.println("3 " + layer.size());
             }
 
         }
 
         public boolean isAlive() throws RemoteException {
-                for (GameBlock gb : layer) {
-                    if (gb.getHp() > 0) {
-                        return true;
-                    }
+            if (layer == null) return false;
+            if (layer.size() == 0) return false;
+            for (GameBlock gb : layer) {
+                if (gb.getHp() > 0) {
+                    return true;
+                }
             }
             return false;
         }
@@ -221,6 +223,14 @@ public class Cube implements Serializable{
             String s = "";
             for (GameBlock b : layer) {
                 s += (b.toString() + "\n");
+            }
+            return s;
+        }
+
+        String toStringHp() {
+            String s = "";
+            for (GameBlock b : layer) {
+                s += (b.toStringHp() + "\n");
             }
             return s;
         }
@@ -238,9 +248,9 @@ public class Cube implements Serializable{
 
         for (Layer layer : layers) {
 //            for (ArrayList<GameBlock> face : layer.faces) {
-                for (GameBlock block : layer.layer) {
-                    cubeMap.putIfAbsent(block.toString(), block);
-                }
+            for (GameBlock block : layer.layer) {
+                cubeMap.putIfAbsent(block.toString(), block);
+            }
 //            }
         }
 
@@ -250,7 +260,7 @@ public class Cube implements Serializable{
 //            Map.Entry pair = (Map.Entry) it.next();
 //            System.out.println(pair.getKey() + " = " + pair.getValue().toString());
 //        }
-        for(GameBlock gb : currentLayer.layer){
+        for (GameBlock gb : currentLayer.layer) {
             System.err.println(gb.toString());
         }
 //        cube = new GameBlock[size][size][size];
@@ -271,6 +281,7 @@ public class Cube implements Serializable{
     }
 
     public boolean isAlive() throws RemoteException {
+        if (currentLayer == null) return false;
         if (currentLayer.isAlive()) {
             return true;
         } else {

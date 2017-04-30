@@ -24,6 +24,7 @@ public interface RemoteBlock extends java.rmi.Remote {
      */
     int attack(int dmg) throws RemoteException;
 
+    String toStringHp() throws RemoteException;
     /**
      * @param rep the hit points repaired
      * @return credits equal to the amount of hit points repaired
