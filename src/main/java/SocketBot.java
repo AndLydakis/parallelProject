@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.Socket;
 import java.rmi.RemoteException;
+import java.util.Objects;
 
 /**
  * Created by lydakis-local on 4/30/17.
@@ -15,6 +16,10 @@ public class SocketBot extends Bot {
     private String targets;
     private String host;
     private String username;
+    private String regString;
+    private int primary;
+    private int secondary;
+    private int items;
     private volatile boolean running;
     private Socket socket;
     private OutputStream outputStream;
@@ -35,17 +40,26 @@ public class SocketBot extends Bot {
         }
     }
 
-    public SocketBot(String username, int role, String host, int port, long sleep) {
+    public SocketBot(String username, int role, String host, int port, long sleep, String regString) {
         this.running = true;
         this.host = host;
         this.port = port + 1;
         this.numOps = 0;
         this.username = username;
         this.sleep = sleep;
+        this.regString = regString;
         if (role == 1) {
             System.err.println("Created new socket attacker bot");
         } else {
             System.err.println("Created new socket defender bot");
+        }
+        if (!Objects.equals(regString, "")) {
+            String[] tokens = regString.split("-");
+            this.primary = Integer.parseInt(tokens[2]);
+            this.secondary = Integer.parseInt(tokens[3]);
+            this.items = Integer.parseInt(tokens[4]);
+        } else {
+            this.primary = -1;
         }
     }
 
@@ -181,12 +195,22 @@ public class SocketBot extends Bot {
     public void run() {
         long start;
         try {
-            if (sendRequest("REGISTER-" + username + "-" + role) != 1)
-                return;
-            if (role == 1) {
-                System.err.println("Created new Socket attacker bot: " + username);
+            if (this.primary != -1) {
+                if (sendRequest("REGISTER-" + username + "-" + role + "-0-0-" + primary + "-" + secondary + "-" + items) != 1)
+                    return;
+                if (role == 1) {
+                    System.err.println("Created new Socket attacker bot: " + username);
+                } else {
+                    System.err.println("Created new Socket defender bot: " + username);
+                }
             } else {
-                System.err.println("Created new Socket defender bot: " + username);
+                if (sendRequest("REGISTER-" + username + "-" + role) != 1)
+                    return;
+                if (role == 1) {
+                    System.err.println("Created new Socket attacker bot: " + username);
+                } else {
+                    System.err.println("Created new Socket defender bot: " + username);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

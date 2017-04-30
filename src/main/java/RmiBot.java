@@ -1,5 +1,6 @@
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Created by lydakis-local on 4/30/17.
@@ -8,9 +9,13 @@ public class RmiBot extends Bot {
     private RemoteState state;
     private int role;
     private int numOps;
+    private int primary;
+    private int secondary;
+    private int items;
     private int avgDelay;
     private long sleep;
     String username;
+    private String regString;
     private String targets;
     private volatile boolean running;
 
@@ -41,20 +46,37 @@ public class RmiBot extends Bot {
         }
     }
 
-    public RmiBot(RemoteState s, String username, int role, long sleep) {
-        running = true;
+    public RmiBot(RemoteState s, String username, int role, long sleep, String regString) {
+        this.running = true;
         this.state = s;
         this.username = username;
         this.role = role;
         this.sleep = sleep;
+        this.regString = regString;
+        if(!Objects.equals(regString, "")) {
+            String[] tokens = regString.split("-");
+            this.primary = Integer.parseInt(tokens[2]);
+            this.secondary = Integer.parseInt(tokens[3]);
+            this.items = Integer.parseInt(tokens[4]);
+        }else{
+            this.primary = -1;
+        }
     }
 
     public void run() {
         long start;
         System.err.println("Trying to register " + roles[role] + " " + username);
         try {
-            if (!state.register(username, role)) {
-                System.err.println("Registration failed");
+            if(primary!=-1){
+                if (!state.register(username, role, 0, 0, primary, secondary, items)) {
+                    System.err.println("Registration failed");
+                    return;
+                }
+            }else {
+                if (!state.register(username, role)) {
+                    System.err.println("Registration failed");
+                    return;
+                }
             }
         } catch (RemoteException re) {
             re.printStackTrace();

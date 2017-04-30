@@ -31,14 +31,14 @@ public class Attacker extends Player implements Serializable {
         this.bombs = 0;
     }
 
-    Attacker(String un, int score, int credits, int speed, int attack, int bombs) throws RemoteException {
+    Attacker(String un, int score, int credits, int attack, int speed,  int bombs) throws RemoteException {
         super(un, 1, score, credits);
-        this.speed = speed;
         this.attackRating = attack;
+        this.speed = speed;
+        this.bombs = bombs;
         this.lastAttack = -10000L;
         this.lastBoost = -10000L;
         this.lastBomb = -10000L;
-        this.bombs = bombs;
     }
 
     public Attacker(String s) throws RemoteException {

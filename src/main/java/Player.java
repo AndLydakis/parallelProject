@@ -25,14 +25,14 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
      * Create player from string for the socket service
      *
      * @param un username
-     * @param s  score
-     * @param cr credits
+     * @param score  score
+     * @param credits credits
      * @throws RemoteException
      */
-    public Player(String un, int role, int s, int cr) throws RemoteException {
+    public Player(String un, int role, int score, int credits) throws RemoteException {
         this.userName = un;
-        this.score = s;
-        this.credits = cr;
+        this.score = score;
+        this.credits = credits;
         this.level = 1;
         this.creditLock = new Object();
         this.logLock = new Object();

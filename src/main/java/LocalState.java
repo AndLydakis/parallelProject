@@ -1,13 +1,8 @@
-import javax.net.ssl.SSLContext;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
-import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 /**
  * Created by ChunkLightTuna on 4/2/17.
  */
@@ -19,8 +14,8 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     private final int depth;
     private final Cube cube;
     private long start;
-    public long timeleft;
-    public long timeLimit;
+    private long timeleft;
+    private long timeLimit;
     private transient Object playerLock;
 
     private ConcurrentHashMap<String, Player> players;
@@ -127,6 +122,28 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         }
     }
 
+    @Override
+    public boolean register(String username, int role, int score, int credits, int primary, int secondary, int items) throws RemoteException {
+        synchronized (playerLock) {
+            if (players.get(username) == null) {
+                if (role == 1) {
+                    System.err.println("Registered attacker " + username);
+                    Attacker atk = new Attacker(username, score, credits, primary, secondary, items);
+                    players.putIfAbsent(username, atk);
+                    attackers.putIfAbsent(username, atk);
+                } else {
+                    System.err.println("Registered defender " + username);
+                    Defender def = new Defender(username, score, credits, primary, secondary, items);
+                    players.putIfAbsent(username, def);
+                    defenders.putIfAbsent(username, def);
+                }
+                leaderboard.add(players.get(username));
+                return true;
+            }
+            return false;
+        }
+    }
+
     public String printLeaderBoards() throws RemoteException {
         Collections.sort(leaderboard);
         int min = leaderboard.size() >= 10 ? 10 : leaderboard.size();
@@ -171,12 +188,24 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         int res;
         switch (action) {
             case "REGISTER": {
-                if (register(tokens[1], Integer.parseInt(tokens[2]))) {
-                    res = 1;
-                } else {
-                    res = 0;
+                if(tokens.length==3) {
+                    if (register(tokens[1], Integer.parseInt(tokens[2]))) {
+                        res = 1;
+                    } else {
+                        res = 0;
+                    }
+                    resp = "REGISTER-" + res + "-" + tokens[1] + "-" + tokens[2];
+                }else{
+                    if (register(tokens[1], Integer.parseInt(tokens[2]),
+                            Integer.parseInt(tokens[3]), Integer.parseInt(tokens[4]),
+                            Integer.parseInt(tokens[5]), Integer.parseInt(tokens[6]),
+                            Integer.parseInt(tokens[6]))) {
+                        res = 1;
+                    } else {
+                        res = 0;
+                    }
+                    resp = "REGISTER-" + res + "-" + tokens[1] + "-" + tokens[2];
                 }
-                resp = "REGISTER-" + res + "-" + tokens[1] + "-" + tokens[2];
                 break;
             }
             case "LOGIN": {

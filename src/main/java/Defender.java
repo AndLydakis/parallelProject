@@ -37,14 +37,15 @@ public class Defender extends Player implements Serializable {
             this.shieldLock = new Object();
         }
     }
-    Defender(String un, int score, int credits, int speed, int attack, int shields) throws RemoteException {
+
+    Defender(String un, int score, int credits, int repair, int speed, int items) throws RemoteException {
         super(un, 1, score, credits);
+        this.repairRating = repair;
         this.speed = speed;
-        this.repairRating= attack;
+        this.shields = items;
         this.lastRepair = -10000L;
         this.lastShield = -10000L;
         this.lastBoost = -10000L;
-        this.shields = shields;
         this.boosted = false;
         this.shieldLock = new Object();
     }
@@ -59,23 +60,28 @@ public class Defender extends Player implements Serializable {
         this.shieldLock = new Object();
     }
 
-    void resetLock(){
+    void resetLock() {
         this.shieldLock = new Object();
     }
-    void setRepairRating(int a){
-        this.repairRating= a;
+
+    void setRepairRating(int a) {
+        this.repairRating = a;
     }
-    void setShields(int a){
-        this.shields= a;
+
+    void setShields(int a) {
+        this.shields = a;
     }
-    void setSpd(int a){
+
+    void setSpd(int a) {
         this.speed = a;
     }
-    void setLevelRr(int a){
+
+    void setLevelRr(int a) {
         this.toLevelUpRr = a;
     }
-    void setLevelSpd(int a){
-        this.toLevelUpSpeed= a;
+
+    void setLevelSpd(int a) {
+        this.toLevelUpSpeed = a;
     }
 
     /**
@@ -150,7 +156,7 @@ public class Defender extends Player implements Serializable {
      *
      * @return true if the player can repair a block, false otherwise
      */
-    public boolean canRepair() throws RemoteException {
+    private boolean canRepair() throws RemoteException {
         resetBoost();
         if (boosted) {
             return (System.nanoTime() - this.lastRepair) / 1e9 + 10 * this.speed > baseCooldown;
@@ -173,7 +179,7 @@ public class Defender extends Player implements Serializable {
      * @return true if the player had enough credits to level up repair rating, false otherwise
      * @throws RemoteException
      */
-    public int levelUpRr() throws RemoteException {
+    int levelUpRr() throws RemoteException {
         int cr = getCredits();
         if (super.removeCredits(toLevelUpRr)) {
             repairRating += 1;
@@ -210,7 +216,7 @@ public class Defender extends Player implements Serializable {
      * @return true if the block was repaired, false if the block was already destoryed
      * @throws RemoteException if rmi fails
      */
-    public int repair(GameBlock b) throws RemoteException {
+    int repair(GameBlock b) throws RemoteException {
         if (!canRepair()) return 0;
         int p = b.repair(getRepairRating());
         if (p >= 0) {
@@ -221,7 +227,7 @@ public class Defender extends Player implements Serializable {
     }
 
 
-    public int shield(GameBlock b) throws RemoteException {
+    int shield(GameBlock b) throws RemoteException {
         if (!canRepair()) return 0;
         synchronized (shieldLock) {
             if (this.getShields() > 0) {
@@ -274,8 +280,8 @@ public class Defender extends Player implements Serializable {
      *
      * @throws RemoteException
      */
-    synchronized public void resetBoost() throws RemoteException {
-        if ((System.nanoTime() - this.lastBoost)/1e9 > boostCooldown*10) {
+    private synchronized void resetBoost() throws RemoteException {
+        if ((System.nanoTime() - this.lastBoost) / 1e9 > boostCooldown * 10) {
             boosted = false;
 //            System.err.println("Boost reset");
         }
