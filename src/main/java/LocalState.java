@@ -23,7 +23,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     private ConcurrentHashMap<String, Defender> defenders;
     private ArrayList<Player> leaderboard;
 
-    LocalState(String name, int size, int blockHp) throws RemoteException {
+    LocalState(String name, int size, int blockHp, int timeLimit) throws RemoteException {
         synchronized (this) {
             this.name = name;
             this.width = size;
@@ -38,7 +38,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
 
             this.playerLock = new Object();
             this.start = System.nanoTime();
-            this.timeLimit = (long) (600 * 1e9);
+            this.timeLimit = (long) (timeLimit * 1e9);
         }
     }
 

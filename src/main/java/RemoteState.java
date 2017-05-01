@@ -1,5 +1,3 @@
-import com.sun.org.apache.regexp.internal.RE;
-
 import java.rmi.RemoteException;
 
 /**
@@ -28,6 +26,8 @@ public interface RemoteState extends java.rmi.Remote {
 
     int buy(String user, int role) throws RemoteException;
 
+    int printStatus() throws RemoteException;
+
     String getTargets() throws RemoteException;
 
     String printPlayer(String player, int r) throws RemoteException;
@@ -35,6 +35,4 @@ public interface RemoteState extends java.rmi.Remote {
     String parseRequest(String req) throws RemoteException;
 
     String printLeaderBoards() throws RemoteException;
-
-    int printStatus() throws RemoteException;
 }

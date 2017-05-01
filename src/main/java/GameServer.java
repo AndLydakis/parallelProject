@@ -184,9 +184,10 @@ public class GameServer {
         String name = args[1];
         int size = Integer.parseInt(args[2]);
         int bhp = Integer.parseInt(args[3]);
+        int tl = Integer.parseInt(args[4]);
         LocalState state = null;
-        if (args.length == 4) {
-            state = new LocalState(name, size, bhp);
+        if (args.length == 5) {
+            state = new LocalState(name, size, bhp, tl);
         }else{
             ObjectInputStream objectinputstream = null;
             try {
