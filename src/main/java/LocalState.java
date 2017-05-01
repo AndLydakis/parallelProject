@@ -176,8 +176,24 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     }
 
     public boolean isAlive() throws RemoteException {
-        long timePassed = System.nanoTime() - start;
-        return (this.cube.isAlive() && (timePassed < timeLimit));
+        try {
+            if (!this.cube.isAlive()) {
+                //Attackers won
+                System.err.println("Cube destroyed, attackers won!");
+                return false;
+            }
+            long timePassed = System.nanoTime() - start;
+            if (timePassed > timeLimit) {
+                timeleft = timeLimit - timePassed;
+                System.err.println("Cube survived, defenders won");
+                return false;
+            }
+//            System.err.println(this.cube.isAlive());
+        } catch (NullPointerException npe) {
+            System.err.println("Could not find cube, something went wrong");
+            return false;
+        }
+        return true;
     }
 
     public String parseRequest(String request) throws RemoteException {

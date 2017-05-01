@@ -84,7 +84,7 @@ public class RmiBot extends Bot {
                 }
             }
         } catch (RemoteException re) {
-            System.err.println("Exception 1");
+            System.err.println(username + " Exception 1");
             running = false;
             return;
         }
@@ -94,7 +94,8 @@ public class RmiBot extends Bot {
             System.err.println("Created new RMI defender bot #" + counter.incrementAndGet() + ": " + username);
         }
         try {
-            while (state.isAlive()) {
+            while (state.printStatus() != 0) {
+//            while (state.isAlive()) {
 //            while (state.isAlive() && running) {
 //            while ((targets = state.getTargets()) != null && running) {
                 if (targets == null) {
@@ -122,7 +123,7 @@ public class RmiBot extends Bot {
             }
         } catch (Exception e) {
 //            e.printStackTrace();
-            System.err.println("Exception 2");
+            System.err.println(username + " exception 2");
             running = false;
             System.err.println(username + " adding stats");
             if (numOps != 0) {
