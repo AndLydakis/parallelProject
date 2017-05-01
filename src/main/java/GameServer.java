@@ -19,6 +19,8 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Created by lydakis-local on 4/3/17.
+ * A server generates a cube with the given dimensions and
+ * enables an administrator to monitor the server status
  */
 public class GameServer {
 
@@ -26,6 +28,9 @@ public class GameServer {
     private final LocalState state;
     private Registry registry;
 
+    /**
+     * ServerThreads are used to run socket requests from clients
+     */
     static class ServerThread implements Runnable {
         String line = null;
         BufferedReader is = null;
@@ -33,6 +38,12 @@ public class GameServer {
         Socket s = null;
         RemoteState state = null;
 
+        /**
+         * create a thread with a given socket and game state
+         *
+         * @param s  socket
+         * @param st game state
+         */
         ServerThread(Socket s, RemoteState st) {
             this.s = s;
             this.state = st;
@@ -163,9 +174,14 @@ public class GameServer {
         }
     }
 
+    /**
+     * prints the status of the server
+     *
+     * @throws RemoteException if rmi fails
+     */
     private void printStatus() throws RemoteException {
         try {
-            int status = this.state.printStatus();
+            this.state.printStatus();
         } catch (RemoteException re) {
             re.printStackTrace();
         }
@@ -173,8 +189,8 @@ public class GameServer {
 
     /**
      * Command line program
+     * Arguments : port cube_size block_hp time_limit_seconds
      */
-
     public static void main(String[] args) throws Exception {
         int port = 0;
         if (args.length > 0) {
@@ -187,7 +203,7 @@ public class GameServer {
         LocalState state = null;
         if (args.length == 5) {
             state = new LocalState(name, size, bhp, tl);
-        }else{
+        } else {
             ObjectInputStream objectinputstream = null;
             try {
                 FileInputStream streamIn = new FileInputStream(args[4]);
@@ -201,8 +217,8 @@ public class GameServer {
                 System.exit(0);
                 e.printStackTrace();
             } finally {
-                if(objectinputstream != null){
-                    objectinputstream .close();
+                if (objectinputstream != null) {
+                    objectinputstream.close();
                 }
             }
         }

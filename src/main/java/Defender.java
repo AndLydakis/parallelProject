@@ -1,11 +1,10 @@
-import jdk.nashorn.internal.ir.Block;
-
 import java.io.Serializable;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
  * Created by lydakis-local on 4/2/17.
+ * Defenders are tasked with defending the game blocks
+ * they can repair a single block, or shield it from future attacks
  */
 public class Defender extends Player implements Serializable {
 
@@ -79,8 +78,8 @@ public class Defender extends Player implements Serializable {
         super(s);
         this.speed = 1;
         this.repairRating = 1;
-        this.lastRepair = -1l;
-        this.lastShield = -1l;
+        this.lastRepair = -1L;
+        this.lastShield = -1L;
         this.shields = 0;
         this.shieldLock = new Object();
     }

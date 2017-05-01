@@ -61,7 +61,7 @@ public class GameBlock implements Serializable {
         }
     }
 
-    public String toStringHp() {
+    String toStringHp() {
         try {
             return x + "_" + y + "_" + z + ":" + getHp();
         } catch (Exception e) {
@@ -70,26 +70,34 @@ public class GameBlock implements Serializable {
     }
 
     /**
-     * check if the
+     * Check if the block is shielded and return the amount of shielding
      *
-     * @return
-     * @throws RemoteException
+     * @return the amount of shielding available to the block
+     * @throws RemoteException if rmi fails
      */
-    public int isShielded() throws RemoteException {
+    private int isShielded() throws RemoteException {
         return this.shielded.get();
     }
 
     /**
-     * return the block's hitpoins
+     * Return the block's hitpoins
      *
      * @return the block's hitpoints
-     * @throws RemoteException
+     * @throws RemoteException if rmi fails
      */
-    public int getHp() throws RemoteException {
+    int getHp() throws RemoteException {
         return this.hp;
     }
 
-    public int attack(int dmg) throws RemoteException {
+    /**
+     * Attacks the block
+     *
+     * @param dmg the damage that is attempted
+     * @return the amount of actual damage done to the block
+     * so the player can gain the corresponding credits
+     * @throws RemoteException if rmi fails
+     */
+    int attack(int dmg) throws RemoteException {
         synchronized (shieldLock) {
             synchronized (hpLock) {
                 if (this.hp <= 0) return 0;
@@ -122,12 +130,12 @@ public class GameBlock implements Serializable {
     /**
      * Restore some block hitpoints
      *
-     * @param rep a number of hit point8
-     *            s to be
-     * @return the amount of points that were repaired, so the player can gain the corresponding credits
-     * @throws RemoteException
+     * @param rep a number of hit point to be restpored
+     * @return the amount of points that were repaired,
+     * so the player can gain the corresponding credits
+     * @throws RemoteException if rmi fails
      */
-    public int repair(int rep) throws RemoteException {
+    int repair(int rep) throws RemoteException {
         synchronized (hpLock) {
             if (this.hp <= 0) return 0;
             if (this.hp == maxHp) return 0;
@@ -145,9 +153,9 @@ public class GameBlock implements Serializable {
      * @param p  a player that is trying to shield a block
      * @param sp the shield points to be given to the block
      * @return true if the shield was placed successfully, false if otherwise
-     * @throws RemoteException
+     * @throws RemoteException if rmi fails
      */
-    public int shield(Player p, int sp) throws RemoteException {
+    int shield(Player p, int sp) throws RemoteException {
         synchronized (shieldLock) {
             if (isShielded() == 0) {
                 shielded.set(sp);

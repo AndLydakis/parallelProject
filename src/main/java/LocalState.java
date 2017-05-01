@@ -3,18 +3,17 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Created by ChunkLightTuna on 4/2/17.
+ * The local state keeps track of the players, and the status of the cube
  */
 public class LocalState extends UnicastRemoteObject implements RemoteState, Serializable {
     final String name;
 
-    private final int height;
-    private final int width;
-    private final int depth;
     private final Cube cube;
     private long start;
-    private long timeleft;
+    private long timeLeft;
     private long timeLimit;
     private transient Object playerLock;
 
@@ -23,12 +22,18 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     private ConcurrentHashMap<String, Defender> defenders;
     private ArrayList<Player> leaderboard;
 
+    /**
+     * Constructor
+     *
+     * @param name      server name
+     * @param size      cube size
+     * @param blockHp   block hitpoints
+     * @param timeLimit time limit in seconds
+     * @throws RemoteException if rmi fails
+     */
     LocalState(String name, int size, int blockHp, int timeLimit) throws RemoteException {
         synchronized (this) {
             this.name = name;
-            this.width = size;
-            this.height = size;
-            this.depth = size;
             this.cube = new Cube(size, blockHp);
 
             this.players = new ConcurrentHashMap<>();
@@ -42,8 +47,14 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         }
     }
 
+    /**
+     * resets the transient fields of the different components
+     * to enable deserialization
+     *
+     * @throws RemoteException if rmi fails
+     */
     void reset() throws RemoteException {
-        timeLimit = timeleft;
+        timeLimit = timeLeft;
         start = System.nanoTime();
         System.err.println("Reseting player lock");
         this.playerLock = new Object();
@@ -66,6 +77,14 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         }
     }
 
+    /**
+     * If the given username is already registered return the player if the player is not logged on, null otherwise
+     * If the given username is not already registered register the username and return it
+     *
+     * @param username the name to look up
+     * @return an active player or null
+     * @throws RemoteException if rmi fail
+     */
     public RemotePlayer login(String username) throws RemoteException {
         synchronized (playerLock) {
             try {
@@ -81,6 +100,12 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         return null;
     }
 
+    /**
+     * Return the role of a given player
+     *
+     * @param username the name to look up
+     * @return 1 if the user is an attacker, 0 if it is a defender, -1 if the player is not registered
+     */
     private int findRole(String username) {
         int role;
         if (attackers.containsKey(username)) {
@@ -93,6 +118,13 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         return role;
     }
 
+    /**
+     * Logs the player of the game
+     *
+     * @param username the name to look up
+     * @return true if the player was successfully logged out, false otherwise
+     * @throws RemoteException if rmi fails
+     */
     public synchronized boolean logout(String username) throws RemoteException {
         if (players.get(username) != null) {
             players.get(username).logout();
@@ -101,6 +133,14 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         return false;
     }
 
+    /**
+     * Creates a new player
+     *
+     * @param username the username of the new player
+     * @param role     the role of the new player
+     * @return the player if it was successfully created, null otherwise
+     * @throws RemoteException if rmi fails
+     */
     public synchronized boolean register(String username, int role) throws RemoteException {
         synchronized (playerLock) {
             if (players.get(username) == null) {
@@ -122,8 +162,22 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         }
     }
 
+    /**
+     * Same as regular register() but allows to set the additional attributes of the player
+     *
+     * @param username  username
+     * @param role      role
+     * @param score     score
+     * @param credits   credits
+     * @param primary   primary ability rating
+     * @param secondary secondary ability rating
+     * @param items     number of available items
+     * @return the player if it was successfully created, null otherwise
+     * @throws RemoteException if rmi fails
+     */
     @Override
-    public boolean register(String username, int role, int score, int credits, int primary, int secondary, int items) throws RemoteException {
+    public boolean register(String username, int role, int score, int credits, int primary, int secondary, int items)
+            throws RemoteException {
         synchronized (playerLock) {
             if (players.get(username) == null) {
                 if (role == 1) {
@@ -144,6 +198,12 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         }
     }
 
+    /**
+     * prints the top 10 players
+     *
+     * @return a String containing the 10 players with the highest overall score
+     * @throws RemoteException if rmi fails
+     */
     public String printLeaderBoards() throws RemoteException {
         Collections.sort(leaderboard);
         int min = leaderboard.size() >= 10 ? 10 : leaderboard.size();
@@ -154,6 +214,13 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         return s;
     }
 
+    /**
+     * prints the status of the game if it has ended
+     *
+     * @return 1 if attackers won, -1 if defenders won,
+     * 666 if the game crashed, 0 if the game is still running
+     * @throws RemoteException if rmi fails
+     */
     public int printStatus() throws RemoteException {
         try {
             if (!this.cube.isAlive()) {
@@ -163,7 +230,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
             }
             long timePassed = System.nanoTime() - start;
             if (timePassed > timeLimit) {
-                timeleft = timeLimit - timePassed;
+                timeLeft = timeLimit - timePassed;
                 System.err.println("Cube survived, defenders won");
                 return -1;
             }
@@ -175,6 +242,12 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         return 0;
     }
 
+    /**
+     * Returns true if the game is still going, false otherwise
+     *
+     * @return true if the game is still going, false otherwise
+     * @throws RemoteException if rmi fails
+     */
     public boolean isAlive() throws RemoteException {
         try {
             if (!this.cube.isAlive()) {
@@ -184,7 +257,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
             }
             long timePassed = System.nanoTime() - start;
             if (timePassed > timeLimit) {
-                timeleft = timeLimit - timePassed;
+                timeLeft = timeLimit - timePassed;
 //                System.err.println("Cube survived, defenders won");
                 return false;
             }
@@ -196,6 +269,13 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         return true;
     }
 
+    /**
+     * Parses a request from a client and returns the response as a string
+     *
+     * @param request a request from a client
+     * @return a string containing a reply to a request
+     * @throws RemoteException if rmi fails
+     */
     public String parseRequest(String request) throws RemoteException {
         String[] tokens = request.split("-");
         String action = tokens[0];
@@ -204,14 +284,14 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         int res;
         switch (action) {
             case "REGISTER": {
-                if(tokens.length==3) {
+                if (tokens.length == 3) {
                     if (register(tokens[1], Integer.parseInt(tokens[2]))) {
                         res = 1;
                     } else {
                         res = 0;
                     }
                     resp = "REGISTER-" + res + "-" + tokens[1] + "-" + tokens[2];
-                }else{
+                } else {
                     if (register(tokens[1], Integer.parseInt(tokens[2]),
                             Integer.parseInt(tokens[3]), Integer.parseInt(tokens[4]),
                             Integer.parseInt(tokens[5]), Integer.parseInt(tokens[6]),
@@ -317,26 +397,63 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         return resp;
     }
 
+    /**
+     * Set the attack rating of a player
+     *
+     * @param u the username of the player
+     * @param a the attack rating
+     */
     void setAtk(String u, int a) {
         attackers.get(u).setAttackRating(a);
     }
 
+    /**
+     * Set the repair rating of a player
+     *
+     * @param u the username of the player
+     * @param a the repair rating
+     */
     void setRep(String u, int a) {
         defenders.get(u).setRepairRating(a);
     }
 
+    /**
+     * Set the number of bombs of a player
+     *
+     * @param u the username of the player
+     * @param a the number of bombs
+     */
     void setBombs(String u, int a) {
         attackers.get(u).setBombs(a);
     }
 
+    /**
+     * Set the number of shields of a player
+     *
+     * @param u the username of the player
+     * @param a the number of shields
+     */
     void setShields(String u, int a) {
         defenders.get(u).setShields(a);
     }
 
+    /**
+     * Set the number of credits of a player
+     *
+     * @param u the username of the player
+     * @param a the number of credits
+     */
     void setCredits(String u, int a) throws RemoteException {
         players.get(u).gainCredits(a);
     }
 
+    /**
+     * Set the speed of a player
+     *
+     * @param u the username of the player
+     * @param r the role of the player
+     * @param a the speed
+     */
     void setSpeed(String u, int r, int a) {
         if (r == 1)
             this.attackers.get(u).setSpd(a);
@@ -344,14 +461,33 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
             this.defenders.get(u).setSpd(a);
     }
 
+    /**
+     * Set the number of credits required to level up attack rating
+     *
+     * @param u the username of the player
+     * @param a the number of credits
+     */
     void setLevelAr(String u, int a) {
         attackers.get(u).setLevelAr(a);
     }
 
+    /**
+     * Set the number of credits required to level up repair rating
+     *
+     * @param u the username of the player
+     * @param a the number of credits
+     */
     void setLevelRr(String u, int a) {
         defenders.get(u).setLevelRr(a);
     }
 
+    /**
+     * Set the number of credits required to level up speed
+     *
+     * @param u the username of the player
+     * @param r the role of the player
+     * @param a the number of credits
+     */
     void setLevelSpd(String u, int r, int a) {
         if (r == 1)
             attackers.get(u).setLevelSpd(a);
@@ -361,6 +497,11 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
 
     }
 
+    /**
+     * print all the players
+     *
+     * @throws RemoteException if rmi fails
+     */
     void printPlayers() throws RemoteException {
         for (Map.Entry<String, Attacker> entry : attackers.entrySet()) {
             System.err.println(entry.getValue().print());
@@ -372,6 +513,15 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         }
     }
 
+    /**
+     * Apply the user's primary ability to a block
+     *
+     * @param user  the username to look up
+     * @param role  the role of the player
+     * @param block the target block
+     * @return the result of a successful attempt, -1 otherwise
+     * @throws RemoteException if rmi fails
+     */
     public int requestPrimary(String user, int role, String block) throws RemoteException {
 //        System.err.println("Primary for " + block);
         int result;
@@ -380,7 +530,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
                 result = attackers.get(user).attack(cube.getBlock(block));
                 if (cube.getBlock(block).getHp() <= 0) {
                     int pos = cube.currentLayer.layer.indexOf(cube.getBlock(block));
-                    if(cube.currentLayer.layer.remove(pos)!=null){
+                    if (cube.currentLayer.layer.remove(pos) != null) {
                         System.err.println("Removed " + cube.getBlock(block).toString());
                     }
 //                    System.err.println(pos);
@@ -400,6 +550,15 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         return result;
     }
 
+    /**
+     * Apply the user's secondary ability to a block
+     *
+     * @param user  the username to look up
+     * @param role  the role of the player
+     * @param block the target block
+     * @return the result of a successful attempt, -1 otherwise
+     * @throws RemoteException if rmi fails
+     */
     @Override
     public int requestSecondary(String user, int role, String block) throws RemoteException {
         try {
@@ -434,6 +593,14 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         }
     }
 
+    /**
+     * request a boost for the given player
+     *
+     * @param user the username to lookup
+     * @param role the role of the player
+     * @return 1 if the boost succeeded, 0 if it failed
+     * @throws RemoteException if rmi fails
+     */
     @Override
     public int requestBoost(String user, int role) throws RemoteException {
         int res;
@@ -449,6 +616,15 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         }
     }
 
+    /**
+     * Request to upgrade the user's primary ability
+     *
+     * @param user the username to lookup
+     * @param role the role of the user
+     * @return the user's new primary ability level, or the credits needed to upgrade
+     * or 0 if an exception occurs
+     * @throws RemoteException if rmi fails
+     */
     @Override
     public int levelPrimary(String user, int role) throws RemoteException {
         try {
@@ -462,6 +638,15 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         }
     }
 
+    /**
+     * Request to upgrade the user's secondary ability
+     *
+     * @param user the username to lookup
+     * @param role the role of the user
+     * @return the user's new secondary ability level, or the credits needed to upgrade
+     * or 0 if an exception occurs
+     * @throws RemoteException if rmi fails
+     */
     @Override
     public int levelSecondary(String user, int role) throws RemoteException {
         try {
@@ -475,6 +660,14 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         }
     }
 
+    /**
+     * Request to buy an item
+     *
+     * @param user the username to lookup
+     * @param role the role of the user
+     * @return the user's new item number, or the credits needed to buy an item
+     * @throws RemoteException if rmi fails
+     */
     @Override
     public int buy(String user, int role) throws RemoteException {
         try {
@@ -488,11 +681,24 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         }
     }
 
+    /**
+     * Request the available blocks to attack
+     *
+     * @return the available blocks as as string
+     */
     @Override
     public String getTargets() {
         return cube.currentLayer.toStringHp();
     }
 
+    /**
+     * Print the player stats
+     *
+     * @param player the username to look up
+     * @param r      the role of the player
+     * @return the player as a String
+     * @throws RemoteException if rmi fails
+     */
     @Override
     public String printPlayer(String player, int r) throws RemoteException {
         if (r == 1) {

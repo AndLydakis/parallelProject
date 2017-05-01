@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 /**
  * Created by lydakis-local on 4/2/17.
+ * Attackers are tasked with destroying the game blocks
+ * the can attack a single block, or bomb nearby blocks
  */
 public class Attacker extends Player implements Serializable {
 
