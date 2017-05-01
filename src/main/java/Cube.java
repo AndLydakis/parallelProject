@@ -241,9 +241,11 @@ public class Cube implements Serializable {
         cubeMap = new ConcurrentHashMap<>();
         activeCubes = new ConcurrentHashMap<>();
         layers = new ConcurrentLinkedQueue();
-
+        int level = 1;
         for (int i = size; i > 0; i -= 2) {
-            layers.add(new Layer(size, i, blockHp));
+            System.err.println("Adding layer " + i);
+            layers.add(new Layer(level, i, blockHp));
+            level++;
         }
 
         for (Layer layer : layers) {
@@ -262,6 +264,13 @@ public class Cube implements Serializable {
 //        }
         for (GameBlock gb : currentLayer.layer) {
             System.err.println(gb.toString());
+        }
+        System.err.println("--------------");
+        for(Layer l : layers) {
+            for (GameBlock gb : l.layer) {
+                System.err.println(gb.toString());
+            }
+            System.err.println("--------------");
         }
 //        cube = new GameBlock[size][size][size];
 //
@@ -325,7 +334,7 @@ public class Cube implements Serializable {
     }
 
     public static void main(String[] args) {
-        Cube cube = new Cube(5, 5);
+        Cube cube = new Cube(3, 1);
         System.err.println(cube.cubeMap.size());
     }
 }
