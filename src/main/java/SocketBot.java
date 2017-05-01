@@ -97,7 +97,7 @@ public class SocketBot extends Bot {
                 System.err.println("Could not register");
                 return -1;
             }
-            case "GETTARGETS": {
+            case "TARGETS": {
                 targets = tokens[1].replace(".", "\n");
                 if (targets == null) running = false;
                 break;
@@ -172,6 +172,9 @@ public class SocketBot extends Bot {
                     }
 //                    System.err.println("Response received :" + resp);
 //                resp = processReply(in.readLine());
+//                    if(req.equals("GETTARGETS")){
+//                        System.err.println(resp.toString());
+//                    }
                     int ret = processReply(resp.toString());
                     return ret;
                 } catch (Exception e) {
