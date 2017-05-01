@@ -26,8 +26,8 @@ public class BotGenerator {
     public BotGenerator(int num, String host, int port, double ratio, double ADratio, long sleep,
                         int attackerPrimary, int attackerSecondary, int attackerItems,
                         int defenderPrimary, int defenderSecondary, int defenderItems) throws InterruptedException, IOException {
-        String defString = "-" + defenderPrimary + "-" + defenderSecondary + "-" + defenderItems;
-        String atkString = "-" + attackerPrimary + "-" + attackerSecondary + "-" + attackerItems;
+        String defString = defenderPrimary + "-" + defenderSecondary + "-" + defenderItems;
+        String atkString = attackerPrimary + "-" + attackerSecondary + "-" + attackerItems;
         String service = "rmi://" + host + ":" + port + "/" + GameServer.SERVER_NAME;
         RemoteState state = null;
         try {

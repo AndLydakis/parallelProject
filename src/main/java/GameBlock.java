@@ -73,6 +73,7 @@ public class GameBlock implements Serializable {
     public int attack(int dmg) throws RemoteException {
         synchronized (shieldLock) {
             synchronized (hpLock) {
+                if (this.hp <= 0) return 0;
                 if (this.isShielded() > 0) {
                     int dmgBlocked = 0;
                     if (this.isShielded() > 0) {
@@ -109,6 +110,7 @@ public class GameBlock implements Serializable {
      */
     public int repair(int rep) throws RemoteException {
         synchronized (hpLock) {
+            if (this.hp <= 0) return 0;
             if (this.hp == maxHp) return 0;
             int r = (maxHp - this.hp) > rep ? rep : maxHp - this.hp;
             this.hp = (this.hp + rep) >= maxHp ? maxHp : (this.hp + rep);

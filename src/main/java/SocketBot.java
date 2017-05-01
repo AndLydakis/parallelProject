@@ -25,10 +25,11 @@ public class SocketBot extends Bot {
     private OutputStream outputStream;
     private InputStream inputStream;
     private PrintWriter out;
-    BufferedReader in = null;
+    private BufferedReader in = null;
     BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
 
     private void addStats() {
+        System.err.println(username + " adding stats");
         if (role == 1) {
             synchronized (attackStats) {
                 attackStatsSocket.add(new statsEntry(role, numOps, avgDelay));
@@ -40,7 +41,7 @@ public class SocketBot extends Bot {
         }
     }
 
-    public SocketBot(String username, int role, String host, int port, long sleep, String regString) {
+    SocketBot(String username, int role, String host, int port, long sleep, String regString) {
         this.running = true;
         this.host = host;
         this.port = port + 1;
@@ -53,6 +54,7 @@ public class SocketBot extends Bot {
         } else {
             System.err.println("Created new socket defender bot");
         }
+        System.err.println(regString);
         if (!Objects.equals(regString, "")) {
             String[] tokens = regString.split("-");
             this.primary = Integer.parseInt(tokens[2]);
@@ -78,13 +80,6 @@ public class SocketBot extends Bot {
             res = sendRequest("REPAIR-" + username + "-" + target);
         }
         return res;
-    }
-
-    private void getTargets() throws IOException {
-        sendRequest("GETTARGETS");
-        if (targets == null) {
-            running = false;
-        }
     }
 
     private int processReply(String reply) {
@@ -136,14 +131,16 @@ public class SocketBot extends Bot {
                         running = false;
                     }
                     if (res == 1) {
-                        System.err.println(username + " Attackers won, thanks for playing");
-                        System.err.println("----- Top Players -----");
-                        System.err.println(tokens[2].replace(".", "\n"));
+//                        System.err.println(username + " Attackers won, thanks for playing");
+//                        System.err.println("----- Top Players -----");
+//                        System.err.println(tokens[2].replace(".", "\n"));
+                        running = false;
                     }
                     if (res == -1) {
-                        System.err.println(username + " Defenders won, thanks for playing");
-                        System.err.println("----- Top Players -----");
-                        System.err.println(tokens[2].replace(".", "\n"));
+//                        System.err.println(username + " Defenders won, thanks for playing");
+//                        System.err.println("----- Top Players -----");
+//                        System.err.println(tokens[2].replace(".", "\n"));
+                        running = false;
                     }
                 } catch (Exception e) {
                     System.err.println(username + " Game crashed, we apologise for the inconvenience");
@@ -182,8 +179,9 @@ public class SocketBot extends Bot {
             }
 
         } catch (Exception e) {
-            System.err.println("Could not connect to server, exiting");
-            System.exit(0);
+//            System.err.println("Could not connect to server, exiting");
+            running = false;
+//            System.exit(0);
         } finally {
             out.close();
             in.close();
@@ -194,15 +192,11 @@ public class SocketBot extends Bot {
 
     public void run() {
         long start;
+        System.err.println("Trying to register " + roles[role] + " " + username);
         try {
             if (this.primary != -1) {
                 if (sendRequest("REGISTER-" + username + "-" + role + "-0-0-" + primary + "-" + secondary + "-" + items) != 1)
                     return;
-                if (role == 1) {
-                    System.err.println("Created new Socket attacker bot: " + username);
-                } else {
-                    System.err.println("Created new Socket defender bot: " + username);
-                }
             } else {
                 if (sendRequest("REGISTER-" + username + "-" + role) != 1)
                     return;
@@ -222,11 +216,16 @@ public class SocketBot extends Bot {
                     sendRequest("GETTARGETS");
                     avgDelay += (System.nanoTime() - start);
                     numOps++;
-                    if (targets.equals("") || targets == null) {
+                    if (targets == null) {
                         running = false;
+                        continue;
+                    } else if (targets.equals("")) {
+                        running = false;
+                        continue;
                     } else {
                         continue;
                     }
+
                 }
                 start = System.nanoTime();
                 if (sendRequest("GETEND") != 0) {
@@ -255,8 +254,10 @@ public class SocketBot extends Bot {
                 }
             }
         }
-        avgDelay /= numOps;
-        System.err.println(username + " adding stats");
-        addStats();
+        if (numOps != 0) {
+            avgDelay /= numOps;
+            System.err.println(username + " adding stats");
+            addStats();
+        }
     }
 }
