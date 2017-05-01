@@ -94,8 +94,8 @@ public class RmiBot extends Bot {
             System.err.println("Created new RMI defender bot #" + counter.incrementAndGet() + ": " + username);
         }
         try {
-            while (state.printStatus() != 0) {
-//            while (state.isAlive()) {
+//            while (state.printStatus() != 0) {
+            while (state.isAlive()) {
 //            while (state.isAlive() && running) {
 //            while ((targets = state.getTargets()) != null && running) {
                 if (targets == null) {
