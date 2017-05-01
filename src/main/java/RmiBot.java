@@ -32,11 +32,8 @@ public class RmiBot extends Bot {
     }
 
     private void selectAttack() throws RemoteException {
-        if (targets == null) {
-//            System.err.println("could not find targets");
-//            running = false;
-            return;
-        }
+        if (targets == null) return;
+        if(targets.length()==0)return;
         String[] tokens = targets.split("\n");
 //        System.err.println("RMI " + roles[role] + " " + username + " targeting " + tokens[0].split(":")[0]);
         int res = state.requestPrimary(username, role, tokens[0].split(":")[0]);
@@ -45,8 +42,6 @@ public class RmiBot extends Bot {
             targets = state.getTargets();
             avgDelay += (System.nanoTime() - start);
             numOps++;
-//            System.err.println(roles[role] + " " + username + " Could not contact server");
-//            running = false;
         }
     }
 
@@ -114,7 +109,8 @@ public class RmiBot extends Bot {
                     while ((System.nanoTime() - start) > sleep) {
                     }
                 } catch (Exception e) {
-                    System.err.println(username + " inner Exception");
+//                    System.err.println(username + " inner Exception");
+                    continue;
                 }
             }
             System.err.println("Game over");
