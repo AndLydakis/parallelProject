@@ -34,7 +34,7 @@ public class RmiBot extends Bot {
     private void selectAttack() throws RemoteException {
         if (targets == null) {
 //            System.err.println("could not find targets");
-            running = false;
+//            running = false;
             return;
         }
         String[] tokens = targets.split("\n");
@@ -42,7 +42,7 @@ public class RmiBot extends Bot {
         int res = state.requestPrimary(username, role, tokens[0].split(":")[0]);
         if (res < 0) {
 //            System.err.println(roles[role] + " " + username + " Could not contact server");
-            running = false;
+//            running = false;
         }
     }
 
@@ -90,7 +90,8 @@ public class RmiBot extends Bot {
             System.err.println("Created new RMI defender bot #" + counter.incrementAndGet() + ": " + username);
         }
         try {
-            while (state.isAlive() && running) {
+            while (state.isAlive()) {
+//            while (state.isAlive() && running) {
 //            while ((targets = state.getTargets()) != null && running) {
                 if (targets == null) {
                     start = System.nanoTime();

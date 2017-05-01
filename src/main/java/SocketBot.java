@@ -68,10 +68,10 @@ public class SocketBot extends Bot {
     private int requestPrimary() throws IOException {
         String tokens[] = targets.split("\n");
         String target = tokens[0].split(":")[0];
-        if (target == null) {
-            running = false;
-            return -1;
-        }
+//        if (target == null) {
+//            running = false;
+//            return -1;
+//        }
         int res;
 //        System.err.println("Socket " + roles[role] + " " + username + " targeting " + tokens[0].split(":")[0]);
         if (role == 1) {
@@ -215,6 +215,10 @@ public class SocketBot extends Bot {
         }
         while (running) {
             try {
+                if (sendRequest("GETEND") != 0) {
+                    running = false;
+                    continue;
+                }
                 if (targets == null) {
                     start = System.nanoTime();
                     sendRequest("GETTARGETS");
@@ -229,19 +233,17 @@ public class SocketBot extends Bot {
                     } else {
                         continue;
                     }
-
                 }
                 start = System.nanoTime();
-                if (sendRequest("GETEND") != 0) {
-                    running = false;
-                }
+
                 avgDelay += (System.nanoTime() - start);
                 numOps++;
                 start = System.nanoTime();
-                if (requestPrimary() < 0) {
-                    running = false;
-                    break;
-                }
+                requestPrimary();
+//                if (requestPrimary() < 0) {
+//                    running = false;
+//                    break;
+//                }
                 avgDelay += (System.nanoTime() - start);
                 numOps++;
                 start = System.nanoTime();

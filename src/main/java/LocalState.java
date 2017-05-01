@@ -363,9 +363,10 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
             try {
                 result = attackers.get(user).attack(cube.getBlock(block));
                 if (cube.getBlock(block).getHp() <= 0) {
-                    System.err.println("Removing " + cube.getBlock(block).toString());
                     int pos = cube.currentLayer.layer.indexOf(cube.getBlock(block));
-                    cube.currentLayer.layer.remove(pos);
+                    if(cube.currentLayer.layer.remove(pos)!=null){
+                        System.err.println("Removed " + cube.getBlock(block).toString());
+                    }
 //                    System.err.println(pos);
 //                    System.err.println(cube.currentLayer.layer.remove(pos));
                 }
@@ -407,33 +408,9 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
                 if (b1 != null) {
                     targets.add(b1);
                 }
-                /*
-                GameBlock b2 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n1);
-                GameBlock b3 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n2);
-                GameBlock b4 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n3);
-                GameBlock b5 = cube.getBlock(tokens[0] + "_" + tokens[1] + "_" + n4);
-
-                if (b2 != null) {
-                    targets.add(b1);
-                }
-                if (b3 != null) {
-                    targets.add(b1);
-                }
-                if (b4 != null) {
-                    targets.add(b1);
-                }
-                if (b5 != null) {
-                    targets.add(b1);
-                }
-                */
                 r1 = attackers.get(user).bomb(targets);
                 return r1;
             } else {
-                /*
-                positive : shielding succeded
-                negative : already shielded/ no shields available
-                0: error
-                 */
                 return defenders.get(user).shield(cube.getBlock(block));
             }
         } catch (Exception e) {
