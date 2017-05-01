@@ -4,6 +4,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by lydakis-local on 4/2/17.
+ * Blocks make up the game cube
+ * the have x,y,z coordinates,
+ * a number of hitpoints
+ * an amount of shielding
+ * a shielder if the previous amount is not 0
  */
 public class GameBlock implements Serializable {
     private int x;
@@ -16,6 +21,14 @@ public class GameBlock implements Serializable {
     private transient Object hpLock;
     private transient Object shieldLock;
 
+    /**
+     * Constructor
+     *
+     * @param x  x coordinate
+     * @param y  y coordinate
+     * @param z  z coordinate
+     * @param hp hitpoints
+     */
     GameBlock(int x, int y, int z, int hp) {
         this.x = x;
         this.y = y;
@@ -28,11 +41,17 @@ public class GameBlock implements Serializable {
         this.shieldLock = new Object();
     }
 
+    /**
+     * resets the lock to enable deserialization
+     */
     void resetLock() {
         this.hpLock = new Object();
         this.shieldLock = new Object();
     }
 
+    /**
+     * @return the block as a X_Y_Z string
+     */
     @Override
     public String toString() {
         try {

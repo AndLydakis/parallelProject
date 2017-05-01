@@ -3,6 +3,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by lydakis-local on 4/30/17.
+ * Basic bot interface
  */
 public class Bot extends Thread {
 
@@ -13,12 +14,15 @@ public class Bot extends Thread {
     static final String[] roles = {"Defender", "Attacker"};
     static AtomicInteger counter = new AtomicInteger(0);
 
+    /**
+     * class used to keep track of a bot's stats
+     */
     class statsEntry {
         private int role;
         private int numOps;
         private int avgDelay;
 
-        public statsEntry(int role, int numOps, int avgDelay) {
+        statsEntry(int role, int numOps, int avgDelay) {
             this.role = role;
             this.numOps = numOps;
             this.avgDelay = avgDelay;
@@ -29,7 +33,7 @@ public class Bot extends Thread {
         }
     }
 
-    public Bot() {
+    Bot() {
     }
 
     public void run() {

@@ -24,6 +24,14 @@ public class Defender extends Player implements Serializable {
     private int baseCooldown = 5;
     private volatile boolean boosted;
 
+    /**
+     * Constructor
+     *
+     * @param un username
+     * @param s  score
+     * @param cr credits
+     * @throws RemoteException when rmi bad things happen
+     */
     Defender(String un, int s, int cr) throws RemoteException {
         super(un, 0, s, cr);
         synchronized (this) {
@@ -38,6 +46,17 @@ public class Defender extends Player implements Serializable {
         }
     }
 
+    /**
+     * Constructor
+     *
+     * @param un      username
+     * @param score   score
+     * @param credits credits
+     * @param repair  repair rating
+     * @param speed   speed rating
+     * @param items   number of shields
+     * @throws RemoteException when rmi fails
+     */
     Defender(String un, int score, int credits, int repair, int speed, int items) throws RemoteException {
         super(un, 1, score, credits);
         this.repairRating = repair;
@@ -50,6 +69,12 @@ public class Defender extends Player implements Serializable {
         this.shieldLock = new Object();
     }
 
+    /**
+     * Constructor from string
+     *
+     * @param s String s to create the user from
+     * @throws RemoteException when rmi fails
+     */
     public Defender(String s) throws RemoteException {
         super(s);
         this.speed = 1;
@@ -60,26 +85,54 @@ public class Defender extends Player implements Serializable {
         this.shieldLock = new Object();
     }
 
+    /**
+     * resets the lock to enable deserialization
+     */
     void resetLock() {
         this.shieldLock = new Object();
     }
 
+    /**
+     * sets the repair rating of the player
+     *
+     * @param a the amount of repair rating to set the repair rating to
+     */
     void setRepairRating(int a) {
         this.repairRating = a;
     }
 
+    /**
+     * sets the number of shields of the player
+     *
+     * @param a the number of shields of the player
+     */
     void setShields(int a) {
         this.shields = a;
     }
 
+    /**
+     * sets the speed of the player
+     *
+     * @param a the speed to set the speed to
+     */
     void setSpd(int a) {
         this.speed = a;
     }
 
+    /**
+     * sets the amount necessary need to level up repair rating
+     *
+     * @param a the amount necessary need to level up repair rating
+     */
     void setLevelRr(int a) {
         this.toLevelUpRr = a;
     }
 
+    /**
+     * sets the amount necessary need to level up speed
+     *
+     * @param a the amount necessary need to level up speed
+     */
     void setLevelSpd(int a) {
         this.toLevelUpSpeed = a;
     }
@@ -107,6 +160,12 @@ public class Defender extends Player implements Serializable {
         return (unameToString() + " " + getScore() + " " + getCredits() + " " + speed + " " + shields + " " + repairRating + " " + toLevelUpRr + " " + toLevelUpSpeed);
     }
 
+    /**
+     * print the defender as a string
+     *
+     * @return a string containing the defender's stats
+     * @throws RemoteException when rmi fails
+     */
     public String print() throws RemoteException {
         return super.print() +
                 "Role: Attacker\n" +
@@ -177,7 +236,7 @@ public class Defender extends Player implements Serializable {
      * Increase the repair rating if the player has enough credits
      *
      * @return true if the player had enough credits to level up repair rating, false otherwise
-     * @throws RemoteException
+     * @throws RemoteException if rmi fails
      */
     int levelUpRr() throws RemoteException {
         int cr = getCredits();
@@ -194,7 +253,7 @@ public class Defender extends Player implements Serializable {
      * Increase the speed of the if the player has enough credits
      *
      * @return true if the player had enough credits to level up speed, false otherwise
-     * @throws RemoteException
+     * @throws RemoteException if rmi fails
      */
     int levelUpSpeed() throws RemoteException {
         int cr = getCredits();
@@ -232,7 +291,7 @@ public class Defender extends Player implements Serializable {
         synchronized (shieldLock) {
             if (this.getShields() > 0) {
                 int res = b.shield(this, this.getRepairRating() * 5);
-                if(res>0){
+                if (res > 0) {
                     shields--;
                     lastRepair = System.nanoTime();
                 }
@@ -246,9 +305,9 @@ public class Defender extends Player implements Serializable {
      * Increases the number of available shields if the player has enough credits
      *
      * @return the number of shields available to the player
-     * @throws RemoteException
+     * @throws RemoteException if rmi fails
      */
-    public int buyShield() throws RemoteException {
+    int buyShield() throws RemoteException {
         synchronized (this.shieldLock) {
             if (super.removeCredits(shieldPrice)) {
                 shields++;
@@ -264,7 +323,7 @@ public class Defender extends Player implements Serializable {
      * Temporarily increase the player's speed if he has sufficient credits, and his boost is not in cooldown
      *
      * @return true if the boost succeeded, false otherwise
-     * @throws RemoteException
+     * @throws RemoteException if rmi fails
      */
     synchronized int boost() throws RemoteException {
         if ((System.nanoTime() - this.lastBoost) / 1e9 > boostCooldown) {
@@ -281,7 +340,7 @@ public class Defender extends Player implements Serializable {
     /**
      * Reset the player's speed back to the original pre-boost value
      *
-     * @throws RemoteException
+     * @throws RemoteException if rmi fails
      */
     private synchronized void resetBoost() throws RemoteException {
         if ((System.nanoTime() - this.lastBoost) / 1e9 > boostCooldown * 10) {

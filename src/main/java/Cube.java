@@ -1,28 +1,25 @@
-import jdk.nashorn.internal.ir.Block;
-
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Created by lydakis-local on 4/2/17.
+ * Creates a cube comprised of different layers
+ * that include a decreasing amount of blocks
  */
 public class Cube implements Serializable {
-    //    final int height;
-//    final int width;
-//    final int depth;
-    final int size;
-    //Do we want an array or a concurrent hashmap ?
-//    final GameBlock[][][] cube;
     final ConcurrentHashMap<String, GameBlock> cubeMap;
-    final ConcurrentLinkedQueue<Layer> layers;
+    private final ConcurrentLinkedQueue<Layer> layers;
     Layer currentLayer;
-    ConcurrentHashMap<String, GameBlock> activeCubes;
+    private ConcurrentHashMap<String, GameBlock> activeCubes;
 
+    /**
+     * Layers contain different faces
+     * At the moment the whole layer is returned to
+     * querying players
+     */
     class Layer implements Serializable {
         ArrayList<ArrayList<GameBlock>> faces;
         ArrayList<GameBlock> face1;
@@ -33,7 +30,14 @@ public class Cube implements Serializable {
         ArrayList<GameBlock> face6;
         ArrayList<GameBlock> layer;
 
-        public Layer(int level, int size, int blockHp) {
+        /**
+         * Creates a layer based on the given parameters
+         *
+         * @param level   the depth of the level in the cube
+         * @param size    the dimension of each face
+         * @param blockHp the hitpoints of each block
+         */
+        Layer(int level, int size, int blockHp) {
             System.err.println("Layer #" + level + ",  size " + size);
             face1 = new ArrayList<>();
             face2 = new ArrayList<>();
@@ -208,7 +212,12 @@ public class Cube implements Serializable {
 
         }
 
-        public boolean isAlive() throws RemoteException {
+        /**
+         * @return true if there are hitpoints remaining in
+         * the blocks in the layer, false otherwise
+         * @throws RemoteException when rmi bad things happen
+         */
+        boolean isAlive() throws RemoteException {
             if (layer == null) return false;
             if (layer.size() == 0) return false;
             for (GameBlock gb : layer) {
@@ -219,6 +228,11 @@ public class Cube implements Serializable {
             return false;
         }
 
+        /**
+         * print out the blocks in the layer
+         *
+         * @return every block in the layer as one string
+         */
         public String toString() {
             String s = "";
             for (GameBlock b : layer) {
@@ -237,7 +251,7 @@ public class Cube implements Serializable {
     }
 
     Cube(int size, int blockHp) {
-        this.size = size % 2 == 0 ? (size - 1) : size;
+        size = (size % 2 == 0) ? (size - 1) : size;
         cubeMap = new ConcurrentHashMap<>();
         activeCubes = new ConcurrentHashMap<>();
         layers = new ConcurrentLinkedQueue();
@@ -266,7 +280,7 @@ public class Cube implements Serializable {
             System.err.println(gb.toString());
         }
         System.err.println("--------------");
-        for(Layer l : layers) {
+        for (Layer l : layers) {
             for (GameBlock gb : l.layer) {
                 System.err.println(gb.toString());
             }

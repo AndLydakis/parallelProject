@@ -7,6 +7,8 @@ import java.util.Random;
 
 /**
  * Created by lydakis-local on 4/30/17.
+ * Creates rmi and socket attacker and defender bots that target
+ * the first block on their list until the game is over
  */
 public class BotGenerator {
 
@@ -23,12 +25,12 @@ public class BotGenerator {
 
     }
 
-    public BotGenerator(int num, String host, int port,
-                        double RMIAratio, double RMIDratio,
-                        double SocketAratio, double SocketDratio,
-                        long sleep,
-                        int attackerPrimary, int attackerSecondary, int attackerItems,
-                        int defenderPrimary, int defenderSecondary, int defenderItems) throws InterruptedException, IOException {
+    private BotGenerator(int num, String host, int port,
+                         double RMIAratio, double RMIDratio,
+                         double SocketAratio, double SocketDratio,
+                         long sleep,
+                         int attackerPrimary, int attackerSecondary, int attackerItems,
+                         int defenderPrimary, int defenderSecondary, int defenderItems) throws InterruptedException, IOException {
         String defString = defenderPrimary + "-" + defenderSecondary + "-" + defenderItems;
         String atkString = attackerPrimary + "-" + attackerSecondary + "-" + attackerItems;
         String service = "rmi://" + host + ":" + port + "/" + GameServer.SERVER_NAME;
@@ -129,7 +131,7 @@ public class BotGenerator {
         outputWriter.close();
     }
 
-    public BotGenerator(int num, String host, int port, double ratio, double ADratio, long sleep) throws InterruptedException, IOException {
+    private BotGenerator(int num, String host, int port, double ratio, double ADratio, long sleep) throws InterruptedException, IOException {
         String service = "rmi://" + host + ":" + port + "/" + GameServer.SERVER_NAME;
         RemoteState state = null;
         try {
@@ -185,10 +187,13 @@ public class BotGenerator {
         outputWriter.close();
     }
 
-    /*
-    Command Line arguments : numberOfBots  host port RMI/Socket-Ratio Attacker/DefenderRatio sleepTime(seconds)
-    AttackerPrimary AttackerSecondary AttackerItems DefenderPrimary DefenderSecondary DefenderItems
-
+    /**
+     * Command line program
+     *
+     * @param args numberOfBots host port RMI/Socket-Ratio Attacker/DefenderRatio sleepTime(seconds)
+     *             AttackerPrimary AttackerSecondary AttackerItems DefenderPrimary DefenderSecondary DefenderItems
+     * @throws InterruptedException when socket errors occur
+     * @throws IOException          when rmi errors occur
      */
     public static void main(String args[]) throws InterruptedException, IOException {
         System.err.println("Creating new bot generator");
