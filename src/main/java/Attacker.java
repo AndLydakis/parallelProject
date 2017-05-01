@@ -31,7 +31,7 @@ public class Attacker extends Player implements Serializable {
         this.bombs = 0;
     }
 
-    Attacker(String un, int score, int credits, int attack, int speed,  int bombs) throws RemoteException {
+    Attacker(String un, int score, int credits, int attack, int speed, int bombs) throws RemoteException {
         super(un, 1, score, credits);
         this.attackRating = attack;
         this.speed = speed;
@@ -203,22 +203,23 @@ public class Attacker extends Player implements Serializable {
         if (!canAttack()) return 0;
         int sum = 0;
         if (blocks.size() == 0) return sum;
+        int res = 0;
         if (bombs > 0) {
-            bombs--;
             try {
                 sum = blocks.get(0).attack(getAttackRating() * 5);
             } catch (Exception e) {
-
+                res++;
             }
             for (int i = 1; i < blocks.size(); i++) {
                 try {
                     sum += blocks.get(i).attack(getAttackRating() * 2);
                 } catch (Exception e) {
-
+                    res++;
                 }
             }
             lastAttack = System.nanoTime();
         }
+        if (res != blocks.size()) bombs--;
         if (sum > 0) gainCredits(sum);
         return sum;
     }

@@ -257,7 +257,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
                 break;
             }
             case "LVLATK": {
-                res = levelPrimary(tokens[1], 0);
+                res = levelPrimary(tokens[1], 1);
                 resp = "LVLATK-(" + res + ")-" + tokens[1];
                 break;
             }
@@ -267,8 +267,8 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
                 break;
             }
             case "LVLSPD": {
-                res = levelSecondary(tokens[1], 0);
-                resp = "LVLATK-(" + res + ")-" + tokens[1];
+                res = levelSecondary(tokens[1], Integer.parseInt(tokens[2]));
+                resp = "LVLSPD-(" + res + ")-" + tokens[1];
                 break;
             }
             case "GETTARGETS": {
@@ -470,6 +470,8 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
 
     @Override
     public int levelSecondary(String user, int role) throws RemoteException {
+        System.err.println(user);
+        System.err.println(role);
         try {
             if (role == 1) {
                 return attackers.get(user).levelUpSpeed();

@@ -23,7 +23,10 @@ public class BotGenerator {
 
     }
 
-    public BotGenerator(int num, String host, int port, double ratio, double ADratio, long sleep,
+    public BotGenerator(int num, String host, int port,
+                        double RMIAratio, double RMIDratio,
+                        double SocketAratio, double SocketDratio,
+                        long sleep,
                         int attackerPrimary, int attackerSecondary, int attackerItems,
                         int defenderPrimary, int defenderSecondary, int defenderItems) throws InterruptedException, IOException {
         String defString = defenderPrimary + "-" + defenderSecondary + "-" + defenderItems;
@@ -39,16 +42,42 @@ public class BotGenerator {
         System.err.println("Number of bots: " + num);
         System.err.println("Host: " + host);
         System.err.println("Port: " + port);
-        System.err.println("RMI/Socket ratio: " + ratio);
-        System.err.println("Attacker/Defender ratio: " + ADratio);
+        System.err.println("RMIAttacker ratio: " + RMIAratio);
+        System.err.println("RMIDefender ratio: " + RMIDratio);
+        System.err.println("SocketAttacker ratio: " + SocketAratio);
+        System.err.println("SocketDefender ratio: " + SocketDratio);
         System.err.println("Sleep(seconds): " + sleep);
         Random random = new Random();
         ArrayList<Bot> bots = new ArrayList<>();
         for (int i = 0; i < num; i++) {
             String username;
             String regString;
-            int role = random.nextDouble() > ADratio ? 0 : 1;
+//            int role = random.nextDouble() > ADratio ? 0 : 1;
 
+            double roll = random.nextDouble();
+            System.err.println(roll);
+            System.err.println(RMIAratio);
+            System.err.println(RMIAratio + RMIDratio);
+            System.err.println(RMIAratio + RMIDratio + SocketAratio);
+            System.err.println(RMIAratio + RMIDratio + SocketAratio + SocketDratio);
+            if (roll < RMIAratio) {
+                username = "RMIAttacker:" + getSaltString();
+                regString = username + "-" + 1 + "-" + atkString;
+                bots.add(new RmiBot(state, username, 1, (long) (sleep * 1e9), regString));
+            } else if (roll < (RMIDratio + RMIAratio)) {
+                username = "RMIDefender:" + getSaltString();
+                regString = username + "-" + 0 + "-" + defString;
+                bots.add(new RmiBot(state, username, 1, (long) (sleep * 1e9), regString));
+            } else if (roll < (RMIDratio + RMIAratio + SocketAratio)) {
+                username = "SocketAttacker:" + getSaltString();
+                regString = username + "-" + 1 + "-" + atkString;
+                bots.add(new SocketBot(username, 1, host, port, (long) (sleep * 1e9), regString));
+            } else {
+                username = "SocketDefender:" + getSaltString();
+                regString = username + "-" + 0 + "-" + defString;
+                bots.add(new SocketBot(username, 0, host, port, (long) (sleep * 1e9), regString));
+            }
+            /*
             if (random.nextDouble() > ratio) {
                 username = "Socket" + Bot.roles[role] + ":" + getSaltString();
                 if (role == 1) {
@@ -66,7 +95,9 @@ public class BotGenerator {
                 }
                 bots.add(new RmiBot(state, username, role, (long) (sleep * 1e9), regString));
             }
+            */
         }
+
         for (Bot b : bots) {
             b.start();
         }
@@ -75,7 +106,9 @@ public class BotGenerator {
         }
         System.err.println("Saving stats");
         BufferedWriter outputWriter = new BufferedWriter(
-                new FileWriter(System.getProperty("user.home") + "/RMISTATS_" + num + "_" + ratio + "_" + ADratio + ".csv"));
+                new FileWriter(System.getProperty("user.home") + "/RMISTATS_" + num + "_" +
+                        RMIAratio + "_" + RMIDratio + "_" + SocketAratio + "_" + SocketDratio +
+                        ".csv"));
         for (Bot.statsEntry se : Bot.attackStats) {
             outputWriter.write(se.toString());
         }
@@ -84,7 +117,9 @@ public class BotGenerator {
         }
         outputWriter.close();
         outputWriter = new BufferedWriter(
-                new FileWriter(System.getProperty("user.home") + "/SOCKETSTATS_" + num + "_" + ratio + "_" + ADratio + ".csv"));
+                new FileWriter(System.getProperty("user.home") + "/SOCKETSTATS_" + num + "_" +
+                        RMIAratio + "_" + RMIDratio + "_" + SocketAratio + "_" + SocketDratio +
+                        ".csv"));
         for (Bot.statsEntry se : Bot.attackStatsSocket) {
             outputWriter.write(se.toString());
         }
@@ -130,7 +165,8 @@ public class BotGenerator {
         }
         System.err.println("Saving stats");
         BufferedWriter outputWriter = new BufferedWriter(
-                new FileWriter(System.getProperty("user.home") + "/RMISTATS_" + num + "_" + ratio + "_" + ADratio + ".csv"));
+                new FileWriter(System.getProperty("user.home") +
+                        "/RMISTATS_" + num + "_" + ratio + "_" + ADratio + ".csv"));
         for (Bot.statsEntry se : Bot.attackStats) {
             outputWriter.write(se.toString());
         }
@@ -161,11 +197,12 @@ public class BotGenerator {
                     Integer.parseInt(args[2]), Double.parseDouble(args[3]),
                     Double.parseDouble(args[4]), Long.parseLong(args[5]));
         } else {
-            new BotGenerator(Integer.parseInt(args[0]), args[1],
-                    Integer.parseInt(args[2]), Double.parseDouble(args[3]),
-                    Double.parseDouble(args[4]), Long.parseLong(args[5]),
-                    Integer.parseInt(args[6]), Integer.parseInt(args[7]), Integer.parseInt(args[8]),
-                    Integer.parseInt(args[9]), Integer.parseInt(args[10]), Integer.parseInt(args[11]));
+            new BotGenerator(Integer.parseInt(args[0]), args[1], Integer.parseInt(args[2]),
+                    Double.parseDouble(args[3]), Double.parseDouble(args[4]),
+                    Double.parseDouble(args[5]), Double.parseDouble(args[6]),
+                    Long.parseLong(args[7]),
+                    Integer.parseInt(args[8]), Integer.parseInt(args[9]), Integer.parseInt(args[10]),
+                    Integer.parseInt(args[11]), Integer.parseInt(args[12]), Integer.parseInt(args[13]));
         }
     }
 }

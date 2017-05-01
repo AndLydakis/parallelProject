@@ -143,9 +143,9 @@ public class SocketBot extends Bot {
                         running = false;
                     }
                 } catch (Exception e) {
+                    running = false;
                     System.err.println(username + " Game crashed, we apologise for the inconvenience");
                 }
-                System.exit(0);
             }
         }
         return 0;
@@ -195,19 +195,23 @@ public class SocketBot extends Bot {
         System.err.println("Trying to register " + roles[role] + " " + username);
         try {
             if (this.primary != -1) {
-                if (sendRequest("REGISTER-" + username + "-" + role + "-0-0-" + primary + "-" + secondary + "-" + items) != 1)
+                if (sendRequest("REGISTER-" + username + "-" + role + "-0-0-" + primary + "-" + secondary + "-" + items) != 1) {
+                    System.err.println("Failed to register " + username);
                     return;
+                }
             } else {
-                if (sendRequest("REGISTER-" + username + "-" + role) != 1)
-                    return;
-                if (role == 1) {
-                    System.err.println("Created new Socket attacker bot: " + username);
-                } else {
-                    System.err.println("Created new Socket defender bot: " + username);
+                if (sendRequest("REGISTER-" + username + "-" + role) != 1) {
+                    System.err.println("Failed to register " + username);
                 }
             }
+            if (role == 1) {
+                System.err.println("Created new Socket attacker bot #" + counter.incrementAndGet() + ": " + username);
+            } else {
+                System.err.println("Created new Socket defender bot #" + counter.incrementAndGet() + ": " + username);
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            running = false;
         }
         while (running) {
             try {
@@ -245,12 +249,15 @@ public class SocketBot extends Bot {
                 }
 
             } catch (Exception e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                running = false;
                 if (numOps != 0) {
                     avgDelay /= numOps;
                     System.err.println(username + " adding stats");
                     addStats();
                     return;
+                } else {
+                    System.err.println(username + " no ops performed");
                 }
             }
         }
@@ -258,6 +265,8 @@ public class SocketBot extends Bot {
             avgDelay /= numOps;
             System.err.println(username + " adding stats");
             addStats();
+        } else {
+            System.err.println(username + " no ops performed");
         }
     }
 }

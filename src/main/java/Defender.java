@@ -231,9 +231,12 @@ public class Defender extends Player implements Serializable {
         if (!canRepair()) return 0;
         synchronized (shieldLock) {
             if (this.getShields() > 0) {
-                shields--;
-                lastRepair = System.nanoTime();
-                return b.shield(this, this.getRepairRating() * 5);
+                int res = b.shield(this, this.getRepairRating() * 5);
+                if(res>0){
+                    shields--;
+                    lastRepair = System.nanoTime();
+                }
+                return res;
             }
         }
         return 0;

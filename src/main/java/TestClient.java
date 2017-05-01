@@ -332,6 +332,7 @@ public class TestClient {
             }
             case 8: {
                 repeat();
+                break;
             }
         }
     }
@@ -463,6 +464,7 @@ public class TestClient {
             }
             case 8: {
                 repeat();
+                break;
             }
         }
     }

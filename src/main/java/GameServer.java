@@ -117,7 +117,6 @@ public class GameServer {
 
 //        System.setProperty("java.rmi.server.hostname", "127.0.0.1");
 
-
         if (registry != null)
             throw new IllegalStateException("Server already running");
         Registry reg;

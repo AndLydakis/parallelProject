@@ -119,6 +119,7 @@ public class SocketClient {
                 choice = -1;
             }
         } while (!attackerOptions.contains(choice));
+        System.err.println("Choice : " + choice);
         processAttackerOptions(choice);
     }
 
@@ -139,11 +140,11 @@ public class SocketClient {
 //                int suc = state.requestPrimary(username, role, bl);
                 int suc = sendRequest("ATTACK-" + uName + "-" + bl);
                 if (suc > 0) {
-                    System.err.println("Attacked Block for " + suc + " damage");
+//                    System.err.println("Attacked Block for " + suc + " damage");
                 } else if (suc == 0) {
-                    System.err.println("Block already at 0 hitpoints");
+//                    System.err.println("Block already at 0 hitpoints");
                 } else {
-                    System.err.println("Could not reach block");
+//                    System.err.println("Could not reach block");
                 }
                 lastAction = 2;
                 lastTarget = bl;
@@ -155,11 +156,11 @@ public class SocketClient {
 //                int suc = state.requestSecondary(username, role, bl);
                 int suc = sendRequest("BOMB-" + uName + "-" + bl);
                 if (suc > 0) {
-                    System.err.println("Bomb successful for " + suc + " damage");
+//                    System.err.println("Bomb successful for " + suc + " damage");
                 } else if (suc == 0) {
-                    System.err.println("Block is destroyed");
+//                    System.err.println("Could not bomb block");
                 } else {
-                    System.err.println("Could not reach block");
+//                    System.err.println("Could not reach block");
                 }
                 lastAction = 3;
                 lastTarget = bl;
@@ -169,11 +170,11 @@ public class SocketClient {
 //                int suc = state.buy(username, role);
                 int suc = sendRequest("BUYBOMB-" + uName);
                 if (suc > 0) {
-                    System.err.println("Bomb Purchased: " + suc + " available bombs");
+//                    System.err.println("Bomb Purchased: " + suc + " available bombs");
                 } else if (suc < 0) {
-                    System.err.println("Need " + (-suc) + " credits to buy a bomb");
+//                    System.err.println("Need " + (-suc) + " credits to buy a bomb");
                 } else {
-                    System.err.println("Purchase failed");
+//                    System.err.println("Purchase failed");
                 }
                 lastAction = 4;
                 break;
@@ -182,36 +183,36 @@ public class SocketClient {
 //                int suc = state.levelPrimary(username, role);
                 int suc = sendRequest("LVLATK-" + uName);
                 if (suc > 0) {
-                    System.err.println("Attack Rating Increased to " + suc);
+//                    System.err.println("Attack Rating Increased to " + suc);
                 } else if (suc < 0) {
-                    System.err.println("Need " + (-suc) + " to increase attack rating");
+//                    System.err.println("Need " + (-suc) + " to increase attack rating");
                 } else {
-                    System.err.println("Level up failed");
+//                    System.err.println("Level up failed");
                 }
                 lastAction = 5;
                 break;
             }
             case 6: {
-                int suc = sendRequest("LVLSPD-" + uName);
+                int suc = sendRequest("LVLSPD-" + uName + "-" + role);
                 if (suc > 0) {
-                    System.err.println("Speed Increased to " + suc);
+//                    System.err.println("Speed Increased to " + suc);
                 } else if (suc < 0) {
-                    System.err.println("Need " + (-suc) + " to increase speed");
+//                    System.err.println("Need " + (-suc) + " to increase speed");
                 } else {
-                    System.err.println("Level up failed");
+//                    System.err.println("Level up failed");
                 }
                 lastAction = 6;
                 break;
             }
             case 7: {
 //                int suc = state.requestBoost(username, role);
-                int suc = sendRequest("BOOST-" + uName);
+                int suc = sendRequest("BOOST-" + uName + "-" + role);
                 if (suc > 0) {
-                    System.err.println("Speed Temporarily Increased");
+//                    System.err.println("Speed Temporarily Increased");
                 } else if (suc < 0) {
-                    System.err.println("Cannot Boost yet");
+//                    System.err.println("Cannot Boost yet");
                 } else {
-                    System.err.println("Could not reach player");
+//                    System.err.println("Could not reach player");
                 }
                 lastAction = 7;
                 break;
@@ -225,9 +226,12 @@ public class SocketClient {
             case 10: {
                 logout();
                 System.exit(0);
+                break;
             }
             case 8: {
+                System.err.println("repeat 1");
                 repeat();
+                break;
             }
         }
     }
@@ -278,11 +282,11 @@ public class SocketClient {
 //                int suc = state.requestPrimary(username, role, bl);
                 int suc = sendRequest("REPAIR-" + uName + "-" + bl);
                 if (suc > 0) {
-                    System.err.println("Repaired Block for " + suc + " hitpoints");
+//                    System.err.println("Repaired Block for " + suc + " hitpoints");
                 } else if (suc == 0) {
-                    System.err.println("Block already at full hitpoints or no shields available");
+//                    System.err.println("Block already at full hitpoints or no shields available");
                 } else {
-                    System.err.println("Could not reach block to repair");
+//                    System.err.println("Could not reach block to repair");
                 }
                 lastAction = 2;
                 lastTarget = bl;
@@ -294,11 +298,11 @@ public class SocketClient {
 //                int suc = state.requestSecondary(username, role, bl);
                 int suc = sendRequest("SHIELD-" + uName + "-" + bl);
                 if (suc > 0) {
-                    System.err.println("Block was shielded with " + suc + " shield points");
+//                    System.err.println("Block was shielded with " + suc + " shield points");
                 } else if (suc == 0) {
-                    System.err.println("Block is already shielded");
+//                    System.err.println("Block is already shielded");
                 } else {
-                    System.err.println("Could not reach block to attack");
+//                    System.err.println("Could not reach block to attack");
                 }
                 lastAction = 3;
                 lastTarget = bl;
@@ -308,11 +312,11 @@ public class SocketClient {
 //                int suc = state.buy(username, role);
                 int suc = sendRequest("BUYSHIELD-" + uName);
                 if (suc > 0) {
-                    System.err.println("Shield Purchased: " + suc + " available shields");
+//                    System.err.println("Shield Purchased: " + suc + " available shields");
                 } else if (suc < 0) {
-                    System.err.println("Need " + (-suc) + " credits to buy a shield");
+//                    System.err.println("Need " + (-suc) + " credits to buy a shield");
                 } else {
-                    System.err.println("Purchase failed");
+//                    System.err.println("Purchase failed");
                 }
                 lastAction = 4;
                 break;
@@ -321,24 +325,24 @@ public class SocketClient {
                 int suc = sendRequest("LVLREP-" + uName);
 //                int suc = state.levelPrimary(username, role);
                 if (suc > 0) {
-                    System.err.println("Repair Rating Increased to " + suc);
+//                    System.err.println("Repair Rating Increased to " + suc);
                 } else if (suc < 0) {
-                    System.err.println("Need " + (-suc) + " to increase repair rating");
+//                    System.err.println("Need " + (-suc) + " to increase repair rating");
                 } else {
-                    System.err.println("Level up failed");
+//                    System.err.println("Level up failed");
                 }
                 lastAction = 5;
                 break;
             }
             case 6: {
 //                int suc = state.levelSecondary(username, role);
-                int suc = sendRequest("LVLSPD-" + uName);
+                int suc = sendRequest("LVLSPD-" + uName + "-" + role);
                 if (suc > 0) {
-                    System.err.println("Speed Increased to " + suc);
+//                    System.err.println("Speed Increased to " + suc);
                 } else if (suc < 0) {
-                    System.err.println("Need " + (-suc) + " to increase speed");
+//                    System.err.println("Need " + (-suc) + " to increase speed");
                 } else {
-                    System.err.println("Level up failed");
+//                    System.err.println("Level up failed");
                 }
                 lastAction = 6;
                 break;
@@ -347,11 +351,11 @@ public class SocketClient {
 //                int suc = state.requestBoost(username, role);
                 int suc = sendRequest("BOOST-" + uName + "-" + role);
                 if (suc > 0) {
-                    System.err.println("Speed Temporarily Increased");
+//                    System.err.println("Speed Temporarily Increased");
                 } else if (suc < 0) {
-                    System.err.println("Cannot Boost yet");
+//                    System.err.println("Cannot Boost yet");
                 } else {
-                    System.err.println("Could not reach player");
+//                    System.err.println("Could not reach player");
                 }
                 lastAction = 7;
                 break;
@@ -367,7 +371,9 @@ public class SocketClient {
                 System.exit(0);
             }
             case 8: {
+                System.err.println("repeat 2");
                 repeat();
+                break;
             }
         }
     }
@@ -381,10 +387,9 @@ public class SocketClient {
     }
 
     private int processReply(String reply) {
-        System.err.println("Processing: " + reply);
+//        System.err.println("Processing: " + reply);
         String tokens[] = reply.split("-");
-        System.err.println(tokens);
-        int res;
+        int res = -1;
         switch (tokens[0]) {
             case "REGISTER": {
                 if (Integer.parseInt(tokens[1]) == 1) {
@@ -426,7 +431,7 @@ public class SocketClient {
                 if (res > 0) {
                     System.err.println("Successfully hit for " + res + " damage");
                 } else if (res == 0) {
-                    System.err.println("Block already destroyed");
+                    System.err.println("Attack on cooldown");
                 } else {
                     System.err.println("Could not reach block");
                 }
@@ -438,7 +443,7 @@ public class SocketClient {
                 if (res > 0) {
                     System.err.println("Successfully repaired " + res + " hitpoints");
                 } else if (res == 0) {
-                    System.err.println("Block already at full hitpoints");
+                    System.err.println("Repair on cooldown");
                 } else {
                     System.err.println("Could not reach block");
                 }
@@ -462,7 +467,7 @@ public class SocketClient {
                 if (res > 0) {
                     System.err.println("Successfully shielded for " + res + " damage");
                 } else if (res == 0) {
-                    System.err.println("Block already destroyed");
+                    System.err.println("Could not shield");
                 } else {
                     System.err.println("Could not reach block");
                 }
@@ -493,6 +498,7 @@ public class SocketClient {
                 break;
             }
             case "LVLATK": {
+                System.err.println(reply);
                 res = Integer.parseInt(reply.substring(
                         reply.indexOf("(") + 1, reply.indexOf(")")));
                 if (res > 0) {
@@ -500,7 +506,7 @@ public class SocketClient {
                 } else if (res == 0) {
                     System.err.println("Need " + (-res) + " credits to level up attack rating");
                 } else {
-                    System.err.println("Could perform level up");
+                    System.err.println("Could not perform level up");
                 }
                 break;
             }
@@ -549,7 +555,7 @@ public class SocketClient {
                         reply.indexOf("(") + 1, reply.indexOf(")")));
                 if (res == 0) break;
                 try {
-                    if(res == 666){
+                    if (res == 666) {
                         System.err.println("Game crashed, we apologise for the inconvenience");
                     }
                     if (res == 1) {
@@ -562,13 +568,13 @@ public class SocketClient {
                         System.err.println("----- Top Players -----");
                         System.err.println(tokens[2].replace(".", "\n"));
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     System.err.println("Game crashed, we apologise for the inconvenience");
                 }
                 System.exit(0);
             }
         }
-        return 0;
+        return res;
     }
 
     private boolean Register(String username, int role) throws IOException {
@@ -625,6 +631,7 @@ public class SocketClient {
     }
 
     private void repeat() throws IOException {
+        System.err.println("Repeating");
         System.err.println(lastAction);
         System.err.println(lastTarget);
         if (lastAction == 1) {
@@ -635,36 +642,36 @@ public class SocketClient {
             int suc = requestPrimary();
             if (suc > 0) {
                 if (role == 1) {
-                    System.err.println("Attack Successful for " + suc + " hitpoints");
+//                    System.err.println("Attack Successful for " + suc + " hitpoints");
                 } else {
-                    System.err.println("Repair Successful for " + suc + " hitpoints");
+//                    System.err.println("Repair Successful for " + suc + " hitpoints");
                 }
             } else if (suc == 0) {
                 if (role == 1) {
-                    System.err.println("Could not attack block");
+//                    System.err.println("Could not attack block");
                 } else {
-                    System.err.println("Could not repair block");
+//                    System.err.println("Could not repair block");
                 }
             } else {
-                System.err.println("Block unreachable");
+//                System.err.println("Block unreachable");
             }
         } else if (lastAction == 3) {
 //            int suc = state.requestSecondary(username, role, lastTarget);
             int suc = requestSecondary();
             if (suc > 0) {
                 if (role == 1) {
-                    System.err.println("Bomb Successful for " + suc + " points");
+//                    System.err.println("Bomb Successful for " + suc + " points");
                 } else {
-                    System.err.println("Shield Successful for " + suc + " points");
+//                    System.err.println("Shield Successful for " + suc + " points");
                 }
             } else if (suc == 0) {
                 if (role == 1) {
-                    System.err.println("Could not bomb block");
+//                    System.err.println("Could not bomb block");
                 } else {
-                    System.err.println("Could not shield block");
+//                    System.err.println("Could not shield block");
                 }
             } else {
-                System.err.println("Block unreachable");
+//                System.err.println("Block unreachable");
             }
 
         } else if (lastAction == 4) {
@@ -672,11 +679,11 @@ public class SocketClient {
             int suc = requestBuy();
             if (role == 1) {
                 if (suc > 0) {
-                    System.err.println("Bought bomb, " + suc + " in inventory");
+//                    System.err.println("Bought bomb, " + suc + " in inventory");
                 } else if (suc < 0) {
-                    System.err.println("Need " + (-suc) + " credits to buy a bomb");
+//                    System.err.println("Need " + (-suc) + " credits to buy a bomb");
                 } else {
-                    System.err.println("Purchase request could not go through");
+//                    System.err.println("Purchase request could not go through");
                 }
             } else {
                 if (suc > 0) {
@@ -735,6 +742,7 @@ public class SocketClient {
 
     private int sendRequest(String req) throws IOException {
         try {
+
             socket = new Socket(host, port);
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -750,12 +758,12 @@ public class SocketClient {
                     while ((line = in.readLine()) != null && line.length() != 0) {
                         resp.append(line + ".");
                     }
-                    System.err.println("Response received :" + resp);
+//                    System.err.println("Response received :" + resp);
 //                resp = processReply(in.readLine());
                     int ret = processReply(resp.toString());
                     return ret;
                 } catch (Exception e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
             }
 
