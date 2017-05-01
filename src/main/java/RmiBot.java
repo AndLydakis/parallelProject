@@ -98,19 +98,23 @@ public class RmiBot extends Bot {
             while (state.isAlive()) {
 //            while (state.isAlive() && running) {
 //            while ((targets = state.getTargets()) != null && running) {
-                if (targets == null) {
+                try {
+                    if (targets == null) {
+                        start = System.nanoTime();
+                        targets = state.getTargets();
+                        avgDelay += (System.nanoTime() - start);
+                        numOps++;
+                        continue;
+                    }
                     start = System.nanoTime();
-                    targets = state.getTargets();
+                    selectAttack();
                     avgDelay += (System.nanoTime() - start);
                     numOps++;
-                    continue;
-                }
-                start = System.nanoTime();
-                selectAttack();
-                avgDelay += (System.nanoTime() - start);
-                numOps++;
-                start = System.nanoTime();
-                while ((System.nanoTime() - start) > sleep) {
+                    start = System.nanoTime();
+                    while ((System.nanoTime() - start) > sleep) {
+                    }
+                } catch (Exception e) {
+                    System.err.println(username + " inner Exception");
                 }
             }
             System.err.println("Game over");
