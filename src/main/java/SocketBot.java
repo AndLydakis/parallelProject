@@ -97,8 +97,9 @@ public class SocketBot extends Bot {
                 System.err.println("Could not register");
                 return -1;
             }
-            case "TARGETS": {
+            case "GETTARGETS": {
                 targets = tokens[1].replace(".", "\n");
+                if (targets == null) running = false;
                 break;
             }
             case "LOGIN": {
