@@ -84,7 +84,7 @@ public class RmiBot extends Bot {
                 }
             }
         } catch (RemoteException re) {
-//            re.printStackTrace();
+            re.printStackTrace();
             running = false;
             return;
         }
@@ -121,7 +121,7 @@ public class RmiBot extends Bot {
                 System.err.println(username + " no ops performed");
             }
         } catch (Exception e) {
-//            e.printStackTrace();
+            e.printStackTrace();
             running = false;
             System.err.println(username + " adding stats");
             if (numOps != 0) {
