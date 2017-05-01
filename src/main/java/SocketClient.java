@@ -631,9 +631,6 @@ public class SocketClient {
     }
 
     private void repeat() throws IOException {
-        System.err.println("Repeating");
-        System.err.println(lastAction);
-        System.err.println(lastTarget);
         if (lastAction == 1) {
             sendRequest("GETTARGETS");
             System.err.println(targets);

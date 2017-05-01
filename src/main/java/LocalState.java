@@ -365,8 +365,8 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
                 if (cube.getBlock(block).getHp() <= 0) {
                     System.err.println("Removing " + cube.getBlock(block).toString());
                     int pos = cube.currentLayer.layer.indexOf(cube.getBlock(block));
-                    System.err.println(pos);
-                    System.err.println(cube.currentLayer.layer.remove(pos));
+//                    System.err.println(pos);
+//                    System.err.println(cube.currentLayer.layer.remove(pos));
                 }
             } catch (Exception e) {
 //                e.printStackTrace();
@@ -470,8 +470,6 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
 
     @Override
     public int levelSecondary(String user, int role) throws RemoteException {
-        System.err.println(user);
-        System.err.println(role);
         try {
             if (role == 1) {
                 return attackers.get(user).levelUpSpeed();
