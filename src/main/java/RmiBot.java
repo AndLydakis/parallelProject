@@ -41,6 +41,10 @@ public class RmiBot extends Bot {
 //        System.err.println("RMI " + roles[role] + " " + username + " targeting " + tokens[0].split(":")[0]);
         int res = state.requestPrimary(username, role, tokens[0].split(":")[0]);
         if (res < 0) {
+            long start = System.nanoTime();
+            targets = state.getTargets();
+            avgDelay += (System.nanoTime() - start);
+            numOps++;
 //            System.err.println(roles[role] + " " + username + " Could not contact server");
 //            running = false;
         }
