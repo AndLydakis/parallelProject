@@ -365,6 +365,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
                 if (cube.getBlock(block).getHp() <= 0) {
                     System.err.println("Removing " + cube.getBlock(block).toString());
                     int pos = cube.currentLayer.layer.indexOf(cube.getBlock(block));
+                    cube.currentLayer.layer.remove(pos);
 //                    System.err.println(pos);
 //                    System.err.println(cube.currentLayer.layer.remove(pos));
                 }
