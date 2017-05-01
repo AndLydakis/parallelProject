@@ -212,11 +212,13 @@ public class SocketBot extends Bot {
             }
         } catch (IOException e) {
 //            e.printStackTrace();
+            System.err.println(username+" exception 1");
             running = false;
         }
         while (running) {
             try {
                 if (sendRequest("GETEND") != 0) {
+                    System.err.println(username+" get end != 0");
                     running = false;
                     continue;
                 }
@@ -226,9 +228,11 @@ public class SocketBot extends Bot {
                     avgDelay += (System.nanoTime() - start);
                     numOps++;
                     if (targets == null) {
+                        System.err.println(username+" exception 2");
                         running = false;
                         continue;
                     } else if (targets.equals("")) {
+                        System.err.println(username+" exception 3");
                         running = false;
                         continue;
                     } else {
@@ -253,6 +257,7 @@ public class SocketBot extends Bot {
 
             } catch (Exception e) {
 //                e.printStackTrace();
+                System.err.println(username+" exception 4");
                 running = false;
                 if (numOps != 0) {
                     avgDelay /= numOps;
