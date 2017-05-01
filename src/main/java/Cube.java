@@ -280,8 +280,13 @@ public class Cube implements Serializable {
         return (w + "_" + h + "_" + d);
     }
 
-    public boolean isAlive() throws RemoteException {
-        if (currentLayer == null) return false;
+    synchronized boolean isAlive() throws RemoteException {
+        if (currentLayer == null) {
+            currentLayer = layers.poll();
+            if (currentLayer == null) {
+                return false;
+            }
+        }
         if (currentLayer.isAlive()) {
             return true;
         } else {
