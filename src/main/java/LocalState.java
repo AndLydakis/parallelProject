@@ -179,18 +179,18 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         try {
             if (!this.cube.isAlive()) {
                 //Attackers won
-                System.err.println("Cube destroyed, attackers won!");
+//                System.err.println("Cube destroyed, attackers won!");
                 return false;
             }
             long timePassed = System.nanoTime() - start;
             if (timePassed > timeLimit) {
                 timeleft = timeLimit - timePassed;
-                System.err.println("Cube survived, defenders won");
+//                System.err.println("Cube survived, defenders won");
                 return false;
             }
 //            System.err.println(this.cube.isAlive());
         } catch (NullPointerException npe) {
-            System.err.println("Could not find cube, something went wrong");
+//            System.err.println("Could not find cube, something went wrong");
             return false;
         }
         return true;

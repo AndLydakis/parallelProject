@@ -110,7 +110,6 @@ public class RmiBot extends Bot {
                     }
                 } catch (Exception e) {
 //                    System.err.println(username + " inner Exception");
-                    continue;
                 }
             }
             System.err.println("Game over");
