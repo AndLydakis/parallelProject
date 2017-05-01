@@ -108,6 +108,7 @@ public class RmiBot extends Bot {
                 while ((System.nanoTime() - start) > sleep) {
                 }
             }
+            System.err.println("Game over");
             System.err.println(username + " adding stats");
             if (numOps != 0) {
                 avgDelay /= numOps;
