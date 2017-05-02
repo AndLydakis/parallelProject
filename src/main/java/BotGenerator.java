@@ -60,7 +60,7 @@ public class BotGenerator {
 
             String username = "RMIDefender:" + getSaltString();
             String regString = username + "-" + 0 + "-" + defString;
-            bots.add(new RmiBot(state, username, 1, (long) (sleep * 1e9), regString));
+            bots.add(new RmiBot(state, username, 0, (long) (sleep * 1e9), regString));
         }
 
         for (int i = 0; i < SocketA; i++) {
