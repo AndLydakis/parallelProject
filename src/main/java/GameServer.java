@@ -185,8 +185,11 @@ public class GameServer {
     /**
      * Command line program
      * Arguments : port cube_size block_hp time_limit_seconds
+     *
+     * @param args Commandline arguments : port server_name cube_size block_hitpoints time_limit(seconds)
+     * @throws IOException if socket communication fails
      */
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException {
         int port = 0;
         if (args.length > 0) {
             port = Integer.parseInt(args[0]);

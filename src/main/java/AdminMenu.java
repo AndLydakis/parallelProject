@@ -11,7 +11,7 @@ import java.util.Scanner;
  * LEAD print leaderboard
  * STATUS print current layer blocks with their hitpoints
  * SET alter the stats of players
- * SAVE <filename>savefile</filename> export the current state as
+ * SAVE SAVEFILE export the current state as
  * a serialized object
  */
 public class AdminMenu extends Thread {

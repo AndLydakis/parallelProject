@@ -176,6 +176,7 @@ public class Defender extends Player implements Serializable {
      * Return the speed of the player
      *
      * @return the speed of the player
+     * @throws RemoteException if rmi fails
      */
     public double getSpeed() throws RemoteException {
         return this.speed;
@@ -203,6 +204,7 @@ public class Defender extends Player implements Serializable {
      * Returns true if the player can place another shield, false otherwise
      *
      * @return true if the player can place another shield, false otherwise
+     * @throws RemoteException if rmi fails
      */
     public boolean canShield() throws RemoteException {
         return ((System.nanoTime() - this.lastRepair) > this.speed);
@@ -212,6 +214,7 @@ public class Defender extends Player implements Serializable {
      * Return true if the player can repair a block, false otherwise
      *
      * @return true if the player can repair a block, false otherwise
+     * @throws RemoteException if rmi fails
      */
     private boolean canRepair() throws RemoteException {
         resetBoost();
@@ -224,6 +227,7 @@ public class Defender extends Player implements Serializable {
 
     /**
      * @return true if the player can boost his cooldowns, false otherwise
+     * @throws RemoteException if rmi fail
      */
     public boolean canBoost() throws RemoteException {
         return ((System.nanoTime() - this.lastBoost) > getBoostCooldown());
