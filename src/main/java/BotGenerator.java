@@ -67,7 +67,7 @@ public class BotGenerator {
             } else if (roll < (RMIDratio + RMIAratio)) {
                 username = "RMIDefender:" + getSaltString();
                 regString = username + "-" + 0 + "-" + defString;
-                bots.add(new RmiBot(state, username, 1, (long) (sleep * 1e9), regString));
+                bots.add(new RmiBot(state, username, 0, (long) (sleep * 1e9), regString));
             } else if (roll < (RMIDratio + RMIAratio + SocketAratio)) {
                 username = "SocketAttacker:" + getSaltString();
                 regString = username + "-" + 1 + "-" + atkString;
