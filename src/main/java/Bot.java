@@ -19,9 +19,9 @@ public class Bot extends Thread {
     class statsEntry {
         private int role;
         private int numOps;
-        private int avgDelay;
+        private long avgDelay;
 
-        statsEntry(int role, int numOps, int avgDelay) {
+        statsEntry(int role, int numOps, long avgDelay) {
             this.role = role;
             this.numOps = numOps;
             this.avgDelay = avgDelay;

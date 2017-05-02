@@ -13,7 +13,7 @@ public class RmiBot extends Bot {
     private int primary;
     private int secondary;
     private int items;
-    private int avgDelay;
+    private long avgDelay;
     private long sleep;
     String username;
     private String regString;
