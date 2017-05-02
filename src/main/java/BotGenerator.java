@@ -23,9 +23,9 @@ public class BotGenerator {
 
     }
 
-    private BotGenerator(int num, String host, int port,
-                         double RMIAratio, double RMIDratio,
-                         double SocketAratio, double SocketDratio,
+    private BotGenerator(String host, int port,
+                         int RMIA, int RMID,
+                         int SocketA, int SocketD,
                          long sleep,
                          int attackerPrimary, int attackerSecondary, int attackerItems,
                          int defenderPrimary, int defenderSecondary, int defenderItems) throws InterruptedException, IOException {
@@ -33,69 +33,46 @@ public class BotGenerator {
         String atkString = attackerPrimary + "-" + attackerSecondary + "-" + attackerItems;
         String service = "rmi://" + host + ":" + port + "/" + GameServer.SERVER_NAME;
         RemoteState state = null;
+        int num = RMIA + RMID + SocketA + SocketD;
+
         try {
             state = (RemoteState) java.rmi.Naming.lookup(service);
         } catch (Exception e) {
             System.err.println("Could not connect to server, we apologize for the inconvenience");
             System.exit(0);
         }
-        System.err.println("Number of bots: " + num);
         System.err.println("Host: " + host);
         System.err.println("Port: " + port);
-        System.err.println("RMIAttacker ratio: " + RMIAratio);
-        System.err.println("RMIDefender ratio: " + RMIDratio);
-        System.err.println("SocketAttacker ratio: " + SocketAratio);
-        System.err.println("SocketDefender ratio: " + SocketDratio);
+        System.err.println("RMIAttackers: " + RMIA);
+        System.err.println("RMIDefenders: " + RMID);
+        System.err.println("SocketAttackers: " + SocketA);
+        System.err.println("SocketDefenders: " + SocketD);
         System.err.println("Sleep(seconds): " + sleep);
-        Random random = new Random();
         ArrayList<Bot> bots = new ArrayList<>();
-        for (int i = 0; i < num; i++) {
-            String username;
-            String regString;
-//            int role = random.nextDouble() > ADratio ? 0 : 1;
 
-            double roll = random.nextDouble();
-            System.err.println(roll);
-            System.err.println(RMIAratio);
-            System.err.println(RMIAratio + RMIDratio);
-            System.err.println(RMIAratio + RMIDratio + SocketAratio);
-            System.err.println(RMIAratio + RMIDratio + SocketAratio + SocketDratio);
-            if (roll < RMIAratio) {
-                username = "RMIAttacker:" + getSaltString();
-                regString = username + "-" + 1 + "-" + atkString;
-                bots.add(new RmiBot(state, username, 1, (long) (sleep * 1e9), regString));
-            } else if (roll < (RMIDratio + RMIAratio)) {
-                username = "RMIDefender:" + getSaltString();
-                regString = username + "-" + 0 + "-" + defString;
-                bots.add(new RmiBot(state, username, 1, (long) (sleep * 1e9), regString));
-            } else if (roll < (RMIDratio + RMIAratio + SocketAratio)) {
-                username = "SocketAttacker:" + getSaltString();
-                regString = username + "-" + 1 + "-" + atkString;
-                bots.add(new SocketBot(username, 1, host, port, (long) (sleep * 1e9), regString));
-            } else {
-                username = "SocketDefender:" + getSaltString();
-                regString = username + "-" + 0 + "-" + defString;
-                bots.add(new SocketBot(username, 0, host, port, (long) (sleep * 1e9), regString));
-            }
-            /*
-            if (random.nextDouble() > ratio) {
-                username = "Socket" + Bot.roles[role] + ":" + getSaltString();
-                if (role == 1) {
-                    regString = username + "-" + role + "-" + atkString;
-                } else {
-                    regString = username + "-" + role + "-" + defString;
-                }
-                bots.add(new SocketBot(username, role, host, port, (long) (sleep * 1e9), regString));
-            } else {
-                username = "Rmi" + Bot.roles[role] + ":" + getSaltString();
-                if (role == 1) {
-                    regString = username + "-" + role + "-" + atkString;
-                } else {
-                    regString = username + "-" + role + "-" + defString;
-                }
-                bots.add(new RmiBot(state, username, role, (long) (sleep * 1e9), regString));
-            }
-            */
+        for (int i = 0; i < RMIA; i++) {
+            String username = "RMIAttacker:" + getSaltString();
+            String regString = username + "-" + 1 + "-" + atkString;
+            bots.add(new RmiBot(state, username, 1, (long) (sleep * 1e9), regString));
+        }
+
+        for (int i = 0; i < RMID; i++) {
+
+            String username = "RMIDefender:" + getSaltString();
+            String regString = username + "-" + 0 + "-" + defString;
+            bots.add(new RmiBot(state, username, 1, (long) (sleep * 1e9), regString));
+        }
+
+        for (int i = 0; i < SocketA; i++) {
+
+            String username = "SocketAttacker:" + getSaltString();
+            String regString = username + "-" + 1 + "-" + atkString;
+            bots.add(new SocketBot(username, 1, host, port, (long) (sleep * 1e9), regString));
+        }
+        for (int i = 0; i < SocketD; i++) {
+            String username = "SocketDefender:" + getSaltString();
+            String regString = username + "-" + 0 + "-" + defString;
+            bots.add(new SocketBot(username, 0, host, port, (long) (sleep * 1e9), regString));
         }
 
         for (Bot b : bots) {
@@ -107,7 +84,7 @@ public class BotGenerator {
         System.err.println("Saving stats");
         BufferedWriter outputWriter = new BufferedWriter(
                 new FileWriter(System.getProperty("user.home") + "/RMISTATS_" + num + "_" +
-                        RMIAratio + "_" + RMIDratio + "_" + SocketAratio + "_" + SocketDratio +
+                        RMIA + "_" + RMID + "_" + SocketA + "_" + SocketD +
                         ".csv"));
         for (Bot.statsEntry se : Bot.attackStats) {
             outputWriter.write(se.toString());
@@ -118,64 +95,8 @@ public class BotGenerator {
         outputWriter.close();
         outputWriter = new BufferedWriter(
                 new FileWriter(System.getProperty("user.home") + "/SOCKETSTATS_" + num + "_" +
-                        RMIAratio + "_" + RMIDratio + "_" + SocketAratio + "_" + SocketDratio +
+                        RMIA + "_" + RMID + "_" + SocketA + "_" + SocketD +
                         ".csv"));
-        for (Bot.statsEntry se : Bot.attackStatsSocket) {
-            outputWriter.write(se.toString());
-        }
-        for (Bot.statsEntry se : Bot.defendStatsSocket) {
-            outputWriter.write(se.toString());
-        }
-        outputWriter.close();
-    }
-
-    private BotGenerator(int num, String host, int port, double ratio, double ADratio, long sleep) throws InterruptedException, IOException {
-        String service = "rmi://" + host + ":" + port + "/" + GameServer.SERVER_NAME;
-        RemoteState state = null;
-        try {
-            state = (RemoteState) java.rmi.Naming.lookup(service);
-        } catch (Exception e) {
-            System.err.println("Could not connect to server, we apologize for the inconvenience");
-            System.exit(0);
-        }
-        System.err.println("Number of bots: " + num);
-        System.err.println("Host: " + host);
-        System.err.println("Port: " + port);
-        System.err.println("RMI/Socket ratio: " + ratio);
-        System.err.println("Attacker/Defender ratio: " + ADratio);
-        System.err.println("Sleep(seconds): " + sleep);
-        Random random = new Random();
-        ArrayList<Bot> bots = new ArrayList<>();
-        for (int i = 0; i < num; i++) {
-            String username;
-            int role = random.nextDouble() > ADratio ? 0 : 1;
-            if (random.nextDouble() > ratio) {
-                username = "Socket" + Bot.roles[role] + ":" + getSaltString();
-                bots.add(new SocketBot(username, role, host, port, (long) (sleep * 1e9), ""));
-            } else {
-                username = "Rmi" + Bot.roles[role] + ":" + getSaltString();
-                bots.add(new RmiBot(state, username, role, (long) (sleep * 1e9), ""));
-            }
-        }
-        for (Bot b : bots) {
-            b.start();
-        }
-        for (Bot b : bots) {
-            b.join();
-        }
-        System.err.println("Saving stats");
-        BufferedWriter outputWriter = new BufferedWriter(
-                new FileWriter(System.getProperty("user.home") +
-                        "/RMISTATS_" + num + "_" + ratio + "_" + ADratio + ".csv"));
-        for (Bot.statsEntry se : Bot.attackStats) {
-            outputWriter.write(se.toString());
-        }
-        for (Bot.statsEntry se : Bot.defendStats) {
-            outputWriter.write(se.toString());
-        }
-        outputWriter.close();
-        outputWriter = new BufferedWriter(
-                new FileWriter(System.getProperty("user.home") + "/SOCKETSTATS_" + num + "_" + ratio + "_" + ADratio + ".csv"));
         for (Bot.statsEntry se : Bot.attackStatsSocket) {
             outputWriter.write(se.toString());
         }
@@ -195,17 +116,13 @@ public class BotGenerator {
      */
     public static void main(String args[]) throws InterruptedException, IOException {
         System.err.println("Creating new bot generator");
-        if (args.length == 6) {
-            new BotGenerator(Integer.parseInt(args[0]), args[1],
-                    Integer.parseInt(args[2]), Double.parseDouble(args[3]),
-                    Double.parseDouble(args[4]), Long.parseLong(args[5]));
-        } else {
-            new BotGenerator(Integer.parseInt(args[0]), args[1], Integer.parseInt(args[2]),
-                    Double.parseDouble(args[3]), Double.parseDouble(args[4]),
-                    Double.parseDouble(args[5]), Double.parseDouble(args[6]),
-                    Long.parseLong(args[7]),
-                    Integer.parseInt(args[8]), Integer.parseInt(args[9]), Integer.parseInt(args[10]),
-                    Integer.parseInt(args[11]), Integer.parseInt(args[12]), Integer.parseInt(args[13]));
-        }
+
+        new BotGenerator(args[1], Integer.parseInt(args[2]),
+                Integer.parseInt(args[3]), Integer.parseInt(args[4]),
+                Integer.parseInt(args[5]), Integer.parseInt(args[6]),
+                Long.parseLong(args[7]),
+                Integer.parseInt(args[8]), Integer.parseInt(args[9]), Integer.parseInt(args[10]),
+                Integer.parseInt(args[11]), Integer.parseInt(args[12]), Integer.parseInt(args[13]));
+//        }
     }
 }
