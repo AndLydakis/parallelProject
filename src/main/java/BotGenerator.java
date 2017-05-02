@@ -123,6 +123,5 @@ public class BotGenerator {
                 Long.parseLong(args[7]),
                 Integer.parseInt(args[8]), Integer.parseInt(args[9]), Integer.parseInt(args[10]),
                 Integer.parseInt(args[11]), Integer.parseInt(args[12]), Integer.parseInt(args[13]));
-//        }
     }
 }
