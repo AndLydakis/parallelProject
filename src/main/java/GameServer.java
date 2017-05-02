@@ -203,14 +203,14 @@ public class GameServer {
         } else {
             ObjectInputStream objectinputstream = null;
             try {
-                FileInputStream streamIn = new FileInputStream(args[4]);
+                FileInputStream streamIn = new FileInputStream(args[5]);
                 objectinputstream = new ObjectInputStream(streamIn);
-                System.err.println("Loading state from " + args[4]);
+                System.err.println("Loading state from " + args[5]);
                 state = (LocalState) objectinputstream.readObject();
                 System.err.println("Resetting locks");
                 state.reset();
             } catch (Exception e) {
-                System.err.println("Could not load state from " + args[4] + ", exiting");
+                System.err.println("Could not load state from " + args[5] + ", exiting");
                 e.printStackTrace();
                 System.exit(0);
             } finally {
