@@ -117,11 +117,11 @@ public class BotGenerator {
     public static void main(String args[]) throws InterruptedException, IOException {
         System.err.println("Creating new bot generator");
 
-        new BotGenerator(args[1], Integer.parseInt(args[2]),
-                Integer.parseInt(args[3]), Integer.parseInt(args[4]),
-                Integer.parseInt(args[5]), Integer.parseInt(args[6]),
-                Long.parseLong(args[7]),
-                Integer.parseInt(args[8]), Integer.parseInt(args[9]), Integer.parseInt(args[10]),
-                Integer.parseInt(args[11]), Integer.parseInt(args[12]), Integer.parseInt(args[13]));
+        new BotGenerator(args[0], Integer.parseInt(args[1]),
+                Integer.parseInt(args[2]), Integer.parseInt(args[3]),
+                Integer.parseInt(args[4]), Integer.parseInt(args[5]),
+                Long.parseLong(args[6]),
+                Integer.parseInt(args[7]), Integer.parseInt(args[8]), Integer.parseInt(args[9]),
+                Integer.parseInt(args[10]), Integer.parseInt(args[11]), Integer.parseInt(args[12]));
     }
 }
