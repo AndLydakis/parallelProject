@@ -221,10 +221,17 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      * 666 if the game crashed, 0 if the game is still running
      * @throws RemoteException if rmi fails
      */
+
+    public void printTimeLeft(){
+        long timePassed = System.nanoTime() - start;
+        timeLeft = timeLimit - timePassed;
+//        System.err.println("Time left: " + timeLeft / 1e9 + "/" + timeLimit / 1e9 + " seconds");
+    }
+
     public int printStatus() throws RemoteException {
         long timePassed = System.nanoTime() - start;
         timeLeft = timeLimit - timePassed;
-        System.err.println("Time left: " + timeLeft / 1e9 + "/" + timeLimit / 1e9 + " seconds");
+//        System.err.println("Time left: " + timeLeft / 1e9 + "/" + timeLimit / 1e9 + " seconds");
         try {
             if (!this.cube.isAlive()) {
                 //Attackers won

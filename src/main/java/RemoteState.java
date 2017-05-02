@@ -129,6 +129,13 @@ public interface RemoteState extends java.rmi.Remote {
     int printStatus() throws RemoteException;
 
     /**
+     * Print the time left
+     *
+     * @throws RemoteException if rmi fails
+     */
+    int printTimeLeft() throws RemoteException;
+
+    /**
      * Get the available targets for the player
      *
      * @return a string containing the available targets
