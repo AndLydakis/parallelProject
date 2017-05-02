@@ -60,9 +60,9 @@ public class SocketBot extends Bot {
         this.sleep = sleep;
         this.regString = regString;
         if (role == 1) {
-            System.err.println("Created new socket attacker bot");
+            System.err.println("Created new socket attacker bot " + username);
         } else {
-            System.err.println("Created new socket defender bot");
+            System.err.println("Created new socket defender bot " + username);
         }
         System.err.println(regString);
         if (!Objects.equals(regString, "")) {
