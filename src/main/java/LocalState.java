@@ -53,24 +53,25 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      * @throws RemoteException if rmi fails
      */
     void reset() throws RemoteException {
+        System.err.println("Resetting time");
         timeLimit = timeLeft;
         start = System.nanoTime();
-        System.err.println("Reseting player lock");
+        System.err.println("Resetting player lock");
         this.playerLock = new Object();
-        System.err.println("Reseting block locks");
+        System.err.println("Resetting block locks");
         for (GameBlock gb : cube.cubeMap.values()) {
             gb.resetLock();
         }
-        System.err.println("Reseting player locks");
+        System.err.println("Resetting player locks");
         for (Player p : players.values()) {
             p.resetLocks();
         }
-        System.err.println("Reseting defender locks");
+        System.err.println("Resetting defender locks");
         for (Defender d : defenders.values()) {
             d.logout();
             d.resetLock();
         }
-        System.err.println("Reseting attacker locks");
+        System.err.println("Resetting attacker locks");
         for (Attacker a : attackers.values()) {
             a.logout();
         }
