@@ -10,7 +10,15 @@ import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 
 /**
- * Created by lydakis-local on 4/3/17.
+ * Client that uses a socket interface to interact with the game state
+ * possible requests to the server:
+ * GETTARGETS request available blocks
+ * GETEND get the status of the game state
+ * ATTACK/REPAIR attack or repair a block
+ * BOMB/SHIELD bomb or shield a block
+ * BUYBOMB/BUYSHIELD buy a shield or a bomb
+ * LVLATK/LVLREP/LVLSPD request to level up the player skills
+ * BOOST request boost
  */
 public class SocketClient {
     private int role;
@@ -23,16 +31,40 @@ public class SocketClient {
     private String playerToString;
     private String targets;
     private Socket socket;
-    private OutputStream outputStream;
-    private InputStream inputStream;
     private PrintWriter out;
     BufferedReader in = null;
-    BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
 
-    List<Integer> attackerOptions = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-    List<Integer> defenderOptions = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    private List<Integer> attackerOptions = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    private List<Integer> defenderOptions = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
-    public void initialMenu() throws IOException {
+    /**
+     * Constructor
+     *
+     * @param host hostname
+     * @param port port
+     * @throws IOException if socket communication fails
+     */
+    private SocketClient(String host, int port) throws IOException {
+        this.host = host;
+        this.port = port;
+
+        while (true) {
+            sendRequest("GETEND");
+            if (uName == null) {
+                initialMenu();
+            } else {
+                actionMenu();
+                testEnd();
+            }
+        }
+    }
+
+    /**
+     * Print an initial menu when the client first starts
+     *
+     * @throws IOException if socket communication fails
+     */
+    private void initialMenu() throws IOException {
         int s;
         Scanner reader = new Scanner(System.in);
         do {
@@ -93,6 +125,12 @@ public class SocketClient {
         }
     }
 
+    /**
+     * Print a menu with the attacker options
+     * and get the user choices
+     *
+     * @throws IOException if socket communication fails
+     */
     private void AttackerMenu() throws IOException {
         Scanner reader = new Scanner(System.in);
         int choice;
@@ -123,6 +161,13 @@ public class SocketClient {
         processAttackerOptions(choice);
     }
 
+    /**
+     * Process the selection made in {@link SocketClient#AttackerMenu()}
+     * * and sends the corresponding request to the server
+     *
+     * @param ch the choice to process
+     * @throws IOException if socket communication fails
+     */
     private void processAttackerOptions(int ch) throws IOException {
         Scanner reader = new Scanner(System.in);
         String bl;
@@ -139,13 +184,6 @@ public class SocketClient {
                 bl = reader.nextLine();
 //                int suc = state.requestPrimary(username, role, bl);
                 int suc = sendRequest("ATTACK-" + uName + "-" + bl);
-                if (suc > 0) {
-//                    System.err.println("Attacked Block for " + suc + " damage");
-                } else if (suc == 0) {
-//                    System.err.println("Block already at 0 hitpoints");
-                } else {
-//                    System.err.println("Could not reach block");
-                }
                 lastAction = 2;
                 lastTarget = bl;
                 break;
@@ -154,66 +192,31 @@ public class SocketClient {
                 System.err.println("Type in Block Coordinates : (X_Y_Z)");
                 bl = reader.nextLine();
 //                int suc = state.requestSecondary(username, role, bl);
-                int suc = sendRequest("BOMB-" + uName + "-" + bl);
-                if (suc > 0) {
-//                    System.err.println("Bomb successful for " + suc + " damage");
-                } else if (suc == 0) {
-//                    System.err.println("Could not bomb block");
-                } else {
-//                    System.err.println("Could not reach block");
-                }
+                sendRequest("BOMB-" + uName + "-" + bl);
                 lastAction = 3;
                 lastTarget = bl;
                 break;
             }
             case 4: {
 //                int suc = state.buy(username, role);
-                int suc = sendRequest("BUYBOMB-" + uName);
-                if (suc > 0) {
-//                    System.err.println("Bomb Purchased: " + suc + " available bombs");
-                } else if (suc < 0) {
-//                    System.err.println("Need " + (-suc) + " credits to buy a bomb");
-                } else {
-//                    System.err.println("Purchase failed");
-                }
+                sendRequest("BUYBOMB-" + uName);
                 lastAction = 4;
                 break;
             }
             case 5: {
 //                int suc = state.levelPrimary(username, role);
-                int suc = sendRequest("LVLATK-" + uName);
-                if (suc > 0) {
-//                    System.err.println("Attack Rating Increased to " + suc);
-                } else if (suc < 0) {
-//                    System.err.println("Need " + (-suc) + " to increase attack rating");
-                } else {
-//                    System.err.println("Level up failed");
-                }
+                sendRequest("LVLATK-" + uName);
                 lastAction = 5;
                 break;
             }
             case 6: {
-                int suc = sendRequest("LVLSPD-" + uName + "-" + role);
-                if (suc > 0) {
-//                    System.err.println("Speed Increased to " + suc);
-                } else if (suc < 0) {
-//                    System.err.println("Need " + (-suc) + " to increase speed");
-                } else {
-//                    System.err.println("Level up failed");
-                }
+                sendRequest("LVLSPD-" + uName + "-" + role);
                 lastAction = 6;
                 break;
             }
             case 7: {
 //                int suc = state.requestBoost(username, role);
-                int suc = sendRequest("BOOST-" + uName + "-" + role);
-                if (suc > 0) {
-//                    System.err.println("Speed Temporarily Increased");
-                } else if (suc < 0) {
-//                    System.err.println("Cannot Boost yet");
-                } else {
-//                    System.err.println("Could not reach player");
-                }
+                sendRequest("BOOST-" + uName + "-" + role);
                 lastAction = 7;
                 break;
             }
@@ -236,6 +239,12 @@ public class SocketClient {
         }
     }
 
+    /**
+     * Print a menu with the defender options
+     * and get the user choices
+     *
+     * @throws IOException if socket communication fails
+     */
     private void DefenderMenu() throws IOException {
         Scanner reader = new Scanner(System.in);
         int choice;
@@ -265,6 +274,13 @@ public class SocketClient {
         processDefenderOptions(choice);
     }
 
+    /**
+     * Process the selection made in {@link SocketClient#DefenderMenu()}
+     * and sends the corresponding request to the server
+     *
+     * @param ch the choice to process
+     * @throws IOException if socket communication fails
+     */
     private void processDefenderOptions(int ch) throws IOException {
         Scanner reader = new Scanner(System.in);
         String bl;
@@ -280,14 +296,7 @@ public class SocketClient {
                 System.err.println("Type in Block Coordinates : (X_Y_Z)");
                 bl = reader.nextLine();
 //                int suc = state.requestPrimary(username, role, bl);
-                int suc = sendRequest("REPAIR-" + uName + "-" + bl);
-                if (suc > 0) {
-//                    System.err.println("Repaired Block for " + suc + " hitpoints");
-                } else if (suc == 0) {
-//                    System.err.println("Block already at full hitpoints or no shields available");
-                } else {
-//                    System.err.println("Could not reach block to repair");
-                }
+                sendRequest("REPAIR-" + uName + "-" + bl);
                 lastAction = 2;
                 lastTarget = bl;
                 break;
@@ -296,67 +305,31 @@ public class SocketClient {
                 System.err.println("Type in Block Coordinates : (X_Y_Z)");
                 bl = reader.nextLine();
 //                int suc = state.requestSecondary(username, role, bl);
-                int suc = sendRequest("SHIELD-" + uName + "-" + bl);
-                if (suc > 0) {
-//                    System.err.println("Block was shielded with " + suc + " shield points");
-                } else if (suc == 0) {
-//                    System.err.println("Block is already shielded");
-                } else {
-//                    System.err.println("Could not reach block to attack");
-                }
+                sendRequest("SHIELD-" + uName + "-" + bl);
                 lastAction = 3;
                 lastTarget = bl;
                 break;
             }
             case 4: {
 //                int suc = state.buy(username, role);
-                int suc = sendRequest("BUYSHIELD-" + uName);
-                if (suc > 0) {
-//                    System.err.println("Shield Purchased: " + suc + " available shields");
-                } else if (suc < 0) {
-//                    System.err.println("Need " + (-suc) + " credits to buy a shield");
-                } else {
-//                    System.err.println("Purchase failed");
-                }
+                sendRequest("BUYSHIELD-" + uName);
                 lastAction = 4;
                 break;
             }
             case 5: {
-                int suc = sendRequest("LVLREP-" + uName);
-//                int suc = state.levelPrimary(username, role);
-                if (suc > 0) {
-//                    System.err.println("Repair Rating Increased to " + suc);
-                } else if (suc < 0) {
-//                    System.err.println("Need " + (-suc) + " to increase repair rating");
-                } else {
-//                    System.err.println("Level up failed");
-                }
+                sendRequest("LVLREP-" + uName);
                 lastAction = 5;
                 break;
             }
             case 6: {
 //                int suc = state.levelSecondary(username, role);
-                int suc = sendRequest("LVLSPD-" + uName + "-" + role);
-                if (suc > 0) {
-//                    System.err.println("Speed Increased to " + suc);
-                } else if (suc < 0) {
-//                    System.err.println("Need " + (-suc) + " to increase speed");
-                } else {
-//                    System.err.println("Level up failed");
-                }
+                sendRequest("LVLSPD-" + uName + "-" + role);
                 lastAction = 6;
                 break;
             }
             case 7: {
 //                int suc = state.requestBoost(username, role);
-                int suc = sendRequest("BOOST-" + uName + "-" + role);
-                if (suc > 0) {
-//                    System.err.println("Speed Temporarily Increased");
-                } else if (suc < 0) {
-//                    System.err.println("Cannot Boost yet");
-                } else {
-//                    System.err.println("Could not reach player");
-                }
+                sendRequest("BOOST-" + uName + "-" + role);
                 lastAction = 7;
                 break;
             }
@@ -378,6 +351,11 @@ public class SocketClient {
         }
     }
 
+    /**
+     * Select the correct menu to display
+     *
+     * @throws IOException if socket communication fails
+     */
     private void actionMenu() throws IOException {
         if (role == 1) {
             AttackerMenu();
@@ -386,6 +364,68 @@ public class SocketClient {
         }
     }
 
+    /**
+     * Sends a request to the server, receives a reply and process it
+     *
+     * @param req a String containing the client request
+     * @return a String containing the server response
+     * @throws IOException if socket communication fails
+     */
+    private int sendRequest(String req) throws IOException {
+        try {
+
+            socket = new Socket(host, port);
+            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            while (true) {
+                try {
+                    StringBuilder resp = new StringBuilder();
+                    String line = "";
+                    out.print(req + "\r\n");
+                    out.flush();
+                    while ((line = in.readLine()) != null && line.length() != 0) {
+                        resp.append(line + ".");
+                    }
+//                    System.err.println("Response received :" + resp);
+//                resp = processReply(in.readLine());
+                    int ret = processReply(resp.toString());
+                    return ret;
+                } catch (Exception e) {
+//                    e.printStackTrace();
+                }
+            }
+
+        } catch (Exception e) {
+            System.err.println("Could not connect to server, exiting");
+            System.exit(0);
+        } finally {
+            out.close();
+            in.close();
+            socket.close();
+        }
+        return -1;
+    }
+
+    /**
+     * processes the reply from the server
+     *
+     * @param reply the reply form the server
+     *              possible responses:
+     *              REGISTER-(1/0)-USERNAME-ROLE.
+     *              LOGIN-(1/0)-USERNAME-ROLE.
+     *              LOGOUT-(1/0).
+     *              ATTACK-(POINTS_GAINED/0/FAIL).
+     *              REPAIR-(POINTS_GAINED/0/FAIL).
+     *              SHIELD-(POINTS_GAINED/0/FAIL).
+     *              BOMB-(POINTS_GAINED/0/FAIL).
+     *              BUYBOMB/BUYSHIELD-(NUMBER_OF_ITEMS/CREDITS_NEEDED_TO_BUY/FAIL).
+     *              LVLATK/LVLREP/LVLSPD-(NEW_STAT_VALUE/CREDITS_NEEDED_TO_BUY/FAIL).
+     *              BOOST-(1/0).
+     *              GETEND-(1/-1/0/666).
+     *              TARGETS-TARGET1.TARGET2.TARGET3...TARGETN.
+     * @return an integer depending on the success or failure of each request
+     */
     private int processReply(String reply) {
 //        System.err.println("Processing: " + reply);
         String tokens[] = reply.split("-");
@@ -577,19 +617,12 @@ public class SocketClient {
         return res;
     }
 
-    private boolean Register(String username, int role) throws IOException {
-        return sendRequest("REGISTER-" + username + "-" + role) == 1;
-
-    }
-
-    private void login(String username) throws IOException {
-        sendRequest("LOGIN-" + username + "-" + role);
-    }
-
-    private void logout() throws IOException {
-        sendRequest("LOGOUT-" + uName + "-" + role);
-    }
-
+    /**
+     * Request to apply the player's primary ability
+     *
+     * @return the success status of the request
+     * @throws IOException if socket communication fails
+     */
     private int requestPrimary() throws IOException {
         if (role == 1) {
             return sendRequest("ATTACK-" + uName + "-" + lastTarget);
@@ -598,6 +631,12 @@ public class SocketClient {
         }
     }
 
+    /**
+     * Request to apply the player's secondary ability
+     *
+     * @return the success status of the request
+     * @throws IOException if socket communication fails
+     */
     private int requestSecondary() throws IOException {
         if (role == 1) {
             return sendRequest("BOMB-" + uName + "-" + lastTarget);
@@ -606,6 +645,12 @@ public class SocketClient {
         }
     }
 
+    /**
+     * Request to buy an item
+     *
+     * @return the success status of the request
+     * @throws IOException if socket communication fails
+     */
     private int requestBuy() throws IOException {
         if (role == 1) {
             return sendRequest("BUYBOMB-" + uName);
@@ -614,6 +659,12 @@ public class SocketClient {
         }
     }
 
+    /**
+     * Request to upgrade the player's primary ability
+     *
+     * @return the success status of the request
+     * @throws IOException if socket communication fails
+     */
     private int requestLVL() throws IOException {
         if (role == 1) {
             return sendRequest("LVLATK-" + uName);
@@ -622,175 +673,99 @@ public class SocketClient {
         }
     }
 
+    /**
+     * Request to apply the player's speed
+     *
+     * @return the success status of the request
+     * @throws IOException if socket communication fails
+     */
     private int requestLVLSPD() throws IOException {
         return sendRequest("LVLSPD-" + uName + "-" + role);
     }
 
+    /**
+     * Request to apply a boost to the player's speed
+     *
+     * @return the success status of the request
+     * @throws IOException if socket communication fails
+     */
     private int requestBoost() throws IOException {
         return sendRequest("BOOST-" + uName + "-" + role);
     }
 
+    /**
+     * Request to get the game's state status
+     *
+     * @return the success status of the request
+     * @throws IOException if socket communication fails
+     */
+    private int testEnd() throws IOException {
+        return sendRequest("END");
+    }
+
+    /**
+     * Request to register a username
+     *
+     * @param username the username to register
+     * @param role     the role of the new player
+     * @return true if the registration was successful, false otherwise
+     * @throws IOException if socket communication fails
+     */
+    private boolean Register(String username, int role) throws IOException {
+        return sendRequest("REGISTER-" + username + "-" + role) == 1;
+
+    }
+
+    /**
+     * Request to login with a given username
+     *
+     * @param username the username of the player
+     * @throws IOException if socket communication fails
+     */
+    private void login(String username) throws IOException {
+        sendRequest("LOGIN-" + username + "-" + role);
+    }
+
+    /**
+     * Request to logout
+     *
+     * @throws IOException if socket communication fails
+     */
+    private void logout() throws IOException {
+        sendRequest("LOGOUT-" + uName + "-" + role);
+    }
+
+    /**
+     * Request to repeat the last action performed
+     *
+     * @throws IOException if socket communication fails
+     */
     private void repeat() throws IOException {
         if (lastAction == 1) {
             sendRequest("GETTARGETS");
             System.err.println(targets);
         } else if (lastAction == 2) {
 //            int suc = state.requestPrimary(username, role, lastTarget);
-            int suc = requestPrimary();
-            if (suc > 0) {
-                if (role == 1) {
-//                    System.err.println("Attack Successful for " + suc + " hitpoints");
-                } else {
-//                    System.err.println("Repair Successful for " + suc + " hitpoints");
-                }
-            } else if (suc == 0) {
-                if (role == 1) {
-//                    System.err.println("Could not attack block");
-                } else {
-//                    System.err.println("Could not repair block");
-                }
-            } else {
-//                System.err.println("Block unreachable");
-            }
+            requestPrimary();
         } else if (lastAction == 3) {
 //            int suc = state.requestSecondary(username, role, lastTarget);
-            int suc = requestSecondary();
-            if (suc > 0) {
-                if (role == 1) {
-//                    System.err.println("Bomb Successful for " + suc + " points");
-                } else {
-//                    System.err.println("Shield Successful for " + suc + " points");
-                }
-            } else if (suc == 0) {
-                if (role == 1) {
-//                    System.err.println("Could not bomb block");
-                } else {
-//                    System.err.println("Could not shield block");
-                }
-            } else {
-//                System.err.println("Block unreachable");
-            }
-
+            requestSecondary();
         } else if (lastAction == 4) {
 //            int suc = state.buy(username, role);
-            int suc = requestBuy();
-            if (role == 1) {
-                if (suc > 0) {
-//                    System.err.println("Bought bomb, " + suc + " in inventory");
-                } else if (suc < 0) {
-//                    System.err.println("Need " + (-suc) + " credits to buy a bomb");
-                } else {
-//                    System.err.println("Purchase request could not go through");
-                }
-            } else {
-                if (suc > 0) {
-                    System.err.println("Bought shield, " + suc + " in inventory");
-                } else if (suc < 0) {
-                    System.err.println("Need " + (-suc) + " credits to buy a shield");
-                } else {
-                    System.err.println("Purchase request could not go through");
-                }
-            }
-
+            requestBuy();
         } else if (lastAction == 5) {
 //            int suc = state.levelPrimary(username, role);
-            int suc = requestLVL();
-            if (suc > 0) {
-                if (role == 1) {
-                    System.err.println("Attack rating increased to " + suc);
-                } else {
-                    System.err.println("Repair rating increased to " + suc);
-                }
-            } else if (suc < 0) {
-                if (role == 1) {
-                    System.err.println("Need " + (-suc) + " credits to upgrade attack rating");
-                } else {
-                    System.err.println("Need " + (-suc) + " credits to upgrade repair rating");
-                }
-            } else {
-                System.err.println("Level up request failed");
-            }
+            requestLVL();
         } else if (lastAction == 6) {
 //            int suc = state.levelSecondary(username, role);
-            int suc = requestLVLSPD();
-            if (suc > 0) {
-                System.err.println("Speed increased to " + suc);
-            } else if (suc < 0) {
-                System.err.println("Need " + (-suc) + " credits to upgrade speed");
-            } else {
-                System.err.println("Level up request failed");
-            }
+            requestLVLSPD();
         } else if (lastAction == 7) {
 //            int suc = state.requestBoost(username, role);
-            int suc = requestBoost();
-            if (suc > 0) {
-                System.err.println("Speed temporarily increased");
-            } else if (suc < 0) {
-                System.err.println("Could not boost yet");
-            } else {
-                System.err.println("Boost request failed");
-            }
-        }
-    }
-
-    private int testEnd() throws IOException {
-        return sendRequest("END");
-    }
-
-    private int sendRequest(String req) throws IOException {
-        try {
-
-            socket = new Socket(host, port);
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            outputStream = socket.getOutputStream();
-
-            while (true) {
-                try {
-                    StringBuilder resp = new StringBuilder();
-                    String line = "";
-                    out.print(req + "\r\n");
-                    out.flush();
-                    while ((line = in.readLine()) != null && line.length() != 0) {
-                        resp.append(line + ".");
-                    }
-//                    System.err.println("Response received :" + resp);
-//                resp = processReply(in.readLine());
-                    int ret = processReply(resp.toString());
-                    return ret;
-                } catch (Exception e) {
-//                    e.printStackTrace();
-                }
-            }
-
-        } catch (Exception e) {
-            System.err.println("Could not connect to server, exiting");
-            System.exit(0);
-        } finally {
-            out.close();
-            in.close();
-            socket.close();
-        }
-        return -1;
-    }
-
-    private SocketClient(String host, int port) throws IOException {
-        this.host = host;
-        this.port = port;
-
-        while (true) {
-            sendRequest("GETEND");
-            if (uName == null) {
-                initialMenu();
-            } else {
-                actionMenu();
-                testEnd();
-            }
+            requestBoost();
         }
     }
 
     public static void main(String args[]) throws IOException {
-        SocketClient sc = new SocketClient(args[0], Integer.parseInt(args[1]));
+        new SocketClient(args[0], Integer.parseInt(args[1]));
     }
 }

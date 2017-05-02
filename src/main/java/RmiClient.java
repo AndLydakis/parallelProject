@@ -1,16 +1,21 @@
-import javax.sound.midi.SysexMessage;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.sql.Statement;
 import java.util.*;
 
 /**
- * Created by lydakis-local on 4/3/17.
+ * Client that uses the RMI interface to interact with the game state
+ * possible requests to the server:
+ * GETTARGETS request available blocks
+ * GETEND get the status of the game state
+ * ATTACK/REPAIR attack or repair a block
+ * BOMB/SHIELD bomb or shield a block
+ * BUYBOMB/BUYSHIELD buy a shield or a bomb
+ * LVLATK/LVLREP/LVLSPD request to level up the player skills
+ * BOOST request boost
  */
-public class TestClient {
+public class RmiClient {
     private RemoteState state;
     private String username;
     private RemotePlayer player;
@@ -18,132 +23,31 @@ public class TestClient {
     private int lastAction;
     private String lastTarget;
 
-    List<Integer> attackerOptions = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-    List<Integer> defenderOptions = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    private List<Integer> attackerOptions = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    private List<Integer> defenderOptions = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
-
-    private TestClient(String service) throws RemoteException, NotBoundException, MalformedURLException {
+    /**
+     * Constructor
+     *
+     * @param service the rmi service on which the state is running
+     * @throws RemoteException       if rmi fails
+     * @throws NotBoundException     if rmi fails
+     * @throws MalformedURLException if rmi fails
+     */
+    private RmiClient(String service) throws RemoteException, NotBoundException, MalformedURLException {
         try {
             state = (RemoteState) java.rmi.Naming.lookup(service);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.err.println("Could not connect to server, we apologize for the inconvenience");
             System.exit(0);
         }
     }
 
-    private void repeat() throws RemoteException {
-        System.err.println(lastAction);
-        System.err.println(lastTarget);
-        if (lastAction == 1) {
-            System.err.println(state.getTargets());
-        } else if (lastAction == 2) {
-            int suc = state.requestPrimary(username, role, lastTarget);
-            if (suc > 0) {
-                if (role == 1) {
-                    System.err.println("Attack Successful for " + suc + " hitpoints");
-                } else {
-                    System.err.println("Repair Successful for " + suc + " hitpoints");
-                }
-            } else if (suc == 0) {
-                if (role == 1) {
-                    System.err.println("Could not attack block");
-                } else {
-                    System.err.println("Could not repair block");
-                }
-            } else {
-                System.err.println("Block unreachable");
-            }
-        } else if (lastAction == 3) {
-            int suc = state.requestSecondary(username, role, lastTarget);
-            if (suc > 0) {
-                if (role == 1) {
-                    System.err.println("Bomb Successful for " + suc + " points");
-                } else {
-                    System.err.println("Shield Successful for " + suc + " points");
-                }
-            } else if (suc == 0) {
-                if (role == 1) {
-                    System.err.println("Could not bomb block");
-                } else {
-                    System.err.println("Could not shield block");
-                }
-            } else {
-                System.err.println("Block unreachable");
-            }
-
-        } else if (lastAction == 4) {
-            int suc = state.buy(username, role);
-            if (role == 1) {
-                if (suc > 0) {
-                    System.err.println("Bought bomb, " + suc + " in inventory");
-                } else if (suc < 0) {
-                    System.err.println("Need " + (-suc) + " credits to buy a bomb");
-                } else {
-                    System.err.println("Purchase request could not go through");
-                }
-            } else {
-                if (suc > 0) {
-                    System.err.println("Bought shield, " + suc + " in inventory");
-                } else if (suc < 0) {
-                    System.err.println("Need " + (-suc) + " credits to buy a shield");
-                } else {
-                    System.err.println("Purchase request could not go through");
-                }
-            }
-
-        } else if (lastAction == 5) {
-            int suc = state.levelPrimary(username, role);
-            if (suc > 0) {
-                if (role == 1) {
-                    System.err.println("Attack rating increased to " + suc);
-                } else {
-                    System.err.println("Repair rating increased to " + suc);
-                }
-            } else if (suc < 0) {
-                if (role == 1) {
-                    System.err.println("Need " + (-suc) + " credits to upgrade attack rating");
-                } else {
-                    System.err.println("Need " + (-suc) + " credits to upgrade repair rating");
-                }
-            } else {
-                System.err.println("Level up request failed");
-            }
-        } else if (lastAction == 6) {
-            int suc = state.levelSecondary(username, role);
-            if (suc > 0) {
-                System.err.println("Speed increased to " + suc);
-            } else if (suc < 0) {
-                System.err.println("Need " + (-suc) + " credits to upgrade speed");
-            } else {
-                System.err.println("Level up request failed");
-            }
-        } else if (lastAction == 7) {
-            int suc = state.requestBoost(username, role);
-            if (suc > 0) {
-                System.err.println("Speed temporarily increased");
-            } else if (suc < 0) {
-                System.err.println("Could not boost yet");
-            } else {
-                System.err.println("Boost request failed");
-            }
-        }
-    }
-
-    private void testEnd() throws RemoteException {
-        int status = state.printStatus();
-        if (status == 1) {
-            System.err.println("Attackers won, thanks for playing !");
-            System.err.println("----- Top Players -----");
-            System.err.println(state.printLeaderBoards());
-            System.exit(0);
-        } else if (status == -1) {
-            System.err.println("Defenders won, thanks for playing !");
-            System.err.println("----- Top Players -----");
-            System.err.println(state.printLeaderBoards());
-            System.exit(0);
-        }
-    }
-
+    /**
+     * Print an initial menu when the client first starts
+     *
+     * @throws IOException if data entry fails
+     */
     private void initialMenu() throws IOException {
         int s;
         Scanner reader = new Scanner(System.in);
@@ -186,7 +90,7 @@ public class TestClient {
                         if (user.equals("q")) {
                             return;
                         }
-                        reg = Register(user, ch);
+                        reg = register(user, ch);
                         if (!reg) user = "";
                     } while (user.equals(""));
                     break;
@@ -205,6 +109,12 @@ public class TestClient {
         }
     }
 
+    /**
+     * Print a menu with the attacker options
+     * and get the user choices
+     *
+     * @throws RemoteException if rmi fails
+     */
     private void AttackerMenu() throws RemoteException {
         Scanner reader = new Scanner(System.in);
         int choice;
@@ -233,6 +143,13 @@ public class TestClient {
         processAttackerOptions(choice);
     }
 
+    /**
+     * Process the selection made in {@link SocketClient#AttackerMenu()}
+     * * and sends the corresponding request to the server
+     *
+     * @param ch the choice to process
+     * @throws RemoteException if rmi fails
+     */
     private void processAttackerOptions(int ch) throws RemoteException {
         Scanner reader = new Scanner(System.in);
         String bl;
@@ -337,6 +254,12 @@ public class TestClient {
         }
     }
 
+    /**
+     * Print a menu with the defenders options
+     * and get the user choices
+     *
+     * @throws RemoteException if rmi fails
+     */
     private void DefenderMenu() throws RemoteException {
         Scanner reader = new Scanner(System.in);
         int choice;
@@ -365,6 +288,13 @@ public class TestClient {
         processDefenderOptions(choice);
     }
 
+    /**
+     * Process the selection made in {@link SocketClient#DefenderMenu()}
+     * * and sends the corresponding request to the server
+     *
+     * @param ch the choice to process
+     * @throws RemoteException if rmi fails
+     */
     private void processDefenderOptions(int ch) throws RemoteException {
         Scanner reader = new Scanner(System.in);
         String bl;
@@ -469,6 +399,11 @@ public class TestClient {
         }
     }
 
+    /**
+     * Select the correct menu to display
+     *
+     * @throws IOException if data entry fails
+     */
     private void actionMenu() throws IOException {
         if (role == 1) {
             AttackerMenu();
@@ -477,7 +412,7 @@ public class TestClient {
         }
     }
 
-    private boolean Register(String user, int ch) throws RemoteException {
+    private boolean register(String user, int ch) throws RemoteException {
         boolean reg = state.register(user, ch);
         if (reg) {
             player = state.login(user);
@@ -490,6 +425,12 @@ public class TestClient {
         return reg;
     }
 
+    /**
+     * Request to login with a given username
+     *
+     * @param li the username of the player
+     * @throws RemoteException if rmi fails
+     */
     private void login(String li) throws RemoteException {
         player = state.login(li);
         if (player == null) {
@@ -501,6 +442,12 @@ public class TestClient {
         }
     }
 
+
+    /**
+     * Request to logout
+     *
+     * @throws RemoteException if rmi fails
+     */
     private void logout() throws RemoteException {
         if (state.logout(username)) {
             System.err.println("Successfully logged out");
@@ -510,10 +457,133 @@ public class TestClient {
         player = null;
     }
 
+    /**
+     * Request to repeat the last action performed
+     *
+     * @throws RemoteException if rmi fails
+     */
+    private void repeat() throws RemoteException {
+        System.err.println(lastAction);
+        System.err.println(lastTarget);
+        if (lastAction == 1) {
+            System.err.println(state.getTargets());
+        } else if (lastAction == 2) {
+            int suc = state.requestPrimary(username, role, lastTarget);
+            if (suc > 0) {
+                if (role == 1) {
+                    System.err.println("Attack Successful for " + suc + " hitpoints");
+                } else {
+                    System.err.println("Repair Successful for " + suc + " hitpoints");
+                }
+            } else if (suc == 0) {
+                if (role == 1) {
+                    System.err.println("Could not attack block");
+                } else {
+                    System.err.println("Could not repair block");
+                }
+            } else {
+                System.err.println("Block unreachable");
+            }
+        } else if (lastAction == 3) {
+            int suc = state.requestSecondary(username, role, lastTarget);
+            if (suc > 0) {
+                if (role == 1) {
+                    System.err.println("Bomb Successful for " + suc + " points");
+                } else {
+                    System.err.println("Shield Successful for " + suc + " points");
+                }
+            } else if (suc == 0) {
+                if (role == 1) {
+                    System.err.println("Could not bomb block");
+                } else {
+                    System.err.println("Could not shield block");
+                }
+            } else {
+                System.err.println("Block unreachable");
+            }
+
+        } else if (lastAction == 4) {
+            int suc = state.buy(username, role);
+            if (role == 1) {
+                if (suc > 0) {
+                    System.err.println("Bought bomb, " + suc + " in inventory");
+                } else if (suc < 0) {
+                    System.err.println("Need " + (-suc) + " credits to buy a bomb");
+                } else {
+                    System.err.println("Purchase request could not go through");
+                }
+            } else {
+                if (suc > 0) {
+                    System.err.println("Bought shield, " + suc + " in inventory");
+                } else if (suc < 0) {
+                    System.err.println("Need " + (-suc) + " credits to buy a shield");
+                } else {
+                    System.err.println("Purchase request could not go through");
+                }
+            }
+
+        } else if (lastAction == 5) {
+            int suc = state.levelPrimary(username, role);
+            if (suc > 0) {
+                if (role == 1) {
+                    System.err.println("Attack rating increased to " + suc);
+                } else {
+                    System.err.println("Repair rating increased to " + suc);
+                }
+            } else if (suc < 0) {
+                if (role == 1) {
+                    System.err.println("Need " + (-suc) + " credits to upgrade attack rating");
+                } else {
+                    System.err.println("Need " + (-suc) + " credits to upgrade repair rating");
+                }
+            } else {
+                System.err.println("Level up request failed");
+            }
+        } else if (lastAction == 6) {
+            int suc = state.levelSecondary(username, role);
+            if (suc > 0) {
+                System.err.println("Speed increased to " + suc);
+            } else if (suc < 0) {
+                System.err.println("Need " + (-suc) + " credits to upgrade speed");
+            } else {
+                System.err.println("Level up request failed");
+            }
+        } else if (lastAction == 7) {
+            int suc = state.requestBoost(username, role);
+            if (suc > 0) {
+                System.err.println("Speed temporarily increased");
+            } else if (suc < 0) {
+                System.err.println("Could not boost yet");
+            } else {
+                System.err.println("Boost request failed");
+            }
+        }
+    }
+
+    /**
+     * Request to get the game's state status
+     *
+     * @throws RemoteException if rmi fails
+     */
+    private void testEnd() throws RemoteException {
+        int status = state.printStatus();
+        if (status == 1) {
+            System.err.println("Attackers won, thanks for playing !");
+            System.err.println("----- Top Players -----");
+            System.err.println(state.printLeaderBoards());
+            System.exit(0);
+        } else if (status == -1) {
+            System.err.println("Defenders won, thanks for playing !");
+            System.err.println("----- Top Players -----");
+            System.err.println(state.printLeaderBoards());
+            System.exit(0);
+        }
+    }
+
     public static void main(String args[]) throws IOException, NotBoundException {
         String service = "rmi://" + args[0] + "/" + GameServer.SERVER_NAME;
 
-        TestClient client = new TestClient(service);
+        RmiClient client = new RmiClient(service);
         while (true) {
             if (client.player == null) {
                 client.initialMenu();

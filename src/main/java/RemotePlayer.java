@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 /**
- * Created by lydakis-local on 4/3/17.
+ * Remote Interface for player objects
  */
 public interface RemotePlayer extends java.rmi.Remote {
 

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- * Created by lydakis-local on 4/30/17.
  * Creates rmi and socket attacker and defender bots that target
  * the first block on their list until the game is over
  */
@@ -20,8 +19,7 @@ public class BotGenerator {
             int index = (int) (rnd.nextFloat() * SALTCHARS.length());
             salt.append(SALTCHARS.charAt(index));
         }
-        String saltStr = salt.toString();
-        return saltStr;
+        return salt.toString();
 
     }
 

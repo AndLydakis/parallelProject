@@ -3,7 +3,8 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 /**
- * Created by lydakis-local on 4/30/17.
+ * A bot that uses the RMI interface to target
+ * the first available block until the game is over
  */
 public class RmiBot extends Bot {
     private RemoteState state;
@@ -19,6 +20,9 @@ public class RmiBot extends Bot {
     private String targets;
     private volatile boolean running;
 
+    /**
+     * Add the stats to the correct array
+     */
     private void addStats() {
         if (role == 1) {
             synchronized (attackStats) {
@@ -31,9 +35,15 @@ public class RmiBot extends Bot {
         }
     }
 
+    /**
+     * Select an available block and target it
+     * if there are no available targets do nothing
+     *
+     * @throws RemoteException if rmi fails
+     */
     private void selectAttack() throws RemoteException {
         if (targets == null) return;
-        if(targets.length()==0)return;
+        if (targets.length() == 0) return;
         String[] tokens = targets.split("\n");
 //        System.err.println("RMI " + roles[role] + " " + username + " targeting " + tokens[0].split(":")[0]);
         int res = state.requestPrimary(username, role, tokens[0].split(":")[0]);
@@ -45,6 +55,15 @@ public class RmiBot extends Bot {
         }
     }
 
+    /**
+     * Constructor
+     *
+     * @param s         game state
+     * @param username  player name
+     * @param role      player role
+     * @param sleep     time to sleep between attacks(milliseconds)
+     * @param regString string to pass to the registration function
+     */
     RmiBot(RemoteState s, String username, int role, long sleep, String regString) {
         this.running = true;
         this.state = s;

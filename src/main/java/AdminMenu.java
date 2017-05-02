@@ -5,7 +5,14 @@ import java.util.Objects;
 import java.util.Scanner;
 
 /**
- * Created by andreas on 4/27/17.
+ * Menu that presents some additional operation to an admin
+ * <p>
+ * LIST list all players and their stats
+ * LEAD print leaderboard
+ * STATUS print current layer blocks with their hitpoints
+ * SET alter the stats of players
+ * SAVE <filename>savefile</filename> export the current state as
+ * a serialized object
  */
 public class AdminMenu extends Thread {
     private final LocalState state;
@@ -75,16 +82,16 @@ public class AdminMenu extends Thread {
                     System.err.println(state.printLeaderBoards());
                     break;
                 }
-                case "SAVE" :{
+                case "SAVE": {
                     try {
                         FileOutputStream fileOut =
-                                new FileOutputStream("/tmp/"+tokens[1]+".ser");
+                                new FileOutputStream("/tmp/" + tokens[1] + ".ser");
                         ObjectOutputStream out = new ObjectOutputStream(fileOut);
                         out.writeObject(state);
                         out.close();
                         fileOut.close();
-                        System.out.printf("Serialized data is saved in /tmp/"+tokens[1]+".ser");
-                    }catch(IOException i) {
+                        System.out.printf("Serialized data is saved in /tmp/" + tokens[1] + ".ser");
+                    } catch (IOException i) {
                         i.printStackTrace();
                     }
                     break;

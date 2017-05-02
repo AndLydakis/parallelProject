@@ -5,7 +5,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by ChunkLightTuna on 4/2/17.
  * The local state keeps track of the players, and the status of the cube
  */
 public class LocalState extends UnicastRemoteObject implements RemoteState, Serializable {
@@ -564,9 +563,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         try {
             if (role == 1) {
                 Random rand = new Random();
-                String tokens[] = block.split("_");
                 ArrayList<GameBlock> targets = new ArrayList<>();
-                int number = Integer.parseInt(tokens[tokens.length - 1]);
                 int r1;
                 int idx = 0;
                 int attempts = 0;

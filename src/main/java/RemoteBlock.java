@@ -1,7 +1,7 @@
 import java.rmi.RemoteException;
 
 /**
- * Created by lydakis-local on 4/3/17.
+ * Remote interface for the game blocks
  */
 public interface RemoteBlock extends java.rmi.Remote {
 

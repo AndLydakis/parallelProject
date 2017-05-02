@@ -3,7 +3,6 @@ import java.rmi.RemoteException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Created by lydakis-local on 4/2/17.
  * Blocks make up the game cube
  * the have x,y,z coordinates,
  * a number of hitpoints

@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by lydakis-local on 4/2/17.
+ * Basic player class maintains a username, the player's score, credits
+ * and role
  */
 public class Player extends UnicastRemoteObject implements Comparable<Player>, RemotePlayer, Serializable {
     private final String userName;

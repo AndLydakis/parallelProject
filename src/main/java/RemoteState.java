@@ -1,7 +1,6 @@
 import java.rmi.RemoteException;
 
 /**
- * Created by lydakis-local on 4/3/17.
  * The remote interface for the game state
  */
 public interface RemoteState extends java.rmi.Remote {
@@ -121,35 +120,44 @@ public interface RemoteState extends java.rmi.Remote {
     int buy(String user, int role) throws RemoteException;
 
     /**
-     * @return
+     * Print the status of the state
+     *
+     * @return 1 if attackers won, -1 if defenders won, 0 if
+     * the game is still ongoing, 666 if the game crashed
      * @throws RemoteException if rmi fails
      */
     int printStatus() throws RemoteException;
 
     /**
-     * @return
+     * Get the available targets for the player
+     *
+     * @return a string containing the available targets
      * @throws RemoteException if rmi fails
      */
     String getTargets() throws RemoteException;
 
     /**
-     * @param player
-     * @param r
-     * @return
+     * Print a player as a String
+     *
+     * @param player the player to print
+     * @param role   the role of the player
+     * @return 1 if the status was retrieved successfully, -1 otherwise
      * @throws RemoteException if rmi fails
      */
-    String printPlayer(String player, int r) throws RemoteException;
+    String printPlayer(String player, int role) throws RemoteException;
 
     /**
      * Process a user request
      *
-     * @param req the user request
+     * @param request the user request
      * @return a string containing the server's response
      * @throws RemoteException if rmi fails
      */
-    String parseRequest(String req) throws RemoteException;
+    String parseRequest(String request) throws RemoteException;
 
     /**
+     * Print the top 10 players
+     *
      * @return the top 10 players as a string
      * @throws RemoteException if rmi fails
      */

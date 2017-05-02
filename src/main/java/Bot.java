@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Created by lydakis-local on 4/30/17.
  * Basic bot interface
  */
 public class Bot extends Thread {
@@ -34,11 +33,5 @@ public class Bot extends Thread {
     }
 
     Bot() {
-    }
-
-    public void run() {
-        while (true) {
-
-        }
     }
 }

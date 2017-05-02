@@ -5,7 +5,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * Created by lydakis-local on 4/2/17.
  * Creates a cube comprised of different layers
  * that include a decreasing amount of blocks
  */
@@ -315,10 +314,7 @@ public class Cube implements Serializable {
         } else {
             System.err.println("Layer Destoryed");
             currentLayer = layers.poll();
-            if (currentLayer == null) {
-                return false;
-            }
-            return true;
+            return currentLayer != null;
         }
     }
 
@@ -336,7 +332,7 @@ public class Cube implements Serializable {
         }
     }
 
-    public GameBlock getBlock(String s) {
+    GameBlock getBlock(String s) {
         return cubeMap.get(s);
     }
 

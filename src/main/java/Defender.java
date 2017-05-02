@@ -2,7 +2,6 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 
 /**
- * Created by lydakis-local on 4/2/17.
  * Defenders are tasked with defending the game blocks
  * they can repair a single block, or shield it from future attacks
  */
@@ -54,7 +53,7 @@ public class Defender extends Player implements Serializable {
      * @param repair  repair rating
      * @param speed   speed rating
      * @param items   number of shields
-     * @throws RemoteException when rmi fails
+     * @throws RemoteException if rmi fails
      */
     Defender(String un, int score, int credits, int repair, int speed, int items) throws RemoteException {
         super(un, 1, score, credits);
@@ -72,7 +71,7 @@ public class Defender extends Player implements Serializable {
      * Constructor from string
      *
      * @param s String s to create the user from
-     * @throws RemoteException when rmi fails
+     * @throws RemoteException if rmi fails
      */
     public Defender(String s) throws RemoteException {
         super(s);
@@ -153,7 +152,7 @@ public class Defender extends Player implements Serializable {
      * Returns the player inf as a string
      *
      * @return a string formatted as USERNAME SCORE CREDITS SPEED REPAIR_RATING SHIELDS SPEED TOLVRR TOLVLSPD
-     * @throws RemoteException
+     * @throws RemoteException if rmi fails
      */
     public String playerToString() throws RemoteException {
         return (unameToString() + " " + getScore() + " " + getCredits() + " " + speed + " " + shields + " " + repairRating + " " + toLevelUpRr + " " + toLevelUpSpeed);
@@ -163,7 +162,7 @@ public class Defender extends Player implements Serializable {
      * print the defender as a string
      *
      * @return a string containing the defender's stats
-     * @throws RemoteException when rmi fails
+     * @throws RemoteException if rmi fails
      */
     public String print() throws RemoteException {
         return super.print() +
@@ -176,7 +175,7 @@ public class Defender extends Player implements Serializable {
     /**
      * Return the speed of the player
      *
-     * @return
+     * @return the speed of the player
      */
     public double getSpeed() throws RemoteException {
         return this.speed;
@@ -255,7 +254,6 @@ public class Defender extends Player implements Serializable {
      * @throws RemoteException if rmi fails
      */
     int levelUpSpeed() throws RemoteException {
-        int cr = getCredits();
         if (((System.nanoTime() - this.lastBoost) > this.speed)) {
             if (super.removeCredits(toLevelUpSpeed)) {
                 speed += 1;

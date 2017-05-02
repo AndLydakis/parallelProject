@@ -1,10 +1,10 @@
 import java.io.*;
 import java.net.Socket;
-import java.rmi.RemoteException;
 import java.util.Objects;
 
 /**
- * Created by lydakis-local on 4/30/17.
+ * A bot that uses the socket interface to target
+ * the first available block until the game is over
  */
 public class SocketBot extends Bot {
 
@@ -22,12 +22,12 @@ public class SocketBot extends Bot {
     private int items;
     private volatile boolean running;
     private Socket socket;
-    private OutputStream outputStream;
-    private InputStream inputStream;
     private PrintWriter out;
     private BufferedReader in = null;
-    BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
 
+    /**
+     * Add the stats to the correct array
+     */
     private void addStats() {
         System.err.println(username + " adding stats");
         if (role == 1) {
@@ -41,6 +41,16 @@ public class SocketBot extends Bot {
         }
     }
 
+    /**
+     * Constructor
+     *
+     * @param username  player name
+     * @param role      player role
+     * @param host      hostname to connect to
+     * @param port      port in which the rmi state is connected to
+     * @param sleep     time to sleep between attacks(milliseconds)
+     * @param regString string to pass to the registration function
+     */
     SocketBot(String username, int role, String host, int port, long sleep, String regString) {
         this.running = true;
         this.host = host;
@@ -159,12 +169,10 @@ public class SocketBot extends Bot {
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            outputStream = socket.getOutputStream();
-
             while (true) {
                 try {
                     StringBuilder resp = new StringBuilder();
-                    String line = "";
+                    String line;
                     out.print(req + "\r\n");
                     out.flush();
                     while ((line = in.readLine()) != null && line.length() != 0) {
@@ -175,8 +183,8 @@ public class SocketBot extends Bot {
 //                    if(req.equals("GETTARGETS")){
 //                        System.err.println(resp.toString());
 //                    }
-                    int ret = processReply(resp.toString());
-                    return ret;
+//                    int ret = processReply(resp.toString());
+                    return processReply(resp.toString());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -215,13 +223,13 @@ public class SocketBot extends Bot {
             }
         } catch (IOException e) {
 //            e.printStackTrace();
-            System.err.println(username+" exception 1");
+            System.err.println(username + " exception 1");
             running = false;
         }
         while (running) {
             try {
                 if (sendRequest("GETEND") != 0) {
-                    System.err.println(username+" get end != 0");
+                    System.err.println(username + " get end != 0");
                     running = false;
                     continue;
                 }
@@ -231,11 +239,11 @@ public class SocketBot extends Bot {
                     avgDelay += (System.nanoTime() - start);
                     numOps++;
                     if (targets == null) {
-                        System.err.println(username+" exception 2");
+                        System.err.println(username + " exception 2");
                         running = false;
                         continue;
                     } else if (targets.equals("")) {
-                        System.err.println(username+" exception 3");
+                        System.err.println(username + " exception 3");
                         running = false;
                         continue;
                     } else {
@@ -260,7 +268,7 @@ public class SocketBot extends Bot {
 
             } catch (Exception e) {
 //                e.printStackTrace();
-                System.err.println(username+" exception 4");
+                System.err.println(username + " exception 4");
                 running = false;
                 if (numOps != 0) {
                     avgDelay /= numOps;
