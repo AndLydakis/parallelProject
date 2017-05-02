@@ -210,7 +210,7 @@ public class GameServer {
                 System.err.println("Resetting locks");
                 state.reset();
             } catch (Exception e) {
-                System.err.println("Could not load state, exiting");
+                System.err.println("Could not load state from " + args[4] + ", exiting");
                 e.printStackTrace();
                 System.exit(0);
             } finally {
