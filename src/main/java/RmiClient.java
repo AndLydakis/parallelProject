@@ -53,7 +53,7 @@ public class RmiClient {
         Scanner reader = new Scanner(System.in);
         do {
             System.out.print("\033[H\033[2J");
-            System.err.println("Welcome to the bone-zone");
+            System.err.println("Welcome to the game");
             System.err.println("Would you like to:");
             System.err.println("1. Sign up");
             System.err.println("2. Sign in");
@@ -84,7 +84,7 @@ public class RmiClient {
                     do {
                         reader.nextLine();
                         System.out.print("\033[H\033[2J");
-                        System.err.println("Enter your username (penis jokes will not be tolerated)");
+                        System.err.println("Enter your username");
                         System.err.println("Type 'q' to quit");
                         user = reader.nextLine();
                         if (user.equals("q")) {
