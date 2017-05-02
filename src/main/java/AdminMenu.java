@@ -84,6 +84,7 @@ public class AdminMenu extends Thread {
                 }
                 case "SAVE": {
                     try {
+                        state.printStatus();
                         FileOutputStream fileOut =
                                 new FileOutputStream("/tmp/" + tokens[1] + ".ser");
                         ObjectOutputStream out = new ObjectOutputStream(fileOut);
@@ -95,6 +96,9 @@ public class AdminMenu extends Thread {
                         i.printStackTrace();
                     }
                     break;
+                }
+                case "QUIT":{
+                    System.exit(0);
                 }
 
             }

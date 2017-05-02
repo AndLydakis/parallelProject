@@ -53,24 +53,25 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      * @throws RemoteException if rmi fails
      */
     void reset() throws RemoteException {
+        System.err.println("Resetting time");
         timeLimit = timeLeft;
         start = System.nanoTime();
-        System.err.println("Reseting player lock");
+        System.err.println("Resetting player lock");
         this.playerLock = new Object();
-        System.err.println("Reseting block locks");
+        System.err.println("Resetting block locks");
         for (GameBlock gb : cube.cubeMap.values()) {
             gb.resetLock();
         }
-        System.err.println("Reseting player locks");
+        System.err.println("Resetting player locks");
         for (Player p : players.values()) {
             p.resetLocks();
         }
-        System.err.println("Reseting defender locks");
+        System.err.println("Resetting defender locks");
         for (Defender d : defenders.values()) {
             d.logout();
             d.resetLock();
         }
-        System.err.println("Reseting attacker locks");
+        System.err.println("Resetting attacker locks");
         for (Attacker a : attackers.values()) {
             a.logout();
         }
@@ -220,14 +221,24 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      * 666 if the game crashed, 0 if the game is still running
      * @throws RemoteException if rmi fails
      */
+
+    public void printTimeLeft(){
+        long timePassed = System.nanoTime() - start;
+        timeLeft = timeLimit - timePassed;
+//        System.err.println("Time left: " + timeLeft / 1e9 + "/" + timeLimit / 1e9 + " seconds");
+    }
+
     public int printStatus() throws RemoteException {
+        long timePassed = System.nanoTime() - start;
+        timeLeft = timeLimit - timePassed;
+//        System.err.println("Time left: " + timeLeft / 1e9 + "/" + timeLimit / 1e9 + " seconds");
         try {
             if (!this.cube.isAlive()) {
                 //Attackers won
                 System.err.println("Cube destroyed, attackers won!");
                 return 1;
             }
-            long timePassed = System.nanoTime() - start;
+            timePassed = System.nanoTime() - start;
             if (timePassed > timeLimit) {
                 timeLeft = timeLimit - timePassed;
                 System.err.println("Cube survived, defenders won");
