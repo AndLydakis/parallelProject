@@ -211,8 +211,8 @@ public class GameServer {
                 state.reset();
             } catch (Exception e) {
                 System.err.println("Could not load state, exiting");
-                System.exit(0);
                 e.printStackTrace();
+                System.exit(0);
             } finally {
                 if (objectinputstream != null) {
                     objectinputstream.close();
