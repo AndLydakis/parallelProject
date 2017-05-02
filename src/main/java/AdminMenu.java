@@ -97,6 +97,9 @@ public class AdminMenu extends Thread {
                     }
                     break;
                 }
+                case "QUIT":{
+                    System.exit(0);
+                }
 
             }
         } catch (Exception e) {
