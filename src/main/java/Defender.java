@@ -166,7 +166,7 @@ public class Defender extends Player implements Serializable {
      */
     public String print() throws RemoteException {
         return super.print() +
-                "Role: Attacker\n" +
+                "Role: Defender\n" +
                 "Speed: " + speed + "\n" +
                 "Repair Rating: " + repairRating + "\n" +
                 "Shields Available: " + shields;
