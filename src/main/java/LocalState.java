@@ -223,8 +223,8 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      */
     public int printStatus() throws RemoteException {
         long timePassed = System.nanoTime() - start;
-        System.err.println("Time left: " + timePassed / 1e9 + " seconds");
         timeLeft = timeLimit - timePassed;
+        System.err.println("Time left: " + timeLeft / 1e9 + "/" + timeLimit / 1e9 + " seconds");
         try {
             if (!this.cube.isAlive()) {
                 //Attackers won
