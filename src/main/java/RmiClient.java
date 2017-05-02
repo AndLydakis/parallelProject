@@ -5,13 +5,13 @@ import java.rmi.RemoteException;
 import java.util.*;
 
 /**
- * Client that uses the RMI interface to interact with the game state
- * possible requests to the server:
- * GETTARGETS request available blocks
- * GETEND get the status of the game state
- * ATTACK/REPAIR attack or repair a block
- * BOMB/SHIELD bomb or shield a block
- * BUYBOMB/BUYSHIELD buy a shield or a bomb
+ * Client that uses the RMI interface to interact with the game state<br>
+ * possible requests to the server:<br>
+ * GETTARGETS request available blocks<br>
+ * GETEND get the status of the game state<br>
+ * ATTACK/REPAIR attack or repair a block<br>
+ * BOMB/SHIELD bomb or shield a block<br>
+ * BUYBOMB/BUYSHIELD buy a shield or a bomb<br>
  * LVLATK/LVLREP/LVLSPD request to level up the player skills
  * BOOST request boost
  */

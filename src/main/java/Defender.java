@@ -28,7 +28,7 @@ public class Defender extends Player implements Serializable {
      * @param un username
      * @param s  score
      * @param cr credits
-     * @throws RemoteException when rmi bad things happen
+     * @throws RemoteException if rmi fails
      */
     Defender(String un, int s, int cr) throws RemoteException {
         super(un, 0, s, cr);

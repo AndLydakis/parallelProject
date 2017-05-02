@@ -25,6 +25,7 @@ public interface RemotePlayer extends java.rmi.Remote {
 
     /**
      * Update the status of the player
+     * @param s a String containing th new values for the player stats
      * @throws RemoteException if rmi fails
      */
     void update(String s) throws RemoteException;

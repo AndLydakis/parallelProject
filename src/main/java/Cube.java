@@ -214,7 +214,7 @@ public class Cube implements Serializable {
         /**
          * @return true if there are hitpoints remaining in
          * the blocks in the layer, false otherwise
-         * @throws RemoteException when rmi bad things happen
+         * @throws RemoteException if rmi fails
          */
         boolean isAlive() throws RemoteException {
             if (layer == null) return false;

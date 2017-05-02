@@ -28,7 +28,7 @@ public class Attacker extends Player implements Serializable {
      * @param un String username
      * @param s  int score
      * @param cr int credits
-     * @throws RemoteException when RMI bad things happen
+     * @throws RemoteException if rmi fails
      */
     Attacker(String un, int s, int cr) throws RemoteException {
         super(un, 1, s, cr);
@@ -49,7 +49,7 @@ public class Attacker extends Player implements Serializable {
      * @param attack  int attack rating
      * @param speed   int speed
      * @param bombs   int bombs
-     * @throws RemoteException when RMI bad thing happen
+     * @throws RemoteException if rmi fails
      */
     Attacker(String un, int score, int credits, int attack, int speed, int bombs) throws RemoteException {
         super(un, 1, score, credits);
@@ -65,7 +65,7 @@ public class Attacker extends Player implements Serializable {
      * Constructor from String
      *
      * @param s the string to create the player from
-     * @throws RemoteException when RMI bad things happen
+     * @throws RemoteException if rmi fails
      */
     public Attacker(String s) throws RemoteException {
         super(s);
@@ -125,6 +125,7 @@ public class Attacker extends Player implements Serializable {
      * Update player from a socket response
      *
      * @param s String formatted as "SCORE CREDITS LEVEL SPEED ATTACK_RATING BOMBS"
+     * @throws RemoteException if rmi fails
      */
     public void update(String s) throws RemoteException {
         super.update(s);
@@ -136,7 +137,7 @@ public class Attacker extends Player implements Serializable {
 
     /**
      * @return the speed of the player
-     * @throws RemoteException when RMI bad thing happen
+     * @throws RemoteException if rmi fails
      */
     public double getSpeed() throws RemoteException {
         return this.speed;
@@ -146,7 +147,7 @@ public class Attacker extends Player implements Serializable {
      * prints the attacker as a string
      *
      * @return the attacker as a string
-     * @throws RemoteException when RMI bad things happen
+     * @throws RemoteException if rmi fails
      */
     public String print() throws RemoteException {
         return super.print() +
@@ -160,6 +161,7 @@ public class Attacker extends Player implements Serializable {
      * Return the attack rating of the player
      *
      * @return the attack rating of the player
+     * @throws RemoteException if rmi fails
      */
     private int getAttackRating() throws RemoteException {
         return this.attackRating;
@@ -169,6 +171,7 @@ public class Attacker extends Player implements Serializable {
      * Return the number of bombs available to the player
      *
      * @return the number of bombs
+     * @throws RemoteException if rmi fails
      */
     public int getBombs() throws RemoteException {
         return this.bombs;
@@ -178,6 +181,7 @@ public class Attacker extends Player implements Serializable {
      * Check if the player can attack again
      *
      * @return true iof the player can attack, false otherwise
+     * @throws RemoteException if rmi fails
      */
     private boolean canAttack() throws RemoteException {
         resetBoost();
@@ -203,7 +207,7 @@ public class Attacker extends Player implements Serializable {
      * Increase the attack rating if the player has enough credits
      *
      * @return true if the player had enough credits to level up repair rating, false otherwise
-     * @throws RemoteException when RMI bad thing happen
+     * @throws RemoteException if rmi fails
      */
     int levelUpAr() throws RemoteException {
         int cr = getCredits();
@@ -220,7 +224,7 @@ public class Attacker extends Player implements Serializable {
      * Increase the speed of the if the player has enough credits
      *
      * @return true if the player had enough credits to level up speed, false otherwise
-     * @throws RemoteException when RMI bad thing happen
+     * @throws RemoteException if rmi fails
      */
     int levelUpSpeed() throws RemoteException {
         int cr = getCredits();
@@ -261,7 +265,7 @@ public class Attacker extends Player implements Serializable {
      *
      * @param blocks an array of blocks to be attacked
      * @return the total damage dealt to all the blocks
-     * @throws RemoteException when RMI bad things happen
+     * @throws RemoteException if rmi fails
      */
     int bomb(ArrayList<GameBlock> blocks) throws RemoteException {
 //        System.err.println("Bombing " + blocks.get(0).toString());
@@ -293,7 +297,7 @@ public class Attacker extends Player implements Serializable {
      * Increases the number of available bombs if the player has enough credits
      *
      * @return the number of bombs available to the player
-     * @throws RemoteException when RMI bad thing happen
+     * @throws RemoteException if rmi fails
      */
     int buyBomb() throws RemoteException {
         if (super.removeCredits(bombPrice)) {
@@ -309,7 +313,7 @@ public class Attacker extends Player implements Serializable {
      * Temporarily increase the player's speed if he has sufficient credits, and his boost is not in cooldown
      *
      * @return true if the boost succeeded, false otherwise
-     * @throws RemoteException when RMI bad thing happen
+     * @throws RemoteException if rmi fails
      */
     synchronized int boost() throws RemoteException {
         if ((System.nanoTime() - this.lastBoost) / 1e9 > boostCooldown) {
@@ -326,7 +330,7 @@ public class Attacker extends Player implements Serializable {
     /**
      * Reset the player's speed back to the original pre-boost value
      *
-     * @throws RemoteException when RMI bad thing happen
+     * @throws RemoteException if rmi fails
      */
     private synchronized void resetBoost() throws RemoteException {
         if ((System.nanoTime() - this.lastBoost) / 1e9 > boostCooldown * 10) {

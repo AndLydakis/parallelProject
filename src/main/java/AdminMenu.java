@@ -7,12 +7,12 @@ import java.util.Scanner;
 /**
  * Menu that presents some additional operation to an admin
  * <p>
- * LIST list all players and their stats
- * LEAD print leaderboard
- * STATUS print current layer blocks with their hitpoints
- * SET alter the stats of players
+ * LIST list all players and their stats<br>
+ * LEAD print leaderboard<br>
+ * STATUS print current layer blocks with their hitpoints<br>
+ * SET alter the stats of players<br>
  * SAVE SAVEFILE export the current state as
- * a serialized object
+ * a serialized object<br>
  */
 public class AdminMenu extends Thread {
     private final LocalState state;
