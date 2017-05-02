@@ -205,7 +205,7 @@ public class GameServer {
             try {
                 FileInputStream streamIn = new FileInputStream(args[4]);
                 objectinputstream = new ObjectInputStream(streamIn);
-                System.err.println("Loading state");
+                System.err.println("Loading state from " + args[4]);
                 state = (LocalState) objectinputstream.readObject();
                 System.err.println("Resetting locks");
                 state.reset();
