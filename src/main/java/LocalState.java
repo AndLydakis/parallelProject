@@ -222,13 +222,16 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      * @throws RemoteException if rmi fails
      */
     public int printStatus() throws RemoteException {
+        long timePassed = System.nanoTime() - start;
+        System.err.println("Time left: " + timePassed / 1e9 + " seconds");
+        timeLeft = timeLimit - timePassed;
         try {
             if (!this.cube.isAlive()) {
                 //Attackers won
                 System.err.println("Cube destroyed, attackers won!");
                 return 1;
             }
-            long timePassed = System.nanoTime() - start;
+            timePassed = System.nanoTime() - start;
             if (timePassed > timeLimit) {
                 timeLeft = timeLimit - timePassed;
                 System.err.println("Cube survived, defenders won");
