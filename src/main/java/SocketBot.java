@@ -13,7 +13,7 @@ public class SocketBot extends Bot {
 
     private int role;
     private int numOps;
-    private int avgDelay;
+    private long avgDelay;
     private int port;
     private long sleep;
     private String targets;
