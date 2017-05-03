@@ -1,7 +1,6 @@
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -109,8 +108,21 @@ public class BotGenerator {
     /**
      * Command line program
      *
-     * @param args numberOfBots host port RMI/Socket-Ratio Attacker/DefenderRatio sleepTime(seconds)
-     *             AttackerPrimary AttackerSecondary AttackerItems DefenderPrimary DefenderSecondary DefenderItems
+     * @param args
+     * host
+     * port
+     * RMI Attackers
+     * RMI Defender
+     * Socket Attackers
+     * Socket Defenders
+     * sleepTime(seconds)
+     * AttackerPrimary
+     * AttackerSecondary
+     * AttackerItems
+     * DefenderPrimary
+     * DefenderSecondary
+     * DefenderItems
+     *
      * @throws InterruptedException when socket errors occur
      * @throws IOException          when rmi errors occur
      */
