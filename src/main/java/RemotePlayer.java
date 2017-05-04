@@ -71,8 +71,27 @@ public interface RemotePlayer extends java.rmi.Remote {
      */
     boolean removeCredits(int c) throws RemoteException;
 
+    /**
+     * Temporarily boost the player's speed
+     * @return
+     * @throws RemoteException
+     */
     int boost() throws RemoteException;
+
+    /**
+     * Upgrade the player's primary attribute
+     *
+     * @return the new attribute value, or the credits needed to upgrade
+     * @throws RemoteException if rmi fails
+     */
     int upgradePrimary() throws RemoteException;
+
+    /**
+     * Upgrade the player's secondary attribute
+     *
+     * @return the new attribute value, or the credits needed to upgrade
+     * @throws RemoteException if rmi fails
+     */
     int upgradeSecondary() throws RemoteException;
     int buyItem() throws RemoteException;
     void setPrimary(int a) throws RemoteException;

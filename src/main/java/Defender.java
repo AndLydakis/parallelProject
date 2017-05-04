@@ -172,9 +172,9 @@ public class Defender extends Player implements Serializable {
     }
 
     /**
-     * Return true if the player can repair a block, false otherwise
+     * Temporarily increase the player's speed if he has sufficient credits, and his boost is not in cooldown
      *
-     * @return true if the player can repair a block, false otherwise
+     * @return 1 if the boost succeeded, 0 otherwise
      * @throws RemoteException if rmi fails
      */
     private boolean canRepair() throws RemoteException {

@@ -131,7 +131,7 @@ public class Attacker extends Player implements Serializable {
     /**
      * Check if the player can attack again
      *
-     * @return true iof the player can attack, false otherwise
+     * @return true if the player can attack, false otherwise
      * @throws RemoteException if rmi fails
      */
     private boolean canAttack() throws RemoteException {
@@ -248,7 +248,7 @@ public class Attacker extends Player implements Serializable {
     /**
      * Temporarily increase the player's speed if he has sufficient credits, and his boost is not in cooldown
      *
-     * @return true if the boost succeeded, false otherwise
+     * @return 1 if the boost succeeded, 0 otherwise
      * @throws RemoteException if rmi fails
      */
     @Override
@@ -264,11 +264,23 @@ public class Attacker extends Player implements Serializable {
         return 0;
     }
 
+    /**
+     * Upgrade the player's primary attribute
+     *
+     * @return the new attribute value, or the credits needed to upgrade
+     * @throws RemoteException if rmi fails
+     */
     @Override
     public int upgradePrimary() throws RemoteException {
         return levelUpAr();
     }
 
+    /**
+     * Upgrade the player's secondary attribute
+     *
+     * @return the new attribute value, or the credits needed to upgrade
+     * @throws RemoteException if rmi fails
+     */
     @Override
     public int upgradeSecondary() throws RemoteException {
         return levelUpSpeed();
