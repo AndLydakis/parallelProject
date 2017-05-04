@@ -55,6 +55,8 @@ public interface RemoteState extends java.rmi.Remote {
      */
     boolean isAlive() throws RemoteException;
 
+    int getState() throws RemoteException;
+
     /**
      * Request to apply the primary ability of the player on a block
      *

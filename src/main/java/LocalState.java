@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The local state keeps track of the players, and the status of the cube
@@ -23,6 +24,8 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     private ConcurrentHashMap<String, Attacker> attackers;
     private ConcurrentHashMap<String, Defender> defenders;
     private ArrayList<Player> leaderboard;
+
+    private AtomicInteger currentState;
 
     /**
      * Constructor
@@ -46,6 +49,8 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
             this.playerLock = new Object();
             this.start = System.nanoTime();
             this.timeLimit = (long) (timeLimit * 1e9);
+
+            this.currentState = new AtomicInteger(-2);
         }
     }
 
@@ -110,15 +115,11 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      * @return 1 if the user is an attacker, 0 if it is a defender, -1 if the player is not registered
      */
     private int findRole(String username) {
-        int role;
-        if (attackers.containsKey(username)) {
-            role = 1;
-        } else if (defenders.containsKey(username)) {
-            role = 0;
-        } else {
-            role = -1;
+        try {
+            return players.get(username).getRole();
+        } catch (Exception e) {
+            return -1;
         }
-        return role;
     }
 
     /**
@@ -223,7 +224,6 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     public void printTimeLeft() {
         long timePassed = System.nanoTime() - start;
         timeLeft = timeLimit - timePassed;
-//        System.err.println("Time left: " + timeLeft / 1e9 + "/" + timeLimit / 1e9 + " seconds");
     }
 
     /**
@@ -236,24 +236,26 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     public int printStatus() throws RemoteException {
         long timePassed = System.nanoTime() - start;
         timeLeft = timeLimit - timePassed;
-//        System.err.println("Time left: " + timeLeft / 1e9 + "/" + timeLimit / 1e9 + " seconds");
         try {
             if (!this.cube.isAlive()) {
                 //Attackers won
                 System.err.println("Cube destroyed, attackers won!");
+                currentState.set(1);
                 return 1;
             }
             timePassed = System.nanoTime() - start;
             if (timePassed > timeLimit) {
                 timeLeft = timeLimit - timePassed;
                 System.err.println("Cube survived, defenders won");
+                currentState.set(0);
                 return -1;
             }
-//            System.err.println(this.cube.isAlive());
         } catch (NullPointerException npe) {
             System.err.println("Could not find cube, something went wrong");
+            currentState.set(666);
             return 666;
         }
+        currentState.set(0);
         return 0;
     }
 
@@ -279,6 +281,11 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int getState() throws RemoteException {
+        return currentState.get();
     }
 
     /**
@@ -384,7 +391,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
                 break;
             }
             case "GETEND": {
-                res = printStatus();
+                res = getState();
                 resp = "GETEND-(" + res + ")-" + printLeaderBoards();
                 break;
             }
@@ -394,13 +401,8 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
                 break;
             }
             case "GETPLAYER": {
-                int role = Integer.parseInt(tokens[2]);
                 String pl;
-                if (role == 1) {
-                    pl = attackers.get(tokens[1]).print();
-                } else {
-                    pl = defenders.get(tokens[1]).print();
-                }
+                pl = players.get(tokens[1]).print();
                 resp = "GETPLAYER-" + pl + "\r\n";
                 break;
             }
@@ -446,8 +448,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      * @param a the number of shields
      */
     void setShields(String u, int a) {
-        if (a > 0)
-            defenders.get(u).setItems(a);
+        defenders.get(u).setItems(a);
     }
 
     /**
@@ -468,8 +469,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      * @param a the speed
      */
     void setSpeed(String u, int r, int a) throws RemoteException {
-        if (a > 0)
-            players.get(u).setSecondary(a);
+        players.get(u).setSecondary(a);
     }
 
     /**
@@ -509,15 +509,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      * @throws RemoteException if rmi fails
      */
     void printPlayers() throws RemoteException {
-//        for (Map.Entry<String, Attacker> entry : attackers.entrySet()) {
-//            System.err.println(entry.getValue().print());
-//            System.err.println("---------------");
-//        }
-//        for (Map.Entry<String, Defender> entry : defenders.entrySet()) {
-//            System.err.println(entry.getValue().print());
-//            System.err.println("---------------");
-//        }
-        for(Map.Entry<String, Player> entry: players.entrySet()){
+        for (Map.Entry<String, Player> entry : players.entrySet()) {
             System.err.println(entry.getValue().print());
             System.err.println("---------------");
         }

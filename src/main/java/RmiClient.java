@@ -576,7 +576,7 @@ public class RmiClient {
      * @throws RemoteException if rmi fails
      */
     private void testEnd() throws RemoteException {
-        int status = state.printStatus();
+        int status = state.getState();
         if (status == 1) {
             System.err.println("Attackers won, thanks for playing !");
             System.err.println("----- Top Players -----");
@@ -587,6 +587,8 @@ public class RmiClient {
             System.err.println("----- Top Players -----");
             System.err.println(state.printLeaderBoards());
             System.exit(0);
+        } else if (status == 666) {
+            System.err.println("Could not get game state");
         }
     }
 

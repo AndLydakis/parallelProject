@@ -262,19 +262,12 @@ public class Cube implements Serializable {
         }
 
         for (Layer layer : layers) {
-//            for (ArrayList<GameBlock> face : layer.faces) {
             for (GameBlock block : layer.layer) {
                 cubeMap.putIfAbsent(block.toString(), block);
             }
-//            }
         }
 
         currentLayer = layers.poll();
-//        Iterator it = cubeMap.entrySet().iterator();
-//        while (it.hasNext()) {
-//            Map.Entry pair = (Map.Entry) it.next();
-//            System.out.println(pair.getKey() + " = " + pair.getValue().toString());
-//        }
         for (GameBlock gb : currentLayer.layer) {
             System.err.println(gb.toString());
         }
@@ -285,18 +278,7 @@ public class Cube implements Serializable {
             }
             System.err.println("--------------");
         }
-//        cube = new GameBlock[size][size][size];
-//
-//        for (int w = 0; w < this.size; w++) {
-//            for (int h = 0; h < this.size; h++) {
-//                for (int d = 0; d < this.size; d++) {
-//                    cube[w][h][d] = new GameBlock(w, h, d, blockHp);
-//                    cubeMap.put(coordToString(w, h, d), cube[w][h][d]);
-//                }
-//            }
-//        }
     }
-
 
     private String coordToString(int w, int h, int d) {
         return (w + "_" + h + "_" + d);
