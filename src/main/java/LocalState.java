@@ -273,12 +273,9 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
             long timePassed = System.nanoTime() - start;
             if (timePassed > timeLimit) {
                 timeLeft = timeLimit - timePassed;
-//                System.err.println("Cube survived, defenders won");
                 return false;
             }
-//            System.err.println(this.cube.isAlive());
         } catch (NullPointerException npe) {
-//            System.err.println("Could not find cube, something went wrong");
             return false;
         }
         return true;
@@ -408,7 +405,6 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
                 break;
             }
         }
-//        System.err.println("Response : " + resp);
         return resp;
     }
 
@@ -474,10 +470,6 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     void setSpeed(String u, int r, int a) throws RemoteException {
         if (a > 0)
             players.get(u).setSecondary(a);
-//        if (r == 1)
-//            this.attackers.get(u).setSecondary(a);
-//        else
-//            this.defenders.get(u).setSpd(a);
     }
 
     /**
@@ -509,12 +501,6 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      */
     void setLevelSpd(String u, int r, int a) throws RemoteException {
         players.get(u).setLevelSecondary(a);
-//        if (r == 1)
-//            attackers.get(u).setLevelSecondary(a);
-//        else
-//            defenders.get(u).setLevelSpd(a);
-
-
     }
 
     /**
@@ -523,11 +509,15 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      * @throws RemoteException if rmi fails
      */
     void printPlayers() throws RemoteException {
-        for (Map.Entry<String, Attacker> entry : attackers.entrySet()) {
-            System.err.println(entry.getValue().print());
-            System.err.println("---------------");
-        }
-        for (Map.Entry<String, Defender> entry : defenders.entrySet()) {
+//        for (Map.Entry<String, Attacker> entry : attackers.entrySet()) {
+//            System.err.println(entry.getValue().print());
+//            System.err.println("---------------");
+//        }
+//        for (Map.Entry<String, Defender> entry : defenders.entrySet()) {
+//            System.err.println(entry.getValue().print());
+//            System.err.println("---------------");
+//        }
+        for(Map.Entry<String, Player> entry: players.entrySet()){
             System.err.println(entry.getValue().print());
             System.err.println("---------------");
         }
@@ -553,11 +543,8 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
                     if (cube.currentLayer.layer.remove(pos) != null) {
                         System.err.println("Removed " + cube.getBlock(block).toString());
                     }
-//                    System.err.println(pos);
-//                    System.err.println(cube.currentLayer.layer.remove(pos));
                 }
             } catch (Exception e) {
-//                e.printStackTrace();
                 result = -1;
             }
         } else {
@@ -621,14 +608,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      */
     @Override
     public int requestBoost(String user, int role) throws RemoteException {
-        int res;
         try {
-//            if (role == 1) {
-//                res = attackers.get(user).boost();
-//            } else {
-//                res = defenders.get(user).boost();
-//            }
-//            return res;
             return players.get(user).boost();
         } catch (Exception e) {
             return 0;
@@ -646,12 +626,6 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      */
     @Override
     public int levelPrimary(String user, int role) throws RemoteException {
-//        try {
-//            if (role == 1) {
-//                return attackers.get(user).levelUpAr();
-//            } else {
-//                return defenders.get(user).levelUpRr();
-//            }
         try {
             return players.get(user).upgradePrimary();
         } catch (Exception e) {
@@ -671,11 +645,6 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     @Override
     public int levelSecondary(String user, int role) throws RemoteException {
         try {
-//            if (role == 1) {
-//                return attackers.get(user).levelUpSpeed();
-//            } else {
-//                return defenders.get(user).levelUpSpeed();
-//            }
             return players.get(user).upgradeSecondary();
         } catch (Exception e) {
             return 0;
@@ -693,11 +662,6 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     @Override
     public int buy(String user, int role) throws RemoteException {
         try {
-//            if (role == 1) {
-//                return attackers.get(user).buyBomb();
-//            } else {
-//                return defenders.get(user).buyShield();
-//            }
             return players.get(user).buyItem();
         } catch (Exception e) {
             return 0;
@@ -724,11 +688,6 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      */
     @Override
     public String printPlayer(String player, int r) throws RemoteException {
-//        if (r == 1) {
-//            return attackers.get(player).print();
-//        } else {
-//            return defenders.get(player).print();
-//        }
         return players.get(player).print();
     }
 

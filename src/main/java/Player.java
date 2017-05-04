@@ -17,7 +17,6 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
     private transient Object creditLock;
     private transient Object logLock;
     private volatile boolean logged;
-    ConcurrentHashMap<String, RemoteBlock> targets;
 
     private final double boostCooldown = 10.0;
 

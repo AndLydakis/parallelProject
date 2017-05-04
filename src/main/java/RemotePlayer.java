@@ -20,13 +20,13 @@ public interface RemotePlayer extends java.rmi.Remote {
 
     /**
      * Update the status of the player
+     *
      * @param s a String containing th new values for the player stats
      * @throws RemoteException if rmi fails
      */
     void update(String s) throws RemoteException;
 
     /**
-     *
      * @return a block given its coordinates
      * @throws RemoteException if rmi fails
      */
@@ -73,8 +73,9 @@ public interface RemotePlayer extends java.rmi.Remote {
 
     /**
      * Temporarily boost the player's speed
-     * @return
-     * @throws RemoteException
+     *
+     * @return 1 if the boost succeeded, 0 otherwise
+     * @throws RemoteException if rmi fails
      */
     int boost() throws RemoteException;
 
@@ -93,15 +94,28 @@ public interface RemotePlayer extends java.rmi.Remote {
      * @throws RemoteException if rmi fails
      */
     int upgradeSecondary() throws RemoteException;
-    int buyItem() throws RemoteException;
-    void setPrimary(int a) throws RemoteException;
-    void setSecondary(int a) throws RemoteException;
-    void setLevelPrimary(int a) throws RemoteException;
-    void setLevelSecondary(int a) throws RemoteException;
-    void setItems(int a) throws RemoteException;
+
     /**
-     * @return a list of Blocks representing a face of the cube
-     * @throws RemoteException if rmi fails
+     * Buy an item (bomb/shield)if there are enough credits
+     *
+     * @return the new number of available items, or the credits needed to buy on
+     * @throws RemoteException
      */
-    ArrayList<GameBlock> requestFace() throws RemoteException;
+    int buyItem() throws RemoteException;
+
+    void setPrimary(int a) throws RemoteException;
+
+    void setSecondary(int a) throws RemoteException;
+
+    void setLevelPrimary(int a) throws RemoteException;
+
+    void setLevelSecondary(int a) throws RemoteException;
+
+    /**
+     * Buy an item (bomb/shield)if there are enough credits
+     *
+     * @return the new number of available items, or the credits needed to buy on
+     * @throws RemoteException
+     */
+    void setItems(int a) throws RemoteException;
 }
