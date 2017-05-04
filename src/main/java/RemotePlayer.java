@@ -75,6 +75,11 @@ public interface RemotePlayer extends java.rmi.Remote {
     int upgradePrimary() throws RemoteException;
     int upgradeSecondary() throws RemoteException;
     int buyItem() throws RemoteException;
+    void setPrimary(int a) throws RemoteException;
+    void setSecondary(int a) throws RemoteException;
+    void setLevelPrimary(int a) throws RemoteException;
+    void setLevelSecondary(int a) throws RemoteException;
+    void setItem(int a) throws RemoteException;
     /**
      * @return a list of Blocks representing a face of the cube
      * @throws RemoteException if rmi fails

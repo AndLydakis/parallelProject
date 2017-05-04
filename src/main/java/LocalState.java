@@ -417,7 +417,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      * @param a the attack rating
      */
     void setAtk(String u, int a) {
-        attackers.get(u).setAttackRating(a);
+        attackers.get(u).setPrimary(a);
     }
 
     /**
@@ -469,7 +469,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      */
     void setSpeed(String u, int r, int a) {
         if (r == 1)
-            this.attackers.get(u).setSpd(a);
+            this.attackers.get(u).setSecondary(a);
         else
             this.defenders.get(u).setSpd(a);
     }
@@ -481,7 +481,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      * @param a the number of credits
      */
     void setLevelAr(String u, int a) {
-        attackers.get(u).setLevelAr(a);
+        attackers.get(u).setLevelPrimary(a);
     }
 
     /**
@@ -503,7 +503,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      */
     void setLevelSpd(String u, int r, int a) {
         if (r == 1)
-            attackers.get(u).setLevelSpd(a);
+            attackers.get(u).setLevelSecondary(a);
         else
             defenders.get(u).setLevelSpd(a);
 
@@ -616,12 +616,13 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     public int requestBoost(String user, int role) throws RemoteException {
         int res;
         try {
-            if (role == 1) {
-                res = attackers.get(user).boost();
-            } else {
-                res = defenders.get(user).boost();
-            }
-            return res;
+//            if (role == 1) {
+//                res = attackers.get(user).boost();
+//            } else {
+//                res = defenders.get(user).boost();
+//            }
+//            return res;
+            return players.get(user).boost();
         } catch (Exception e) {
             return 0;
         }
@@ -638,12 +639,14 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      */
     @Override
     public int levelPrimary(String user, int role) throws RemoteException {
-        try {
-            if (role == 1) {
-                return attackers.get(user).levelUpAr();
-            } else {
-                return defenders.get(user).levelUpRr();
-            }
+//        try {
+//            if (role == 1) {
+//                return attackers.get(user).levelUpAr();
+//            } else {
+//                return defenders.get(user).levelUpRr();
+//            }
+        try{
+            return players.get(user).upgradePrimary();
         } catch (Exception e) {
             return 0;
         }
@@ -661,11 +664,12 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     @Override
     public int levelSecondary(String user, int role) throws RemoteException {
         try {
-            if (role == 1) {
-                return attackers.get(user).levelUpSpeed();
-            } else {
-                return defenders.get(user).levelUpSpeed();
-            }
+//            if (role == 1) {
+//                return attackers.get(user).levelUpSpeed();
+//            } else {
+//                return defenders.get(user).levelUpSpeed();
+//            }
+            return players.get(user).upgradeSecondary();
         } catch (Exception e) {
             return 0;
         }
@@ -682,11 +686,12 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     @Override
     public int buy(String user, int role) throws RemoteException {
         try {
-            if (role == 1) {
-                return attackers.get(user).buyBomb();
-            } else {
-                return defenders.get(user).buyShield();
-            }
+//            if (role == 1) {
+//                return attackers.get(user).buyBomb();
+//            } else {
+//                return defenders.get(user).buyShield();
+//            }
+            return players.get(user).buyItem();
         } catch (Exception e) {
             return 0;
         }
@@ -712,11 +717,12 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      */
     @Override
     public String printPlayer(String player, int r) throws RemoteException {
-        if (r == 1) {
-            return attackers.get(player).print();
-        } else {
-            return defenders.get(player).print();
-        }
+//        if (r == 1) {
+//            return attackers.get(player).print();
+//        } else {
+//            return defenders.get(player).print();
+//        }
+        return players.get(player).print();
     }
 
 }

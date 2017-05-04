@@ -81,9 +81,11 @@ public class Attacker extends Player implements Serializable {
      *
      * @param a attack rating
      */
-    void setAttackRating(int a) {
+    @Override
+    public void setPrimary(int a) {
         this.attackRating = a;
     }
+
 
     /**
      * Set the number of bombs of the player
@@ -99,7 +101,8 @@ public class Attacker extends Player implements Serializable {
      *
      * @param a the speed to set
      */
-    void setSpd(int a) {
+    @Override
+    public void setSecondary(int a) {
         this.speed = a;
     }
 
@@ -108,7 +111,8 @@ public class Attacker extends Player implements Serializable {
      *
      * @param a the credits needed to level attack rating
      */
-    void setLevelAr(int a) {
+    @Override
+    public void setLevelPrimary(int a) {
         this.toLevelUpAr = a;
     }
 
@@ -117,7 +121,8 @@ public class Attacker extends Player implements Serializable {
      *
      * @param a the credits needed to level speed
      */
-    void setLevelSpd(int a) {
+    @Override
+    public void setLevelSecondary(int a) {
         this.toLevelUpSpeed = a;
     }
 
