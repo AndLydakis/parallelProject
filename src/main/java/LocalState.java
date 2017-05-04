@@ -93,11 +93,14 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     void savePoints() throws IOException {
         if (!saved) {
             saved = true;
+            System.err.println("Saving Stats");
             BufferedWriter outputWriter = new BufferedWriter(
                     new FileWriter(System.getProperty("user.home") + "/PlayerScore.csv"));
             for (Map.Entry<String, Player> entry : players.entrySet()) {
+                System.err.println(entry.getKey() + " " + entry.getValue().getScore() + "\n");
                 outputWriter.write(entry.getKey() + " " + entry.getValue().getScore() + "\n");
             }
+            outputWriter.close();
         }
     }
 
@@ -240,7 +243,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     public void printTimeLeft() {
         long timePassed = System.nanoTime() - start;
         timeLeft = timeLimit - timePassed;
-        System.err.println(timeLeft);
+        System.err.println(timeLeft / 1e9 + "/" + timeLimit / 1e9 + " seconds left");
     }
 
     /**
