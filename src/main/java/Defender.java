@@ -326,7 +326,14 @@ public class Defender extends Player implements Serializable {
      * @return true if the boost succeeded, false otherwise
      * @throws RemoteException if rmi fails
      */
-    synchronized int boost() throws RemoteException {
+    /**
+     * Temporarily increase the player's speed if he has sufficient credits, and his boost is not in cooldown
+     *
+     * @return true if the boost succeeded, false otherwise
+     * @throws RemoteException if rmi fails
+     */
+    @Override
+    public synchronized int boost() throws RemoteException {
         if ((System.nanoTime() - this.lastBoost) / 1e9 > boostCooldown) {
             if (super.removeCredits(boostCost)) {
 //            this.speed = this.speed * 2;
@@ -336,6 +343,21 @@ public class Defender extends Player implements Serializable {
             }
         }
         return 0;
+    }
+
+    @Override
+    public int upgradePrimary() throws RemoteException {
+        return levelUpRr();
+    }
+
+    @Override
+    public int upgradeSecondary() throws RemoteException {
+        return levelUpSpeed();
+    }
+
+    @Override
+    public int buyItem() throws RemoteException {
+        return buyShield();
     }
 
     /**

@@ -218,6 +218,26 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
         return false;
     }
 
+    @Override
+    public int boost() throws RemoteException {
+        return 0;
+    }
+
+    @Override
+    public int upgradePrimary() throws RemoteException {
+        return 0;
+    }
+
+    @Override
+    public int upgradeSecondary() throws RemoteException {
+        return 0;
+    }
+
+    @Override
+    public int buyItem() throws RemoteException {
+        return 0;
+    }
+
     /**
      * request the cube's face
      *

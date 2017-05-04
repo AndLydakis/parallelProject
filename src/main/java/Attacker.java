@@ -309,23 +309,6 @@ public class Attacker extends Player implements Serializable {
         return bombs;
     }
 
-    /**
-     * Temporarily increase the player's speed if he has sufficient credits, and his boost is not in cooldown
-     *
-     * @return true if the boost succeeded, false otherwise
-     * @throws RemoteException if rmi fails
-     */
-    synchronized int boost() throws RemoteException {
-        if ((System.nanoTime() - this.lastBoost) / 1e9 > boostCooldown) {
-            if (super.removeCredits(boostCost)) {
-//            this.speed = this.speed * 2;
-                lastBoost = System.nanoTime();
-                this.boosted = true;
-                return 1;
-            }
-        }
-        return 0;
-    }
 
     /**
      * Reset the player's speed back to the original pre-boost value
@@ -337,5 +320,39 @@ public class Attacker extends Player implements Serializable {
             boosted = false;
 //            System.err.println("Boost reset");
         }
+    }
+
+    /**
+     * Temporarily increase the player's speed if he has sufficient credits, and his boost is not in cooldown
+     *
+     * @return true if the boost succeeded, false otherwise
+     * @throws RemoteException if rmi fails
+     */
+    @Override
+    public synchronized int boost() throws RemoteException {
+        if ((System.nanoTime() - this.lastBoost) / 1e9 > boostCooldown) {
+            if (super.removeCredits(boostCost)) {
+//            this.speed = this.speed * 2;
+                lastBoost = System.nanoTime();
+                this.boosted = true;
+                return 1;
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public int upgradePrimary() throws RemoteException {
+        return levelUpAr();
+    }
+
+    @Override
+    public int upgradeSecondary() throws RemoteException {
+        return levelUpSpeed();
+    }
+
+    @Override
+    public int buyItem() throws RemoteException {
+        return buyBomb();
     }
 }

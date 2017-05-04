@@ -76,6 +76,10 @@ public interface RemotePlayer extends java.rmi.Remote {
      */
     boolean removeCredits(int c) throws RemoteException;
 
+    int boost() throws RemoteException;
+    int upgradePrimary() throws RemoteException;
+    int upgradeSecondary() throws RemoteException;
+    int buyItem() throws RemoteException;
     /**
      * @return a list of Blocks representing a face of the cube
      * @throws RemoteException if rmi fails

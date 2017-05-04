@@ -121,7 +121,8 @@ public class RmiClient {
         do {
             try {
                 System.err.println("------------------");
-                System.err.println(state.printPlayer(username, role));
+//                System.err.println(state.printPlayer(username, role));
+                System.err.println(player.print());
                 System.err.println("------------------");
                 System.err.println("1. Get List Of Targets");
                 System.err.println("2. Attack A Block");
@@ -191,7 +192,8 @@ public class RmiClient {
                 break;
             }
             case 4: {
-                int suc = state.buy(username, role);
+//                int suc = state.buy(username, role);
+                int suc = player.buyItem();
                 if (suc > 0) {
                     System.err.println("Bomb Purchased: " + suc + " available bombs");
                 } else if (suc < 0) {
@@ -203,7 +205,8 @@ public class RmiClient {
                 break;
             }
             case 5: {
-                int suc = state.levelPrimary(username, role);
+//                int suc = state.levelPrimary(username, role);
+                int suc = player.upgradePrimary();
                 if (suc > 0) {
                     System.err.println("Attack Rating Increased to " + suc);
                 } else if (suc < 0) {
@@ -215,7 +218,8 @@ public class RmiClient {
                 break;
             }
             case 6: {
-                int suc = state.levelSecondary(username, role);
+//                int suc = state.levelSecondary(username, role);
+                int suc = player.upgradeSecondary();
                 if (suc > 0) {
                     System.err.println("Speed Increased to " + suc);
                 } else if (suc < 0) {
@@ -227,7 +231,8 @@ public class RmiClient {
                 break;
             }
             case 7: {
-                int suc = state.requestBoost(username, role);
+//                int suc = state.requestBoost(username, role);
+                int suc = player.boost();
                 if (suc > 0) {
                     System.err.println("Speed Temporarily Increased");
                 } else if (suc < 0) {
@@ -336,7 +341,8 @@ public class RmiClient {
                 break;
             }
             case 4: {
-                int suc = state.buy(username, role);
+//                int suc = state.buy(username, role);
+                int suc = player.buyItem();
                 if (suc > 0) {
                     System.err.println("Shield Purchased: " + suc + " available shields");
                 } else if (suc < 0) {
@@ -348,7 +354,8 @@ public class RmiClient {
                 break;
             }
             case 5: {
-                int suc = state.levelPrimary(username, role);
+//                int suc = state.levelPrimary(username, role);
+                int suc = player.upgradePrimary();
                 if (suc > 0) {
                     System.err.println("Repair Rating Increased to " + suc);
                 } else if (suc < 0) {
@@ -360,7 +367,8 @@ public class RmiClient {
                 break;
             }
             case 6: {
-                int suc = state.levelSecondary(username, role);
+//                int suc = state.levelSecondary(username, role);
+                int suc = player.upgradeSecondary();
                 if (suc > 0) {
                     System.err.println("Speed Increased to " + suc);
                 } else if (suc < 0) {
@@ -372,7 +380,8 @@ public class RmiClient {
                 break;
             }
             case 7: {
-                int suc = state.requestBoost(username, role);
+//                int suc = state.requestBoost(username, role);
+                int suc = player.boost();
                 if (suc > 0) {
                     System.err.println("Speed Temporarily Increased");
                 } else if (suc < 0) {
