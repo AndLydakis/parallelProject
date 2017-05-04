@@ -1,13 +1,11 @@
-import java.io.*;
-import java.lang.reflect.MalformedParameterizedTypeException;
-import java.net.MalformedURLException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Client that uses a socket interface to interact with the game state<br>
