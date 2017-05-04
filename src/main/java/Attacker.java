@@ -12,7 +12,6 @@ public class Attacker extends Player implements Serializable {
     private int speed;
     private int attackRating;
     private long lastAttack;
-    private long lastBomb;
     private long lastBoost;
     private int toLevelUpAr = 1;
     private int toLevelUpSpeed = 1;
@@ -36,7 +35,6 @@ public class Attacker extends Player implements Serializable {
         this.attackRating = 1;
         this.lastAttack = -10000L;
         this.lastBoost = -10000L;
-        this.lastBomb = -10000L;
         this.bombs = 0;
     }
 
@@ -58,7 +56,6 @@ public class Attacker extends Player implements Serializable {
         this.bombs = bombs;
         this.lastAttack = -10000L;
         this.lastBoost = -10000L;
-        this.lastBomb = -10000L;
     }
 
     /**
@@ -72,7 +69,6 @@ public class Attacker extends Player implements Serializable {
         this.speed = 1;
         this.attackRating = 1;
         this.lastAttack = -10000L;
-        this.lastBomb = -10000L;
         this.bombs = 0;
     }
 

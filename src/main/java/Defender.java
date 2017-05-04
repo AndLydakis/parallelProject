@@ -11,7 +11,6 @@ public class Defender extends Player implements Serializable {
     private int speed;
     private int repairRating;
     private long lastRepair;
-    private long lastShield;
     private long lastBoost;
     private transient Object shieldLock;
     private int toLevelUpRr = 1;
@@ -36,7 +35,6 @@ public class Defender extends Player implements Serializable {
             this.speed = 1;
             this.repairRating = 1;
             this.lastRepair = -10000L;
-            this.lastShield = -10000L;
             this.lastBoost = -10000L;
             this.shields = 0;
             this.boosted = false;
@@ -61,7 +59,6 @@ public class Defender extends Player implements Serializable {
         this.speed = speed;
         this.shields = items;
         this.lastRepair = -10000L;
-        this.lastShield = -10000L;
         this.lastBoost = -10000L;
         this.boosted = false;
         this.shieldLock = new Object();
@@ -78,7 +75,6 @@ public class Defender extends Player implements Serializable {
         this.speed = 1;
         this.repairRating = 1;
         this.lastRepair = -1L;
-        this.lastShield = -1L;
         this.shields = 0;
         this.shieldLock = new Object();
     }
@@ -96,8 +92,8 @@ public class Defender extends Player implements Serializable {
      * @param a the amount of repair rating to set the repair rating to
      */
     void setRepairRating(int a) {
-        if(a>0)
-        this.repairRating = a;
+        if (a > 0)
+            this.repairRating = a;
     }
 
     /**
@@ -324,7 +320,7 @@ public class Defender extends Player implements Serializable {
     @Override
     public void setItems(int a) {
         if (a > 0)
-            this.shields= a;
+            this.shields = a;
     }
 
     /**

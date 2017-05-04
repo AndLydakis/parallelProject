@@ -123,7 +123,6 @@ public class RmiClient {
         do {
             try {
                 System.err.println("------------------");
-//                System.err.println(state.printPlayer(username, role));
                 System.err.println(player.print());
                 System.err.println("------------------");
                 System.err.println("1. Get List Of Targets");

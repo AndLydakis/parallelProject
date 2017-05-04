@@ -216,7 +216,7 @@ public class Cube implements Serializable {
          * the blocks in the layer, false otherwise
          * @throws RemoteException if rmi fails
          */
-        boolean isAlive() throws RemoteException {
+        synchronized boolean isAlive() throws RemoteException {
             if (layer == null) return false;
             if (layer.size() == 0) return false;
             for (GameBlock gb : layer) {

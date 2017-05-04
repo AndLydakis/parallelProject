@@ -218,19 +218,21 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     }
 
     /**
-     * prints the status of the game if it has ended
-     *
-     * @return 1 if attackers won, -1 if defenders won,
-     * 666 if the game crashed, 0 if the game is still running
-     * @throws RemoteException if rmi fails
+     * Prints how much time is left in the game in seconds
      */
-
     public void printTimeLeft() {
         long timePassed = System.nanoTime() - start;
         timeLeft = timeLimit - timePassed;
 //        System.err.println("Time left: " + timeLeft / 1e9 + "/" + timeLimit / 1e9 + " seconds");
     }
 
+    /**
+     * prints the status of the game
+     *
+     * @return 1 if attackers won, -1 if defenders won,
+     * 666 if the game crashed, 0 if the game is still running
+     * @throws RemoteException if rmi fails
+     */
     public int printStatus() throws RemoteException {
         long timePassed = System.nanoTime() - start;
         timeLeft = timeLimit - timePassed;
