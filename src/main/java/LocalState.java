@@ -1,3 +1,6 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -24,6 +27,8 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     private ConcurrentHashMap<String, Attacker> attackers;
     private ConcurrentHashMap<String, Defender> defenders;
     private ArrayList<Player> leaderboard;
+
+    private boolean saved = false;
 
     private AtomicInteger currentState;
 
@@ -82,6 +87,17 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
         System.err.println("Resetting attacker locks");
         for (Attacker a : attackers.values()) {
             a.logout();
+        }
+    }
+
+    void savePoints() throws IOException {
+        if (!saved) {
+            saved = true;
+            BufferedWriter outputWriter = new BufferedWriter(
+                    new FileWriter(System.getProperty("user.home") + "/PlayerScore.csv"));
+            for (Map.Entry<String, Player> entry : players.entrySet()) {
+                outputWriter.write(entry.getKey() + " " + entry.getValue().getScore() + "\n");
+            }
         }
     }
 
@@ -224,6 +240,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     public void printTimeLeft() {
         long timePassed = System.nanoTime() - start;
         timeLeft = timeLimit - timePassed;
+        System.err.println(timeLeft);
     }
 
     /**
@@ -240,6 +257,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
             if (!this.cube.isAlive()) {
                 //Attackers won
                 System.err.println("Cube destroyed, attackers won!");
+                savePoints();
                 currentState.set(1);
                 return 1;
             }
@@ -247,6 +265,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
             if (timePassed > timeLimit) {
                 timeLeft = timeLimit - timePassed;
                 System.err.println("Cube survived, defenders won");
+                savePoints();
                 currentState.set(0);
                 return -1;
             }
@@ -254,6 +273,8 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
             System.err.println("Could not find cube, something went wrong");
             currentState.set(666);
             return 666;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         currentState.set(0);
         return 0;

@@ -12,7 +12,6 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
     private final String userName;
     private int score;
     private int credits;
-    private int level;
     private final int role;
     private transient Object creditLock;
     private transient Object logLock;
@@ -32,7 +31,6 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
         this.userName = un;
         this.score = score;
         this.credits = credits;
-        this.level = 1;
         this.creditLock = new Object();
         this.logLock = new Object();
         this.logged = false;
@@ -95,7 +93,6 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
         String[] tokens = s.split(" ");
         this.score = Integer.parseInt(tokens[0]);
         this.credits = Integer.parseInt(tokens[1]);
-        this.level = Integer.parseInt(tokens[2]);
     }
 
     /**
@@ -144,16 +141,6 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
             }
             return false;
         }
-    }
-
-    /**
-     * Return the player's level
-     *
-     * @return the player's level
-     * @throws RemoteException if rmi fails
-     */
-    public int getLevel() throws RemoteException {
-        return this.level;
     }
 
     /**

@@ -34,11 +34,11 @@ public interface RemotePlayer extends java.rmi.Remote {
     RemoteBlock blockFromString() throws RemoteException;
 
     /**
-     * @return the current level of the player
+     * Return the role of the player
+     *
+     * @return int representation of the player's role
      * @throws RemoteException if rmi fails
      */
-    int getLevel() throws RemoteException;
-
     int getRole() throws RemoteException;
 
     /**
@@ -100,7 +100,7 @@ public interface RemotePlayer extends java.rmi.Remote {
      * Buy an item (bomb/shield)if there are enough credits
      *
      * @return the new number of available items, or the credits needed to buy on
-     * @throws RemoteException
+     * @throws RemoteException if rmi fails
      */
     int buyItem() throws RemoteException;
 
@@ -113,10 +113,9 @@ public interface RemotePlayer extends java.rmi.Remote {
     void setLevelSecondary(int a) throws RemoteException;
 
     /**
-     * Buy an item (bomb/shield)if there are enough credits
+     * Sets the number of available items
      *
-     * @return the new number of available items, or the credits needed to buy on
-     * @throws RemoteException
+     * @throws RemoteException if rmi fails
      */
     void setItems(int a) throws RemoteException;
 }
