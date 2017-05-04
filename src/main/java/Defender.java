@@ -96,43 +96,8 @@ public class Defender extends Player implements Serializable {
      * @param a the amount of repair rating to set the repair rating to
      */
     void setRepairRating(int a) {
+        if(a>0)
         this.repairRating = a;
-    }
-
-    /**
-     * sets the number of shields of the player
-     *
-     * @param a the number of shields of the player
-     */
-    void setShields(int a) {
-        this.shields = a;
-    }
-
-    /**
-     * sets the speed of the player
-     *
-     * @param a the speed to set the speed to
-     */
-    void setSpd(int a) {
-        this.speed = a;
-    }
-
-    /**
-     * sets the amount necessary need to level up repair rating
-     *
-     * @param a the amount necessary need to level up repair rating
-     */
-    void setLevelRr(int a) {
-        this.toLevelUpRr = a;
-    }
-
-    /**
-     * sets the amount necessary need to level up speed
-     *
-     * @param a the amount necessary need to level up speed
-     */
-    void setLevelSpd(int a) {
-        this.toLevelUpSpeed = a;
     }
 
     /**
@@ -226,21 +191,12 @@ public class Defender extends Player implements Serializable {
     }
 
     /**
-     * @return true if the player can boost his cooldowns, false otherwise
-     * @throws RemoteException if rmi fail
-     */
-    public boolean canBoost() throws RemoteException {
-        return ((System.nanoTime() - this.lastBoost) > getBoostCooldown());
-    }
-
-
-    /**
      * Increase the repair rating if the player has enough credits
      *
      * @return true if the player had enough credits to level up repair rating, false otherwise
      * @throws RemoteException if rmi fails
      */
-    int levelUpRr() throws RemoteException {
+    private int levelUpRr() throws RemoteException {
         int cr = getCredits();
         if (super.removeCredits(toLevelUpRr)) {
             repairRating += 1;
@@ -257,7 +213,7 @@ public class Defender extends Player implements Serializable {
      * @return true if the player had enough credits to level up speed, false otherwise
      * @throws RemoteException if rmi fails
      */
-    int levelUpSpeed() throws RemoteException {
+    private int levelUpSpeed() throws RemoteException {
         if (((System.nanoTime() - this.lastBoost) > this.speed)) {
             if (super.removeCredits(toLevelUpSpeed)) {
                 speed += 1;
@@ -303,30 +259,6 @@ public class Defender extends Player implements Serializable {
     }
 
     /**
-     * Increases the number of available shields if the player has enough credits
-     *
-     * @return the number of shields available to the player
-     * @throws RemoteException if rmi fails
-     */
-    int buyShield() throws RemoteException {
-        synchronized (this.shieldLock) {
-            if (super.removeCredits(shieldPrice)) {
-                shields++;
-                return shields;
-            } else {
-                System.err.println("Not enough credits to buy a shield, " + shieldPrice + " credits needed");
-                return -shieldPrice;
-            }
-        }
-    }
-
-    /**
-     * Temporarily increase the player's speed if he has sufficient credits, and his boost is not in cooldown
-     *
-     * @return true if the boost succeeded, false otherwise
-     * @throws RemoteException if rmi fails
-     */
-    /**
      * Temporarily increase the player's speed if he has sufficient credits, and his boost is not in cooldown
      *
      * @return true if the boost succeeded, false otherwise
@@ -355,9 +287,77 @@ public class Defender extends Player implements Serializable {
         return levelUpSpeed();
     }
 
+    /**
+     * Increases the number of available shields if the player has enough credits
+     *
+     * @return the number of shields available to the player
+     * @throws RemoteException if rmi fails
+     */
     @Override
     public int buyItem() throws RemoteException {
-        return buyShield();
+        if (super.removeCredits(shieldPrice)) {
+            shields++;
+        } else {
+//            System.err.println("Not enough credits to buy a shield, " + bombPrice + " credits needed");
+            return -shieldPrice;
+        }
+        return shields;
+    }
+
+    /**
+     * Set the attack rating of the player
+     *
+     * @param a attack rating
+     */
+    @Override
+    public void setPrimary(int a) {
+        if (a > 0)
+            this.repairRating = a;
+    }
+
+
+    /**
+     * Set the number of bombs of the player
+     *
+     * @param a the number of bombs
+     */
+    @Override
+    public void setItems(int a) {
+        if (a > 0)
+            this.shields= a;
+    }
+
+    /**
+     * Set the speed of the player
+     *
+     * @param a the speed to set
+     */
+    @Override
+    public void setSecondary(int a) {
+        if (a > 0)
+            this.speed = a;
+    }
+
+    /**
+     * Set the credits needed to level attack rating
+     *
+     * @param a the credits needed to level attack rating
+     */
+    @Override
+    public void setLevelPrimary(int a) {
+        if (a > 0)
+            this.toLevelUpRr = a;
+    }
+
+    /**
+     * Set the credits needed to level speed
+     *
+     * @param a the credits needed to level speed
+     */
+    @Override
+    public void setLevelSecondary(int a) {
+        if (a > 0)
+            this.toLevelUpSpeed = a;
     }
 
     /**

@@ -77,56 +77,6 @@ public class Attacker extends Player implements Serializable {
     }
 
     /**
-     * Set the attack rating of the player
-     *
-     * @param a attack rating
-     */
-    @Override
-    public void setPrimary(int a) {
-        this.attackRating = a;
-    }
-
-
-    /**
-     * Set the number of bombs of the player
-     *
-     * @param a the number of bombs
-     */
-    void setBombs(int a) {
-        this.bombs = a;
-    }
-
-    /**
-     * Set the speed of the player
-     *
-     * @param a the speed to set
-     */
-    @Override
-    public void setSecondary(int a) {
-        this.speed = a;
-    }
-
-    /**
-     * Set the credits needed to level attack rating
-     *
-     * @param a the credits needed to level attack rating
-     */
-    @Override
-    public void setLevelPrimary(int a) {
-        this.toLevelUpAr = a;
-    }
-
-    /**
-     * Set the credits needed to level speed
-     *
-     * @param a the credits needed to level speed
-     */
-    @Override
-    public void setLevelSecondary(int a) {
-        this.toLevelUpSpeed = a;
-    }
-
-    /**
      * Update player from a socket response
      *
      * @param s String formatted as "SCORE CREDITS LEVEL SPEED ATTACK_RATING BOMBS"
@@ -198,23 +148,12 @@ public class Attacker extends Player implements Serializable {
     }
 
     /**
-     * Check if the player can use his boost ability again
-     *
-     * @return true if the player can boost again, false otherwise
-     * @throws RemoteException if rmi fails
-     */
-    public boolean canBoost() throws RemoteException {
-        return ((System.nanoTime() - this.lastBoost) > boostCooldown);
-    }
-
-
-    /**
      * Increase the attack rating if the player has enough credits
      *
      * @return true if the player had enough credits to level up repair rating, false otherwise
      * @throws RemoteException if rmi fails
      */
-    int levelUpAr() throws RemoteException {
+    private int levelUpAr() throws RemoteException {
         int cr = getCredits();
         if (super.removeCredits(toLevelUpAr)) {
             attackRating += 1;
@@ -231,7 +170,7 @@ public class Attacker extends Player implements Serializable {
      * @return true if the player had enough credits to level up speed, false otherwise
      * @throws RemoteException if rmi fails
      */
-    int levelUpSpeed() throws RemoteException {
+    private int levelUpSpeed() throws RemoteException {
         int cr = getCredits();
         if (((System.nanoTime() - this.lastBoost) > this.speed)) {
             if (super.removeCredits(toLevelUpSpeed)) {
@@ -299,23 +238,6 @@ public class Attacker extends Player implements Serializable {
     }
 
     /**
-     * Increases the number of available bombs if the player has enough credits
-     *
-     * @return the number of bombs available to the player
-     * @throws RemoteException if rmi fails
-     */
-    int buyBomb() throws RemoteException {
-        if (super.removeCredits(bombPrice)) {
-            bombs++;
-        } else {
-//            System.err.println("Not enough credits to buy a shield, " + bombPrice + " credits needed");
-            return -bombPrice;
-        }
-        return bombs;
-    }
-
-
-    /**
      * Reset the player's speed back to the original pre-boost value
      *
      * @throws RemoteException if rmi fails
@@ -356,8 +278,76 @@ public class Attacker extends Player implements Serializable {
         return levelUpSpeed();
     }
 
+    /**
+     * Increases the number of available bombs if the player has enough credits
+     *
+     * @return the number of bombs available to the player
+     * @throws RemoteException if rmi fails
+     */
     @Override
     public int buyItem() throws RemoteException {
-        return buyBomb();
+        if (super.removeCredits(bombPrice)) {
+            bombs++;
+        } else {
+//            System.err.println("Not enough credits to buy a shield, " + bombPrice + " credits needed");
+            return -bombPrice;
+        }
+        return bombs;
+    }
+
+    /**
+     * Set the attack rating of the player
+     *
+     * @param a attack rating
+     */
+    @Override
+    public void setPrimary(int a) {
+        if (a > 0)
+            this.attackRating = a;
+    }
+
+
+    /**
+     * Set the number of bombs of the player
+     *
+     * @param a the number of bombs
+     */
+    @Override
+    public void setItems(int a) {
+        if (a > 0)
+            this.bombs = a;
+    }
+
+    /**
+     * Set the speed of the player
+     *
+     * @param a the speed to set
+     */
+    @Override
+    public void setSecondary(int a) {
+        if (a > 0)
+            this.speed = a;
+    }
+
+    /**
+     * Set the credits needed to level attack rating
+     *
+     * @param a the credits needed to level attack rating
+     */
+    @Override
+    public void setLevelPrimary(int a) {
+        if (a > 0)
+            this.toLevelUpAr = a;
+    }
+
+    /**
+     * Set the credits needed to level speed
+     *
+     * @param a the credits needed to level speed
+     */
+    @Override
+    public void setLevelSecondary(int a) {
+        if (a > 0)
+            this.toLevelUpSpeed = a;
     }
 }

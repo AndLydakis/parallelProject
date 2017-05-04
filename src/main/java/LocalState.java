@@ -225,7 +225,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      * @throws RemoteException if rmi fails
      */
 
-    public void printTimeLeft(){
+    public void printTimeLeft() {
         long timePassed = System.nanoTime() - start;
         timeLeft = timeLimit - timePassed;
 //        System.err.println("Time left: " + timeLeft / 1e9 + "/" + timeLimit / 1e9 + " seconds");
@@ -437,7 +437,8 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      * @param a the number of bombs
      */
     void setBombs(String u, int a) {
-        attackers.get(u).setBombs(a);
+        if (a > 0)
+            attackers.get(u).setItems(a);
     }
 
     /**
@@ -447,7 +448,8 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      * @param a the number of shields
      */
     void setShields(String u, int a) {
-        defenders.get(u).setShields(a);
+        if (a > 0)
+            defenders.get(u).setItems(a);
     }
 
     /**
@@ -467,11 +469,13 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      * @param r the role of the player
      * @param a the speed
      */
-    void setSpeed(String u, int r, int a) {
-        if (r == 1)
-            this.attackers.get(u).setSecondary(a);
-        else
-            this.defenders.get(u).setSpd(a);
+    void setSpeed(String u, int r, int a) throws RemoteException {
+        if (a > 0)
+            players.get(u).setSecondary(a);
+//        if (r == 1)
+//            this.attackers.get(u).setSecondary(a);
+//        else
+//            this.defenders.get(u).setSpd(a);
     }
 
     /**
@@ -491,7 +495,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      * @param a the number of credits
      */
     void setLevelRr(String u, int a) {
-        defenders.get(u).setLevelRr(a);
+        defenders.get(u).setLevelPrimary(a);
     }
 
     /**
@@ -501,11 +505,12 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
      * @param r the role of the player
      * @param a the number of credits
      */
-    void setLevelSpd(String u, int r, int a) {
-        if (r == 1)
-            attackers.get(u).setLevelSecondary(a);
-        else
-            defenders.get(u).setLevelSpd(a);
+    void setLevelSpd(String u, int r, int a) throws RemoteException {
+        players.get(u).setLevelSecondary(a);
+//        if (r == 1)
+//            attackers.get(u).setLevelSecondary(a);
+//        else
+//            defenders.get(u).setLevelSpd(a);
 
 
     }
@@ -645,7 +650,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
 //            } else {
 //                return defenders.get(user).levelUpRr();
 //            }
-        try{
+        try {
             return players.get(user).upgradePrimary();
         } catch (Exception e) {
             return 0;

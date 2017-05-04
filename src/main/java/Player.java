@@ -258,7 +258,7 @@ public class Player extends UnicastRemoteObject implements Comparable<Player>, R
     }
 
     @Override
-    public void setItem(int a) throws RemoteException {
+    public void setItems(int a) throws RemoteException {
 
     }
 
