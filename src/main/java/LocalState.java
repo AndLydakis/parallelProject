@@ -243,7 +243,7 @@ public class LocalState extends UnicastRemoteObject implements RemoteState, Seri
     public void printTimeLeft() {
         long timePassed = System.nanoTime() - start;
         timeLeft = timeLimit - timePassed;
-        System.err.println((int) (timeLeft / 1e9) + "/" + (int) (timeLimit / 1e9) + " seconds left");
+        System.err.format("%.2f%n/%.2f%n seconds left", timeLeft / 1e9,timeLimit / 1e9);
     }
 
     /**
