@@ -186,7 +186,13 @@ public class GameServer {
     /**
      * Command line program to create a new state or load a saved state from a serialized object
      *
-     * @param args Commandline arguments : port server_name cube_size block_hitpoints time_limit(seconds) (optional)serialized_state
+     * @param args Commandline arguments:
+     *             port
+     *             server_name
+     *             cube_size
+     *             block_hitpoints
+     *             time_limit(seconds)
+     *             (serialized_state)
      * @throws IOException if socket communication fails
      */
     public static void main(String[] args) throws IOException {
