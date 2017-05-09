@@ -103,6 +103,31 @@ public class GameServer {
         this.state = localState;
     }
 
+
+    /**
+     * http://stackoverflow.com/a/14541376/1440902
+     * @return
+     * @throws Exception
+     */
+    private static String getIp() throws Exception {
+        URL whatismyip = new URL("http://checkip.amazonaws.com");
+        BufferedReader in = null;
+        try {
+            in = new BufferedReader(new InputStreamReader(
+                    whatismyip.openStream()));
+            String ip = in.readLine();
+            return ip;
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     /**
      * Start the server by binding it to a registry
      * <p>
@@ -121,21 +146,13 @@ public class GameServer {
      */
     private synchronized int start(int port) throws RemoteException, UnknownHostException {
 
-        System.err.println("address belief: " + InetAddress.getLocalHost().getHostAddress());
-        System.setProperty("java.rmi.server.hostname", InetAddress.getLocalHost().getHostAddress());
-
         try {
-            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-            while (networkInterfaces.hasMoreElements()) {
-                List<InterfaceAddress> interfaceAddresses = networkInterfaces.nextElement().getInterfaceAddresses();
-                for (InterfaceAddress interfaceAddress : interfaceAddresses) {
-                    System.out.println("ok" + interfaceAddress.getAddress());
-                }
-            }
-        } catch (SocketException e) {
+            String ip = getIp();
+            System.err.println("address belief: " + ip);
+            System.setProperty("java.rmi.server.hostname", ip);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
 
         if (registry != null)
             throw new IllegalStateException("Server already running");
