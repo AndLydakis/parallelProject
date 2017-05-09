@@ -195,7 +195,7 @@ public class SocketBot extends Bot {
             }
 
         } catch (Exception e) {
-//            System.err.println("Could not connect to server, exiting");
+            System.err.format("SocketBot unable to connect to server %s on port %d", host, port);
             running = false;
 //            System.exit(0);
         } finally {
