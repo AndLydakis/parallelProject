@@ -1,12 +1,10 @@
 import java.io.*;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Enumeration;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -124,6 +122,16 @@ public class GameServer {
 
         System.err.println("address belief: " + InetAddress.getLocalHost().getHostAddress());
         System.setProperty("java.rmi.server.hostname", InetAddress.getLocalHost().getHostAddress());
+
+        try {
+            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+            while (networkInterfaces.hasMoreElements()) {
+                System.out.println("?? " + networkInterfaces.nextElement().getInterfaceAddresses().toString());
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+
 
         if (registry != null)
             throw new IllegalStateException("Server already running");
