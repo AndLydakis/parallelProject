@@ -97,7 +97,8 @@ public class RmiBot extends Bot {
                 }
             }
         } catch (RemoteException re) {
-            System.err.println(username + " Exception 1");
+            System.err.println(username + " Exception 1 ");
+            re.printStackTrace();
             running = false;
             return;
         }
