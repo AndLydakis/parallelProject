@@ -30,6 +30,9 @@ public class BotGenerator {
                          int defenderPrimary, int defenderSecondary, int defenderItems) throws InterruptedException, IOException {
         String defString = defenderPrimary + "-" + defenderSecondary + "-" + defenderItems;
         String atkString = attackerPrimary + "-" + attackerSecondary + "-" + attackerItems;
+
+        System.setProperty("java.rmi.server.hostname", host);
+
         String service = "rmi://" + host + ":" + port + "/" + GameServer.SERVER_NAME;
         RemoteState state = null;
         int num = RMIA + RMID + SocketA + SocketD;

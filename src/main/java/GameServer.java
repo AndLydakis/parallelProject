@@ -106,6 +106,7 @@ public class GameServer {
 
     /**
      * http://stackoverflow.com/a/14541376/1440902
+     *
      * @return
      * @throws Exception
      */
@@ -146,13 +147,16 @@ public class GameServer {
      */
     private synchronized int start(int port) throws RemoteException, UnknownHostException {
 
+        String ip;
+
         try {
-            String ip = getIp();
-            System.err.println("address belief: " + ip);
-            System.setProperty("java.rmi.server.hostname", ip);
+            ip = getIp();
         } catch (Exception e) {
-            e.printStackTrace();
+            ip = InetAddress.getLocalHost().getHostAddress();
         }
+
+        System.setProperty("java.rmi.server.hostname", ip);
+
 
         if (registry != null)
             throw new IllegalStateException("Server already running");
