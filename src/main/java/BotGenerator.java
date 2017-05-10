@@ -27,7 +27,7 @@ public class BotGenerator {
      * @param sleep sleep in seconds
      * @return sleep in nanoseconds +/- 5%, but no less than zero
      */
-    private long randomizedSleep(long sleep) {
+    private long randomizedSleep(double sleep) {
 //        return (long) Math.max(0, (sleep * 1e9 * (1 + (Math.random() - .5) / 10)));
         return (long) (sleep * 1e9);
     }
@@ -52,7 +52,7 @@ public class BotGenerator {
     private BotGenerator(String host, int port,
                          int RMIA, int RMID,
                          int SocketA, int SocketD,
-                         long sleep,
+                         double sleep,
                          int attackerPrimary, int attackerSecondary, int attackerItems,
                          int defenderPrimary, int defenderSecondary, int defenderItems) throws InterruptedException, IOException {
         String defString = defenderPrimary + "-" + defenderSecondary + "-" + defenderItems;
@@ -171,11 +171,19 @@ public class BotGenerator {
     public static void main(String args[]) throws InterruptedException, IOException {
         System.err.println("Creating new bot generator");
 
-        new BotGenerator(args[0], Integer.parseInt(args[1]),
-                Integer.parseInt(args[2]), Integer.parseInt(args[3]),
-                Integer.parseInt(args[4]), Integer.parseInt(args[5]),
-                Long.parseLong(args[6]),
-                Integer.parseInt(args[7]), Integer.parseInt(args[8]), Integer.parseInt(args[9]),
-                Integer.parseInt(args[10]), Integer.parseInt(args[11]), Integer.parseInt(args[12]));
+        new BotGenerator(
+                args[0],
+                Integer.parseInt(args[1]),
+                Integer.parseInt(args[2]),
+                Integer.parseInt(args[3]),
+                Integer.parseInt(args[4]),
+                Integer.parseInt(args[5]),
+                Double.parseDouble(args[6]),
+                Integer.parseInt(args[7]),
+                Integer.parseInt(args[8]),
+                Integer.parseInt(args[9]),
+                Integer.parseInt(args[10]),
+                Integer.parseInt(args[11]),
+                Integer.parseInt(args[12]));
     }
 }
