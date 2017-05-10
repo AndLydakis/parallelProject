@@ -32,6 +32,7 @@ public class BotGenerator {
         String atkString = attackerPrimary + "-" + attackerSecondary + "-" + attackerItems;
 
         System.setProperty("java.rmi.server.hostname", host);
+        System.err.println("java.rmi.server.hostname: " + System.getProperty("java.rmi.server.hostname"));
 
         String service = "rmi://" + host + ":" + port + "/" + GameServer.SERVER_NAME;
         RemoteState state = null;
@@ -59,14 +60,12 @@ public class BotGenerator {
         }
 
         for (int i = 0; i < RMID; i++) {
-
             String username = "RMIDefender:" + getSaltString();
             String regString = username + "-" + 0 + "-" + defString;
             bots.add(new RmiBot(state, username, 0, (long) (sleep * 1e9), regString));
         }
 
         for (int i = 0; i < SocketA; i++) {
-
             String username = "SocketAttacker:" + getSaltString();
             String regString = username + "-" + 1 + "-" + atkString;
             bots.add(new SocketBot(username, 1, host, port, (long) (sleep * 1e9), regString));
@@ -77,55 +76,61 @@ public class BotGenerator {
             bots.add(new SocketBot(username, 0, host, port, (long) (sleep * 1e9), regString));
         }
 
-        for (Bot b : bots) {
-            b.start();
-        }
+        bots.forEach(Thread::start);
+
         for (Bot b : bots) {
             b.join();
         }
+
         System.err.println("Saving stats");
+
+        //LOG RMI BOTS
         BufferedWriter outputWriter = new BufferedWriter(
                 new FileWriter(System.getProperty("user.home") + "/RMISTATS_" + num + "_" +
                         RMIA + "_" + RMID + "_" + SocketA + "_" + SocketD +
                         ".csv"));
-        for (Bot.statsEntry se : Bot.attackStats) {
+
+        for (Bot.statsEntry se : Bot.attackStats)
             outputWriter.write(se.toString());
-        }
-        for (Bot.statsEntry se : Bot.defendStats) {
+
+        for (Bot.statsEntry se : Bot.defendStats)
             outputWriter.write(se.toString());
-        }
+
         outputWriter.close();
+
+        //LOG SOCKETBOTS
         outputWriter = new BufferedWriter(
                 new FileWriter(System.getProperty("user.home") + "/SOCKETSTATS_" + num + "_" +
                         RMIA + "_" + RMID + "_" + SocketA + "_" + SocketD +
                         ".csv"));
-        for (Bot.statsEntry se : Bot.attackStatsSocket) {
+
+        for (Bot.statsEntry se : Bot.attackStatsSocket)
             outputWriter.write(se.toString());
-        }
-        for (Bot.statsEntry se : Bot.defendStatsSocket) {
+
+        for (Bot.statsEntry se : Bot.defendStatsSocket)
             outputWriter.write(se.toString());
-        }
+
         outputWriter.close();
+
+
     }
 
     /**
      * Command line program
      *
-     * @param args
-     * host
-     * port
-     * RMI Attackers
-     * RMI Defender
-     * Socket Attackers
-     * Socket Defenders
-     * sleepTime(seconds)
-     * AttackerPrimary
-     * AttackerSecondary
-     * AttackerItems
-     * DefenderPrimary
-     * DefenderSecondary
-     * DefenderItems
-     *
+     * @param args host
+     *             port
+     *             RMI Attackers
+     *             RMI Defender
+     *             Socket Attackers
+     *             Socket Defenders
+     *             sleepTime(seconds)
+     *             AttackerPrimary
+     *             AttackerSecondary
+     *             AttackerItems
+     *             DefenderPrimary
+     *             DefenderSecondary
+     *             DefenderItems
      * @throws InterruptedException when socket errors occur
      * @throws IOException          when rmi errors occur
      */

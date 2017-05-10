@@ -21,6 +21,11 @@ public class Bot extends Thread {
         private int numOps;
         private long avgDelay;
 
+        /**
+         * @param role     Attacker = 1, Defender = 1
+         * @param numOps   Number of actions bot performed
+         * @param avgDelay in nanoseconds
+         */
         statsEntry(int role, int numOps, long avgDelay) {
             this.role = role;
             this.numOps = numOps;
@@ -28,7 +33,7 @@ public class Bot extends Thread {
         }
 
         public String toString() {
-            return this.role + " " + this.numOps + " " + this.avgDelay / 1e9 + "\n";
+            return this.role + " " + this.numOps + " " + this.avgDelay + "\n";
         }
     }
 
