@@ -85,7 +85,11 @@ public class GameBlock implements Serializable {
      * @throws RemoteException if rmi fails
      */
     int getHp() throws RemoteException {
-        return this.hp;
+        int hp;
+        synchronized (hpLock) {
+            hp = this.hp;
+        }
+        return hp;
     }
 
     /**
