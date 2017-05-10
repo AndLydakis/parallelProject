@@ -106,10 +106,12 @@ public class BotGenerator {
             bots.add(new SocketBot(username, 0, host, port, randomizedSleep(sleep), regString, countDownLatch));
         }
 
-        System.err.println("b4" + countDownLatch.getCount());
+        System.err.println("0?: " + countDownLatch.getCount());
         bots.forEach(Thread::start);
 
-        System.err.println("after" + countDownLatch.getCount());
+        System.err.println(num + "?: " + countDownLatch.getCount());
+        countDownLatch.countDown();
+        System.err.println(num + 1 + "?: " + countDownLatch.getCount());
         countDownLatch.await();
 
         for (Bot b : bots) {

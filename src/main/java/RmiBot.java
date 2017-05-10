@@ -87,6 +87,7 @@ public class RmiBot extends Bot {
     public void run() {
 
         try {
+            countDownLatch.countDown();
             countDownLatch.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
