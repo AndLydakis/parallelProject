@@ -111,8 +111,8 @@ public class BotGenerator {
 
         System.err.println(num + "?: " + countDownLatch.getCount());
         countDownLatch.countDown();
-        System.err.println(num + 1 + "?: " + countDownLatch.getCount());
         countDownLatch.await();
+        System.err.println(num + 1 + "?: " + countDownLatch.getCount());
 
         for (Bot b : bots) {
             b.join();
