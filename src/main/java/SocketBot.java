@@ -11,40 +11,11 @@ import java.util.concurrent.CountDownLatch;
  * the first available block until the game is over
  */
 public class SocketBot extends Bot {
-
-    private int role;
-    private int numOps;
-    private long avgDelay;
     private int port;
-    private long sleep;
-    private String targets;
     private String host;
-    private String username;
-    private String regString;
-    private int primary;
-    private int secondary;
-    private int items;
-    private volatile boolean running;
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in = null;
-    private CountDownLatch countDownLatch;
-
-    /**
-     * Add the stats to the correct array
-     */
-    private void addStats() {
-        System.err.println(username + " adding stats");
-        if (role == 1) {
-            synchronized (attackStats) {
-                attackStatsSocket.add(new statsEntry(role, numOps, avgDelay));
-            }
-        } else {
-            synchronized (defendStats) {
-                defendStatsSocket.add(new statsEntry(role, numOps, avgDelay));
-            }
-        }
-    }
 
     /**
      * Constructor
@@ -290,7 +261,6 @@ public class SocketBot extends Bot {
                 running = false;
                 if (numOps != 0) {
                     avgDelay /= numOps;
-                    System.err.println(username + " adding stats");
                     addStats();
                     return;
                 } else {
@@ -300,7 +270,6 @@ public class SocketBot extends Bot {
         }
         if (numOps != 0) {
             avgDelay /= numOps;
-            System.err.println(username + " adding stats");
             addStats();
         } else {
             System.err.println(username + " no ops performed");

@@ -8,33 +8,6 @@ import java.util.concurrent.CountDownLatch;
  */
 public class RmiBot extends Bot {
     private RemoteState state;
-    private int role;
-    private int numOps;
-    private int primary;
-    private int secondary;
-    private int items;
-    private long avgDelay;
-    private long sleep;
-    String username;
-    private String regString;
-    private String targets;
-    private volatile boolean running;
-    private CountDownLatch countDownLatch;
-
-    /**
-     * Add the stats to the correct array
-     */
-    private void addStats() {
-        if (role == 1) {
-            synchronized (attackStats) {
-                attackStats.add(new statsEntry(role, numOps, avgDelay));
-            }
-        } else {
-            synchronized (defendStats) {
-                defendStats.add(new statsEntry(role, numOps, avgDelay));
-            }
-        }
-    }
 
     /**
      * Select first available block and use primary on it
@@ -148,7 +121,6 @@ public class RmiBot extends Bot {
                 }
             }
             System.err.println("Game over");
-            System.err.println(username + " adding stats");
             if (numOps != 0) {
                 avgDelay /= numOps;
                 addStats();
@@ -159,7 +131,6 @@ public class RmiBot extends Bot {
             System.err.println(username + " exception 2:");
             e.printStackTrace();
             running = false;
-            System.err.println(username + " adding stats");
             if (numOps != 0) {
                 avgDelay /= numOps;
                 addStats();

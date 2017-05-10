@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -12,6 +13,35 @@ public class Bot extends Thread {
     static final ArrayList<statsEntry> attackStatsSocket = new ArrayList<>();
     static final String[] roles = {"Defender", "Attacker"};
     static AtomicInteger counter = new AtomicInteger(0);
+
+    CountDownLatch countDownLatch;
+    String username;
+    String regString;
+    String targets;
+    volatile boolean running;
+    int role;
+    int numOps;
+    int primary;
+    int secondary;
+    int items;
+    long avgDelay;
+    long sleep;
+
+    /**
+     * Add the stats to the correct array
+     */
+    void addStats() {
+        System.err.println(username + " adding stats");
+        if (role == 1) {
+            synchronized (attackStats) {
+                attackStatsSocket.add(new statsEntry(role, numOps, avgDelay));
+            }
+        } else {
+            synchronized (defendStats) {
+                defendStatsSocket.add(new statsEntry(role, numOps, avgDelay));
+            }
+        }
+    }
 
     /**
      * class used to keep track of a bot's stats
