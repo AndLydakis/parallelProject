@@ -1,6 +1,7 @@
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -193,7 +194,7 @@ public class Cube implements Serializable {
                 face1.add(corner7);
                 face4.add(corner7);
                 face6.add(corner7);
-                corner8 = new GameBlock(level, 2, idx++, blockHp);
+                corner8 = new GameBlock(level, 2, idx, blockHp);
                 face2.add(corner8);
                 face5.add(corner8);
                 face6.add(corner8);
@@ -219,10 +220,15 @@ public class Cube implements Serializable {
         synchronized boolean isAlive() throws RemoteException {
             if (layer == null) return false;
             if (layer.size() == 0) return false;
-            for (GameBlock gb : layer) {
-                if (gb.getHp() > 0) {
-                    return true;
+
+            try {
+                for (GameBlock gb : layer) {
+                    if (gb != null && gb.getHp() > 0) {
+                        return true;
+                    }
                 }
+            } catch (NoSuchElementException e) {
+                //maybe it died while we were checking?
             }
             return false;
         }
@@ -233,19 +239,19 @@ public class Cube implements Serializable {
          * @return every block in the layer as one string
          */
         public String toString() {
-            String s = "";
+            StringBuilder s = new StringBuilder();
             for (GameBlock b : layer) {
-                s += (b.toString() + "\n");
+                s.append(b.toString()).append("\n");
             }
-            return s;
+            return s.toString();
         }
 
         String toStringHp() {
-            String s = "";
+            StringBuilder s = new StringBuilder();
             for (GameBlock b : layer) {
-                s += (b.toStringHp() + "\n");
+                s.append(b.toStringHp()).append("\n");
             }
-            return s;
+            return s.toString();
         }
     }
 
@@ -253,7 +259,7 @@ public class Cube implements Serializable {
         size = (size % 2 == 0) ? (size - 1) : size;
         cubeMap = new ConcurrentHashMap<>();
         activeCubes = new ConcurrentHashMap<>();
-        layers = new ConcurrentLinkedQueue();
+        layers = new ConcurrentLinkedQueue<>();
         int level = 1;
         for (int i = size; i > 0; i -= 2) {
             System.err.println("Adding layer " + i);
