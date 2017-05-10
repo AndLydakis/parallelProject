@@ -156,8 +156,8 @@ public class RmiBot extends Bot {
                 System.err.println(username + " no ops performed");
             }
         } catch (Exception e) {
-//            e.printStackTrace();
-            System.err.println(username + " exception 2: " + e);
+            System.err.println(username + " exception 2:");
+            e.printStackTrace();
             running = false;
             System.err.println(username + " adding stats");
             if (numOps != 0) {
