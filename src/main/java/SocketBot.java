@@ -53,7 +53,7 @@ public class SocketBot extends Bot {
      * @param role      player role
      * @param host      hostname to connect to
      * @param port      port in which the rmi state is connected to
-     * @param sleep     time to sleep between attacks(milliseconds)
+     * @param sleep     time to sleep between attacks(nanoseconds)
      * @param regString string to pass to the registration function
      */
     SocketBot(String username, int role, String host, int port, long sleep, String regString, CountDownLatch countDownLatch) {
@@ -183,7 +183,7 @@ public class SocketBot extends Bot {
                     out.print(req + "\r\n");
                     out.flush();
                     while ((line = in.readLine()) != null && line.length() != 0) {
-                        resp.append(line + ".");
+                        resp.append(line).append(".");
                     }
 //                    System.err.println("Response received :" + resp);
 //                resp = processReply(in.readLine());
@@ -232,11 +232,9 @@ public class SocketBot extends Bot {
                     System.err.println("Failed to register " + username);
                 }
             }
-            if (role == 1) {
-                System.err.println("Created new Socket attacker bot #" + counter.incrementAndGet() + ": " + username);
-            } else {
-                System.err.println("Created new Socket defender bot #" + counter.incrementAndGet() + ": " + username);
-            }
+
+            System.err.println("Created new Socket " + (role == 1 ? "attacker" : "defender") + " bot #" + counter.incrementAndGet() + ": " + username);
+
         } catch (IOException e) {
 //            e.printStackTrace();
             System.err.println(username + " exception 1");
@@ -278,9 +276,12 @@ public class SocketBot extends Bot {
 //                }
                 avgDelay += (System.nanoTime() - start);
                 numOps++;
-                start = System.nanoTime();
-                while ((System.nanoTime() - start) > sleep) {
-                }
+
+//                start = System.nanoTime();
+//                while ((System.nanoTime() - start) > sleep) {
+//                }
+
+                Thread.sleep((long) (sleep * 1e6));
 
             } catch (Exception e) {
 //                e.printStackTrace();

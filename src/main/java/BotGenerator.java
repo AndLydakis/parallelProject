@@ -23,6 +23,24 @@ public class BotGenerator {
 
     }
 
+    /**
+     *
+     * @param host
+     * @param port
+     * @param RMIA                  # of RMI Attackers
+     * @param RMID                  # of RMI Defenders
+     * @param SocketA               # of Socket Attackers
+     * @param SocketD               # of Socket Defenders
+     * @param sleep                 time in seconds between bot actions
+     * @param attackerPrimary       Attacker attack damage
+     * @param attackerSecondary     TODO
+     * @param attackerItems         TODO
+     * @param defenderPrimary       Defender repair heal amount
+     * @param defenderSecondary     TODO
+     * @param defenderItems         TODO
+     * @throws InterruptedException
+     * @throws IOException
+     */
     private BotGenerator(String host, int port,
                          int RMIA, int RMID,
                          int SocketA, int SocketD,

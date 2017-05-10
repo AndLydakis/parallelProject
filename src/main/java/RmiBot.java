@@ -37,14 +37,13 @@ public class RmiBot extends Bot {
     }
 
     /**
-     * Select an available block and target it
+     * Select first available block and use primary on it
      * if there are no available targets do nothing
      *
      * @throws RemoteException if rmi fails
      */
     private void selectAttack() throws RemoteException {
-        if (targets == null) return;
-        if (targets.length() == 0) return;
+        if (targets == null || targets.isEmpty()) return;
         String[] tokens = targets.split("\n");
 //        System.err.println("RMI " + roles[role] + " " + username + " targeting " + tokens[0].split(":")[0]);
         int res = state.requestPrimary(username, role, tokens[0].split(":")[0]);
@@ -62,7 +61,7 @@ public class RmiBot extends Bot {
      * @param s         game state
      * @param username  player name
      * @param role      player role
-     * @param sleep     time to sleep between attacks(milliseconds)
+     * @param sleep     time to sleep between attacks(nanoseconds)
      * @param regString string to pass to the registration function
      */
     RmiBot(RemoteState s, String username, int role, long sleep, String regString, CountDownLatch countDownLatch) {
@@ -136,9 +135,13 @@ public class RmiBot extends Bot {
                     selectAttack();
                     avgDelay += (System.nanoTime() - start);
                     numOps++;
-                    start = System.nanoTime();
-                    while ((System.nanoTime() - start) > sleep) {
-                    }
+
+//                    start = System.nanoTime();
+//                    while ((System.nanoTime() - start) > sleep) {
+//                    }
+
+                    Thread.sleep((long) (sleep * 1e6));
+
                 } catch (Exception e) {
 //                    System.err.println(username + " inner Exception");
                 }

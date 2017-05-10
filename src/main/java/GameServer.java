@@ -107,16 +107,14 @@ public class GameServer {
     /**
      * http://stackoverflow.com/a/14541376/1440902
      *
-     * @return
-     * @throws Exception
+     * @return devices public IP address as according to checkip.amazonaws.com
+     * @throws Exception Requires network connectivity
      */
     private static String getIp() throws Exception {
-        URL whatismyip = new URL("http://checkip.amazonaws.com");
         BufferedReader in = null;
         try {
-            in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
-            String ip = in.readLine();
-            return ip;
+            in = new BufferedReader(new InputStreamReader(new URL("http://checkip.amazonaws.com").openStream()));
+            return in.readLine();
         } finally {
             if (in != null) {
                 try {
