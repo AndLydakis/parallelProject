@@ -157,7 +157,7 @@ public class RmiBot extends Bot {
             }
         } catch (Exception e) {
 //            e.printStackTrace();
-            System.err.println(username + " exception 2");
+            System.err.println(username + " exception 2: " + e.getMessage());
             running = false;
             System.err.println(username + " adding stats");
             if (numOps != 0) {
