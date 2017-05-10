@@ -118,35 +118,39 @@ public class BotGenerator {
 
         System.err.println("Saving stats");
 
+        BufferedWriter outputWriter;
+
         //LOG RMI BOTS
-        BufferedWriter outputWriter = new BufferedWriter(
-                new FileWriter(System.getProperty("user.home") + "/RMISTATS_" + num + "_" +
-                        RMIA + "_" + RMID + "_" + SocketA + "_" + SocketD +
-                        ".csv"));
+        if (RMIA + RMID > 0) {
+            outputWriter = new BufferedWriter(
+                    new FileWriter(System.getProperty("user.home") + "/RMISTATS_" + num + "_" +
+                            RMIA + "_" + RMID + "_" + SocketA + "_" + SocketD +
+                            ".csv"));
 
-        for (Bot.statsEntry se : Bot.attackStats)
-            outputWriter.write(se.toString());
+            for (Bot.statsEntry se : Bot.attackStatsRmi)
+                outputWriter.write(se.toString());
 
-        for (Bot.statsEntry se : Bot.defendStats)
-            outputWriter.write(se.toString());
+            for (Bot.statsEntry se : Bot.defendStatsRmi)
+                outputWriter.write(se.toString());
 
-        outputWriter.close();
+            outputWriter.close();
+        }
 
         //LOG SOCKETBOTS
-        outputWriter = new BufferedWriter(
-                new FileWriter(System.getProperty("user.home") + "/SOCKETSTATS_" + num + "_" +
-                        RMIA + "_" + RMID + "_" + SocketA + "_" + SocketD +
-                        ".csv"));
+        if (SocketA + SocketD > 0) {
+            outputWriter = new BufferedWriter(
+                    new FileWriter(System.getProperty("user.home") + "/SOCKETSTATS_" + num + "_" +
+                            RMIA + "_" + RMID + "_" + SocketA + "_" + SocketD +
+                            ".csv"));
 
-        for (Bot.statsEntry se : Bot.attackStatsSocket)
-            outputWriter.write(se.toString());
+            for (Bot.statsEntry se : Bot.attackStatsSocket)
+                outputWriter.write(se.toString());
 
-        for (Bot.statsEntry se : Bot.defendStatsSocket)
-            outputWriter.write(se.toString());
+            for (Bot.statsEntry se : Bot.defendStatsSocket)
+                outputWriter.write(se.toString());
 
-        outputWriter.close();
-
-
+            outputWriter.close();
+        }
     }
 
     /**

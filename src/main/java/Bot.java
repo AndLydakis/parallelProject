@@ -7,8 +7,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Bot extends Thread {
 
-    static final ArrayList<statsEntry> attackStats = new ArrayList<>();
-    static final ArrayList<statsEntry> defendStats = new ArrayList<>();
+    static final ArrayList<statsEntry> attackStatsRmi = new ArrayList<>();
+    static final ArrayList<statsEntry> defendStatsRmi = new ArrayList<>();
     static final ArrayList<statsEntry> defendStatsSocket = new ArrayList<>();
     static final ArrayList<statsEntry> attackStatsSocket = new ArrayList<>();
     static final String[] roles = {"Defender", "Attacker"};
@@ -33,11 +33,11 @@ public class Bot extends Thread {
     void addStats() {
         System.err.println(username + " adding stats");
         if (role == 1) {
-            synchronized (attackStats) {
+            synchronized (attackStatsRmi) {
                 attackStatsSocket.add(new statsEntry(role, numOps, avgDelay));
             }
         } else {
-            synchronized (defendStats) {
+            synchronized (defendStatsRmi) {
                 defendStatsSocket.add(new statsEntry(role, numOps, avgDelay));
             }
         }
