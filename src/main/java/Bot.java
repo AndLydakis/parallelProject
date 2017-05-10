@@ -22,7 +22,7 @@ public class Bot extends Thread {
         private long avgDelay;
 
         /**
-         * @param role     Attacker = 1, Defender = 1
+         * @param role     Attacker = 1, Defender = 0
          * @param numOps   Number of actions bot performed
          * @param avgDelay in nanoseconds
          */
