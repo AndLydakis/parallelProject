@@ -222,13 +222,20 @@ public class Cube implements Serializable {
             if (layer.size() == 0) return false;
 
             try {
-                for (GameBlock gb : layer) {
+
+                for (int i = 0; i < layer.size(); i++) {
+                    GameBlock gb = layer.get(i);
                     if (gb != null && gb.getHp() > 0) {
                         return true;
                     }
                 }
+//                for (GameBlock gb : layer) {
+//                    if (gb != null && gb.getHp() > 0) {
+//                        return true;
+//                    }
+//                }
             } catch (NoSuchElementException e) {
-                //maybe it died while we were checking?
+                System.err.println("maybe it died while we were checking?");
             }
             return false;
         }
