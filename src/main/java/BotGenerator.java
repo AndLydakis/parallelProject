@@ -106,13 +106,13 @@ public class BotGenerator {
             bots.add(new SocketBot(username, 0, host, port, randomizedSleep(sleep), regString, countDownLatch));
         }
 
-        System.err.println("0?: " + countDownLatch.getCount());
+        System.err.println((num + 1) + "?: " + countDownLatch.getCount());
         bots.forEach(Thread::start);
 
         System.err.println(num + "?: " + countDownLatch.getCount());
         countDownLatch.countDown();
         countDownLatch.await();
-        System.err.println(num + 1 + "?: " + countDownLatch.getCount());
+        System.err.println("0?: " + countDownLatch.getCount());
 
         for (Bot b : bots) {
             b.join();
