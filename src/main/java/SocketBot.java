@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * A bot that uses the socket interface to target
@@ -27,6 +28,7 @@ public class SocketBot extends Bot {
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in = null;
+    private CountDownLatch countDownLatch;
 
     /**
      * Add the stats to the correct array
@@ -54,7 +56,8 @@ public class SocketBot extends Bot {
      * @param sleep     time to sleep between attacks(milliseconds)
      * @param regString string to pass to the registration function
      */
-    SocketBot(String username, int role, String host, int port, long sleep, String regString) {
+    SocketBot(String username, int role, String host, int port, long sleep, String regString, CountDownLatch countDownLatch) {
+        this.countDownLatch = countDownLatch;
         this.running = true;
         this.host = host;
         this.port = port + 1;
@@ -207,6 +210,15 @@ public class SocketBot extends Bot {
     }
 
     public void run() {
+
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return;
+        }
+
+
         long start;
         System.err.println("Trying to register " + roles[role] + " " + username);
         try {

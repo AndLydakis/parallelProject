@@ -3,6 +3,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Creates rmi and socket attacker and defender bots that target
@@ -53,30 +54,34 @@ public class BotGenerator {
         System.err.println("Sleep(seconds): " + sleep);
         ArrayList<Bot> bots = new ArrayList<>();
 
+        CountDownLatch countDownLatch = new CountDownLatch(num + 1);
+
         for (int i = 0; i < RMIA; i++) {
             String username = "RMIAttacker:" + getSaltString();
             String regString = username + "-" + 1 + "-" + atkString;
-            bots.add(new RmiBot(state, username, 1, (long) (sleep * 1e9), regString));
+            bots.add(new RmiBot(state, username, 1, (long) (sleep * 1e9), regString, countDownLatch));
         }
 
         for (int i = 0; i < RMID; i++) {
             String username = "RMIDefender:" + getSaltString();
             String regString = username + "-" + 0 + "-" + defString;
-            bots.add(new RmiBot(state, username, 0, (long) (sleep * 1e9), regString));
+            bots.add(new RmiBot(state, username, 0, (long) (sleep * 1e9), regString, countDownLatch));
         }
 
         for (int i = 0; i < SocketA; i++) {
             String username = "SocketAttacker:" + getSaltString();
             String regString = username + "-" + 1 + "-" + atkString;
-            bots.add(new SocketBot(username, 1, host, port, (long) (sleep * 1e9), regString));
+            bots.add(new SocketBot(username, 1, host, port, (long) (sleep * 1e9), regString, countDownLatch));
         }
         for (int i = 0; i < SocketD; i++) {
             String username = "SocketDefender:" + getSaltString();
             String regString = username + "-" + 0 + "-" + defString;
-            bots.add(new SocketBot(username, 0, host, port, (long) (sleep * 1e9), regString));
+            bots.add(new SocketBot(username, 0, host, port, (long) (sleep * 1e9), regString, countDownLatch));
         }
 
         bots.forEach(Thread::start);
+
+        countDownLatch.await();
 
         for (Bot b : bots) {
             b.join();

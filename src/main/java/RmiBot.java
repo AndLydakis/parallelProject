@@ -1,5 +1,6 @@
 import java.rmi.RemoteException;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * A bot that uses the RMI interface to target
@@ -18,6 +19,7 @@ public class RmiBot extends Bot {
     private String regString;
     private String targets;
     private volatile boolean running;
+    private CountDownLatch countDownLatch;
 
     /**
      * Add the stats to the correct array
@@ -63,7 +65,7 @@ public class RmiBot extends Bot {
      * @param sleep     time to sleep between attacks(milliseconds)
      * @param regString string to pass to the registration function
      */
-    RmiBot(RemoteState s, String username, int role, long sleep, String regString) {
+    RmiBot(RemoteState s, String username, int role, long sleep, String regString, CountDownLatch countDownLatch) {
         this.running = true;
         this.state = s;
         this.username = username;
@@ -79,9 +81,19 @@ public class RmiBot extends Bot {
         } else {
             this.primary = -1;
         }
+
+        this.countDownLatch = countDownLatch;
     }
 
     public void run() {
+
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return;
+        }
+
         long start;
         System.err.println("Trying to register " + roles[role] + " " + username);
         try {
