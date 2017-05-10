@@ -307,7 +307,7 @@ public class Cube implements Serializable {
         if (currentLayer.isAlive()) {
             return true;
         } else {
-            System.err.println("Layer Destoryed");
+            System.err.println("Layer Destroyed");
             currentLayer = layers.poll();
             return currentLayer != null;
         }
