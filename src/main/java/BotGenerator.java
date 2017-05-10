@@ -24,20 +24,28 @@ public class BotGenerator {
     }
 
     /**
-     *
+     * @param sleep sleep in seconds
+     * @return sleep in nanoseconds +/- 5%, but no less than zero
+     */
+    private long randomizedSleep(long sleep) {
+//        return (long) Math.max(0, (sleep * 1e9 * (1 + (Math.random() - .5) / 10)));
+        return (long) (sleep * 1e9);
+    }
+
+    /**
      * @param host
      * @param port
-     * @param RMIA                  # of RMI Attackers
-     * @param RMID                  # of RMI Defenders
-     * @param SocketA               # of Socket Attackers
-     * @param SocketD               # of Socket Defenders
-     * @param sleep                 time in seconds between bot actions
-     * @param attackerPrimary       Attacker attack damage
-     * @param attackerSecondary     TODO
-     * @param attackerItems         TODO
-     * @param defenderPrimary       Defender repair heal amount
-     * @param defenderSecondary     TODO
-     * @param defenderItems         TODO
+     * @param RMIA              # of RMI Attackers
+     * @param RMID              # of RMI Defenders
+     * @param SocketA           # of Socket Attackers
+     * @param SocketD           # of Socket Defenders
+     * @param sleep             time in seconds between bot actions
+     * @param attackerPrimary   Attacker attack damage
+     * @param attackerSecondary TODO
+     * @param attackerItems     TODO
+     * @param defenderPrimary   Defender repair heal amount
+     * @param defenderSecondary TODO
+     * @param defenderItems     TODO
      * @throws InterruptedException
      * @throws IOException
      */
@@ -77,28 +85,31 @@ public class BotGenerator {
         for (int i = 0; i < RMIA; i++) {
             String username = "RMIAttacker:" + getSaltString();
             String regString = username + "-" + 1 + "-" + atkString;
-            bots.add(new RmiBot(state, username, 1, (long) (sleep * 1e9), regString, countDownLatch));
+            bots.add(new RmiBot(state, username, 1, randomizedSleep(sleep), regString, countDownLatch));
         }
 
         for (int i = 0; i < RMID; i++) {
             String username = "RMIDefender:" + getSaltString();
             String regString = username + "-" + 0 + "-" + defString;
-            bots.add(new RmiBot(state, username, 0, (long) (sleep * 1e9), regString, countDownLatch));
+            bots.add(new RmiBot(state, username, 0, randomizedSleep(sleep), regString, countDownLatch));
         }
 
         for (int i = 0; i < SocketA; i++) {
             String username = "SocketAttacker:" + getSaltString();
             String regString = username + "-" + 1 + "-" + atkString;
-            bots.add(new SocketBot(username, 1, host, port, (long) (sleep * 1e9), regString, countDownLatch));
+            bots.add(new SocketBot(username, 1, host, port, randomizedSleep(sleep), regString, countDownLatch));
         }
+
         for (int i = 0; i < SocketD; i++) {
             String username = "SocketDefender:" + getSaltString();
             String regString = username + "-" + 0 + "-" + defString;
-            bots.add(new SocketBot(username, 0, host, port, (long) (sleep * 1e9), regString, countDownLatch));
+            bots.add(new SocketBot(username, 0, host, port, randomizedSleep(sleep), regString, countDownLatch));
         }
 
+        System.err.println("b4" + countDownLatch.getCount());
         bots.forEach(Thread::start);
 
+        System.err.println("after" + countDownLatch.getCount());
         countDownLatch.await();
 
         for (Bot b : bots) {
