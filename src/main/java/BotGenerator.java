@@ -54,7 +54,7 @@ public class BotGenerator {
                          int SocketA, int SocketD,
                          double sleep,
                          int attackerPrimary, int attackerSecondary, int attackerItems,
-                         int defenderPrimary, int defenderSecondary, int defenderItems) throws InterruptedException, IOException {
+                         int defenderPrimary, int defenderSecondary, int defenderItems, boolean randomBlock) throws InterruptedException, IOException {
         String defString = defenderPrimary + "-" + defenderSecondary + "-" + defenderItems;
         String atkString = attackerPrimary + "-" + attackerSecondary + "-" + attackerItems;
 
@@ -81,8 +81,6 @@ public class BotGenerator {
         ArrayList<Bot> bots = new ArrayList<>();
 
         CountDownLatch countDownLatch = new CountDownLatch(num + 1);
-
-        boolean randomBlock = true;
 
         for (int i = 0; i < RMIA; i++) {
             String username = "RMIAttacker:" + getSaltString();
@@ -180,6 +178,7 @@ public class BotGenerator {
     public static void main(String args[]) throws InterruptedException, IOException {
         System.err.println("Creating new bot generator");
 
+
         new BotGenerator(
                 args[0],
                 Integer.parseInt(args[1]),
@@ -193,6 +192,7 @@ public class BotGenerator {
                 Integer.parseInt(args[9]),
                 Integer.parseInt(args[10]),
                 Integer.parseInt(args[11]),
-                Integer.parseInt(args[12]));
+                Integer.parseInt(args[12]),
+                (args.length > 13) && (args[13].equals("1")));
     }
 }
