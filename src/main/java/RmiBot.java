@@ -1,6 +1,7 @@
 import java.rmi.RemoteException;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A bot that uses the RMI interface to target
@@ -8,6 +9,7 @@ import java.util.concurrent.CountDownLatch;
  */
 public class RmiBot extends Bot {
     private RemoteState state;
+    private boolean randomBlock;
 
     /**
      * Add the stats to the correct array
@@ -35,7 +37,10 @@ public class RmiBot extends Bot {
         if (targets == null || targets.isEmpty()) return;
         String[] tokens = targets.split("\n");
 //        System.err.println("RMI " + roles[role] + " " + username + " targeting " + tokens[0].split(":")[0]);
-        int res = state.requestPrimary(username, role, tokens[0].split(":")[0]);
+
+        int block = randomBlock ? ThreadLocalRandom.current().nextInt(0, tokens.length) : 0;
+
+        int res = state.requestPrimary(username, role, tokens[block].split(":")[0]);
         if (res < 0) {
             long start = System.nanoTime();
             targets = state.getTargets();
@@ -53,7 +58,7 @@ public class RmiBot extends Bot {
      * @param sleep     time to sleep between attacks(nanoseconds)
      * @param regString string to pass to the registration function
      */
-    RmiBot(RemoteState s, String username, int role, long sleep, String regString, CountDownLatch countDownLatch) {
+    RmiBot(RemoteState s, String username, int role, long sleep, String regString, CountDownLatch countDownLatch, Boolean randomBlock) {
         this.running = true;
         this.state = s;
         this.username = username;
@@ -71,6 +76,7 @@ public class RmiBot extends Bot {
         }
 
         this.countDownLatch = countDownLatch;
+        this.randomBlock = randomBlock;
     }
 
     public void run() {
