@@ -46,7 +46,7 @@ public class BotGenerator {
      * @param defenderPrimary   Defender repair heal amount
      * @param defenderSecondary TODO
      * @param defenderItems     TODO
-     * @param randomTargeting       randomized targeting
+     * @param randomTargeting   randomized targeting
      * @throws InterruptedException
      * @throws IOException
      */
@@ -119,7 +119,7 @@ public class BotGenerator {
         }
         long totalTime = System.nanoTime() - startTime;
 
-        System.out.format("saving stats\n Total Time: %.02f seconds", totalTime / 1e9);
+        System.out.format("saving stats\nTotal Time: %.02f seconds\n", (totalTime / 1e9));
 
         BufferedWriter outputWriter;
 
