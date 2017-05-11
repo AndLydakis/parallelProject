@@ -79,6 +79,8 @@ public class BotGenerator {
         System.err.println("SocketAttackers: " + SocketA);
         System.err.println("SocketDefenders: " + SocketD);
         System.err.println("Sleep(seconds): " + sleep);
+        System.err.println("Random Targeting: " + randomTargeting);
+
         ArrayList<Bot> bots = new ArrayList<>();
 
         CountDownLatch countDownLatch = new CountDownLatch(num + 1);
