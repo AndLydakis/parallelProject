@@ -172,6 +172,7 @@ public class BotGenerator {
      *             DefenderPrimary
      *             DefenderSecondary
      *             DefenderItems
+     *             randomized block targeting
      * @throws InterruptedException when socket errors occur
      * @throws IOException          when rmi errors occur
      */
