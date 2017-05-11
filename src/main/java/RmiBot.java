@@ -128,7 +128,7 @@ public class RmiBot extends Bot {
 //                    while ((System.nanoTime() - start) > sleep) {
 //                    }
 
-                    if(sleep > 0) Thread.sleep((long) (sleep * 1e6));
+                    if (sleep > 0) Thread.sleep((long) (sleep * 1e6));
 
                 } catch (Exception e) {
 //                    System.err.println(username + " inner Exception");

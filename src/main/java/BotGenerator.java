@@ -130,12 +130,10 @@ public class BotGenerator {
             System.out.println("k? " + Bot.attackStatsRmi.isEmpty() + " " + Bot.defendStatsRmi.isEmpty());
 
             for (Bot.statsEntry se : Bot.attackStatsRmi) {
-                System.out.println("ack ack ack " + se);
                 outputWriter.write(se.toString());
             }
 
             for (Bot.statsEntry se : Bot.defendStatsRmi) {
-                System.out.println("dak dak dak " + se);
                 outputWriter.write(se.toString());
             }
 
