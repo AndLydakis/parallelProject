@@ -127,11 +127,16 @@ public class BotGenerator {
                             RMIA + "_" + RMID + "_" + SocketA + "_" + SocketD +
                             ".csv"));
 
-            for (Bot.statsEntry se : Bot.attackStatsRmi)
+            for (Bot.statsEntry se : Bot.attackStatsRmi) {
+                System.out.println("ack ack ack " + se);
                 outputWriter.write(se.toString());
+            }
 
-            for (Bot.statsEntry se : Bot.defendStatsRmi)
+            for (Bot.statsEntry se : Bot.defendStatsRmi) {
+                System.out.println("dak dak dak " + se);
                 outputWriter.write(se.toString());
+            }
+
 
             outputWriter.close();
         }
