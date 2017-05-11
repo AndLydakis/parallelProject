@@ -18,6 +18,22 @@ public class SocketBot extends Bot {
     private BufferedReader in = null;
 
     /**
+     * Add the stats to the correct array
+     */
+    void addStats() {
+        System.err.println(username + " adding stats");
+        if (role == 1) {
+            synchronized (attackStatsSocket) {
+                attackStatsSocket.add(new statsEntry(role, numOps, avgDelay));
+            }
+        } else {
+            synchronized (defendStatsSocket) {
+                defendStatsSocket.add(new statsEntry(role, numOps, avgDelay));
+            }
+        }
+    }
+
+    /**
      * Constructor
      *
      * @param username  player name

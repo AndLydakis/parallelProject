@@ -10,6 +10,22 @@ public class RmiBot extends Bot {
     private RemoteState state;
 
     /**
+     * Add the stats to the correct array
+     */
+    void addStats() {
+        System.err.println(username + " adding stats");
+        if (role == 1) {
+            synchronized (attackStatsRmi) {
+                attackStatsRmi.add(new statsEntry(role, numOps, avgDelay));
+            }
+        } else {
+            synchronized (defendStatsRmi) {
+                defendStatsRmi.add(new statsEntry(role, numOps, avgDelay));
+            }
+        }
+    }
+
+    /**
      * Select first available block and use primary on it
      * if there are no available targets do nothing
      *

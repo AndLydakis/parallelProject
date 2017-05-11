@@ -28,22 +28,6 @@ public class Bot extends Thread {
     long sleep;
 
     /**
-     * Add the stats to the correct array
-     */
-    void addStats() {
-        System.err.println(username + " adding stats");
-        if (role == 1) {
-            synchronized (attackStatsRmi) {
-                attackStatsSocket.add(new statsEntry(role, numOps, avgDelay));
-            }
-        } else {
-            synchronized (defendStatsRmi) {
-                defendStatsSocket.add(new statsEntry(role, numOps, avgDelay));
-            }
-        }
-    }
-
-    /**
      * class used to keep track of a bot's stats
      */
     class statsEntry {
