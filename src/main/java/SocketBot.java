@@ -197,16 +197,6 @@ public class SocketBot extends Bot {
     }
 
     public void run() {
-
-        try {
-            countDownLatch.countDown();
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            return;
-        }
-
-
         long start;
         System.err.println("Trying to register " + roles[role] + " " + username);
         try {
@@ -223,11 +213,18 @@ public class SocketBot extends Bot {
 
             System.err.println("Created new Socket " + (role == 1 ? "attacker" : "defender") + " bot #" + counter.incrementAndGet() + ": " + username);
 
+
+            countDownLatch.countDown();
+            countDownLatch.await();
         } catch (IOException e) {
 //            e.printStackTrace();
             System.err.println(username + " exception 1");
             running = false;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return;
         }
+
         while (running) {
             try {
                 if (sendRequest("GETEND") != 0) {

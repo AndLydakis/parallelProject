@@ -109,15 +109,17 @@ public class BotGenerator {
 
         bots.forEach(Thread::start);
 
-        //we could use n instead of n+1 and get rid of this pair
         countDownLatch.countDown();
         countDownLatch.await();
+
+        long startTime = System.nanoTime();
 
         for (Bot b : bots) {
             b.join();
         }
+        long totalTime = System.nanoTime() - startTime;
 
-        System.err.println("Saving stats");
+        System.out.format("saving stats\n Total Time: %.02f seconds", totalTime / 1e9);
 
         BufferedWriter outputWriter;
 

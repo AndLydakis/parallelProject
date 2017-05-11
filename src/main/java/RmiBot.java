@@ -80,15 +80,6 @@ public class RmiBot extends Bot {
     }
 
     public void run() {
-
-        try {
-            countDownLatch.countDown();
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            return;
-        }
-
         long start;
         System.err.println("Trying to register " + roles[role] + " " + username);
         try {
@@ -113,6 +104,8 @@ public class RmiBot extends Bot {
         System.err.println("Created new RMI " + (role == 1 ? "attacker" : "defender") + " bot #" + counter.incrementAndGet() + ": " + username);
 
         try {
+            countDownLatch.countDown();
+            countDownLatch.await();
 //            while (state.printStatus() != 0) {
             while (state.isAlive()) {
 //            while (state.isAlive() && running) {
