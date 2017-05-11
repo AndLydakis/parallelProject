@@ -9,7 +9,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class RmiBot extends Bot {
     private RemoteState state;
-    private boolean randomBlock;
+    private boolean randomTargeting;
 
     /**
      * Add the stats to the correct array
@@ -38,7 +38,7 @@ public class RmiBot extends Bot {
         String[] tokens = targets.split("\n");
 //        System.err.println("RMI " + roles[role] + " " + username + " targeting " + tokens[0].split(":")[0]);
 
-        int block = randomBlock ? ThreadLocalRandom.current().nextInt(0, tokens.length) : 0;
+        int block = randomTargeting ? ThreadLocalRandom.current().nextInt(0, tokens.length) : 0;
 
         int res = state.requestPrimary(username, role, tokens[block].split(":")[0]);
         if (res < 0) {
@@ -58,7 +58,7 @@ public class RmiBot extends Bot {
      * @param sleep     time to sleep between attacks(nanoseconds)
      * @param regString string to pass to the registration function
      */
-    RmiBot(RemoteState s, String username, int role, long sleep, String regString, CountDownLatch countDownLatch, Boolean randomBlock) {
+    RmiBot(RemoteState s, String username, int role, long sleep, String regString, CountDownLatch countDownLatch, Boolean randomTargeting) {
         this.running = true;
         this.state = s;
         this.username = username;
@@ -76,7 +76,7 @@ public class RmiBot extends Bot {
         }
 
         this.countDownLatch = countDownLatch;
-        this.randomBlock = randomBlock;
+        this.randomTargeting = randomTargeting;
     }
 
     public void run() {

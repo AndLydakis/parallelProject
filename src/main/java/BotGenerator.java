@@ -46,6 +46,7 @@ public class BotGenerator {
      * @param defenderPrimary   Defender repair heal amount
      * @param defenderSecondary TODO
      * @param defenderItems     TODO
+     * @param randomTargeting       randomized targeting
      * @throws InterruptedException
      * @throws IOException
      */
@@ -54,7 +55,7 @@ public class BotGenerator {
                          int SocketA, int SocketD,
                          double sleep,
                          int attackerPrimary, int attackerSecondary, int attackerItems,
-                         int defenderPrimary, int defenderSecondary, int defenderItems, boolean randomBlock) throws InterruptedException, IOException {
+                         int defenderPrimary, int defenderSecondary, int defenderItems, boolean randomTargeting) throws InterruptedException, IOException {
         String defString = defenderPrimary + "-" + defenderSecondary + "-" + defenderItems;
         String atkString = attackerPrimary + "-" + attackerSecondary + "-" + attackerItems;
 
@@ -85,13 +86,13 @@ public class BotGenerator {
         for (int i = 0; i < RMIA; i++) {
             String username = "RMIAttacker:" + getSaltString();
             String regString = username + "-" + 1 + "-" + atkString;
-            bots.add(new RmiBot(state, username, 1, randomizedSleep(sleep), regString, countDownLatch, randomBlock));
+            bots.add(new RmiBot(state, username, 1, randomizedSleep(sleep), regString, countDownLatch, randomTargeting));
         }
 
         for (int i = 0; i < RMID; i++) {
             String username = "RMIDefender:" + getSaltString();
             String regString = username + "-" + 0 + "-" + defString;
-            bots.add(new RmiBot(state, username, 0, randomizedSleep(sleep), regString, countDownLatch, randomBlock));
+            bots.add(new RmiBot(state, username, 0, randomizedSleep(sleep), regString, countDownLatch, randomTargeting));
         }
 
         for (int i = 0; i < SocketA; i++) {
