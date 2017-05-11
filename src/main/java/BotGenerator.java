@@ -127,6 +127,7 @@ public class BotGenerator {
                             RMIA + "_" + RMID + "_" + SocketA + "_" + SocketD +
                             ".csv"));
 
+            System.out.println("k?");
             for (Bot.statsEntry se : Bot.attackStatsRmi) {
                 System.out.println("ack ack ack " + se);
                 outputWriter.write(se.toString());

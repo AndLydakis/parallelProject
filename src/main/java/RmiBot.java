@@ -87,11 +87,9 @@ public class RmiBot extends Bot {
             running = false;
             return;
         }
-        if (role == 1) {
-            System.err.println("Created new RMI attacker bot #" + counter.incrementAndGet() + ": " + username);
-        } else {
-            System.err.println("Created new RMI defender bot #" + counter.incrementAndGet() + ": " + username);
-        }
+
+        System.err.println("Created new RMI " + (role == 1 ? "attacker" : "defender") + " bot #" + counter.incrementAndGet() + ": " + username);
+
         try {
 //            while (state.printStatus() != 0) {
             while (state.isAlive()) {
