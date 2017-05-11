@@ -124,11 +124,11 @@ public class RmiBot extends Bot {
                     avgDelay += (System.nanoTime() - start);
                     numOps++;
 
-                    start = System.nanoTime();
-                    while ((System.nanoTime() - start) > sleep) {
-                    }
+//                    start = System.nanoTime();
+//                    while ((System.nanoTime() - start) > sleep) {
+//                    }
 
-//                    Thread.sleep((long) (sleep * 1e6));
+                    if(sleep > 0) Thread.sleep((long) (sleep * 1e6));
 
                 } catch (Exception e) {
 //                    System.err.println(username + " inner Exception");
